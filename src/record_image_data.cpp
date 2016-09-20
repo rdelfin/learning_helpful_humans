@@ -28,6 +28,7 @@
 #include <opencv2/opencv.hpp>  
 
 #include "logging_utils.h"
+#include "nav_utils.h"
 
 typedef actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction> Client;
 
@@ -44,6 +45,10 @@ sensor_msgs::Image current_image;
 
 bool heardPose = false;
 geometry_msgs::PoseWithCovarianceStamped current_pose;
+
+
+
+
 
 void imageCb(const sensor_msgs::ImageConstPtr& msg)
 {
@@ -79,6 +84,10 @@ int main(int argc, char**argv) {
   doors.push_back("d3_414a2");
   int current_door = 0;
     
+    
+    
+    
+    
   //office doors in pod
   //doors.push_back("d3_418");
   //doors.push_back("d3_432");
@@ -111,16 +120,16 @@ int main(int argc, char**argv) {
 	   
 		ROS_INFO_STREAM("going to " << location);
 
-		bwi_kr_execution::ExecutePlanGoal goal;
+		bwi_kr_execution::ExecutePlanGoal goal = createDoorGoal(location);
 
-		bwi_kr_execution::AspRule rule;
+		/*bwi_kr_execution::AspRule rule;
 		bwi_kr_execution::AspFluent fluent;
 		fluent.name = "not facing";
 
 		fluent.variables.push_back(location);
 
 		rule.body.push_back(fluent);
-		goal.aspGoal.push_back(rule);
+		goal.aspGoal.push_back(rule);*/
 
 		ROS_INFO("sending goal");
 		client.sendGoal(goal);

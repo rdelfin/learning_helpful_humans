@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>learning_helpful_humans</name>
+  <version>0.3.12</version>
+  <description>
+	Package including nodes used in latest research
+  </description>
+
+  <maintainer email="jsinapov@gmail.com">Jivko Sinapov</maintainer>
+  <author>Jivko Sinapov</author>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>actionlib</depend>
+  <depend>actionlib_msgs</depend>
+  <depend>bwi_kr_execution</depend>
+  <depend>bwi_msgs</depend>
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>espeak</depend>  
+  <depend>image_transport</depend>  
+  <depend>cv_bridge</depend>  
+  <depend>sensor_msgs</depend>  
+  <depend>geometry_msgs</depend>  
+
+</package>
