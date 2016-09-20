@@ -77,28 +77,8 @@ int main(int argc, char**argv) {
   
   std::vector<string> doors;
   
-  //lab doors
-  doors.push_back("d3_414b1");
-  doors.push_back("d3_414b2");
-  doors.push_back("d3_414a1");
-  doors.push_back("d3_414a2");
-  int current_door = 0;
-    
-    
-    
-    
-    
-  //office doors in pod
-  //doors.push_back("d3_418");
-  //doors.push_back("d3_432");
   
   
-  //client for executing plans
-  Client client("/action_executor/execute_plan", true);
-  client.waitForServer();
-
-  bool need_to_act = true;
-
   //spin rate
   double rate_hz = 10;
   ros::Rate r(rate_hz);
@@ -110,55 +90,10 @@ int main(int argc, char**argv) {
 
   while (ros::ok()) {
 
-	//if the robot is idle
-    if (need_to_act){
-		string location = doors.at(current_door);
-		current_door++;
-		if (current_door >= (int)doors.size())
-			current_door = 0;
-
-	   
-		ROS_INFO_STREAM("going to " << location);
-
-		bwi_kr_execution::ExecutePlanGoal goal = createDoorGoal(location);
-
-		/*bwi_kr_execution::AspRule rule;
-		bwi_kr_execution::AspFluent fluent;
-		fluent.name = "not facing";
-
-		fluent.variables.push_back(location);
-
-		rule.body.push_back(fluent);
-		goal.aspGoal.push_back(rule);*/
-
-		ROS_INFO("sending goal");
-		client.sendGoal(goal);
-    
-    
-		need_to_act = false;
-	}
-
-    /*if (client.getState() == actionlib::SimpleClientGoalState::ABORTED) {
-      ROS_INFO("Aborted");
-    } else if (client.getState() == actionlib::SimpleClientGoalState::PREEMPTED) {
-      ROS_INFO("Preempted");
-    }*/
-
-	if (client.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-      ROS_INFO("Succeeded!");
-      need_to_act = true;
-    }
-    else if (client.getState() == actionlib::SimpleClientGoalState::ABORTED) {
-      ROS_WARN("Aborted");
-      need_to_act = true;
-    } 
-
-
 	ros::spinOnce();
-	r.sleep();
 	
+	//keep track of time
 	double secs_current =ros::Time::now().toSec();
-	
 	elapsed_time += (secs_current-secs_prev);
 	secs_prev = secs_current;
 	
@@ -185,6 +120,8 @@ int main(int argc, char**argv) {
 		
 		//std::string pose_filename = IMG_DATA_PATH+"/"+ts_int+"_pose.txt";
 	}
+	
+	r.sleep();
   }
 
   return 0;

@@ -27,3 +27,8 @@ add_executable(record_image_data src/record_image_data.cpp)
 add_dependencies(record_image_data ${catkin_EXPORTED_TARGETS})
 target_link_libraries(record_image_data ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
+
+add_executable(record_data_agent src/record_data_agent.cpp)
+add_dependencies(record_data_agent ${catkin_EXPORTED_TARGETS})
+target_link_libraries(record_data_agent ${catkin_LIBRARIES})
+
