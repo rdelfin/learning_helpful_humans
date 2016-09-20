@@ -1,0 +1,74 @@
+undergrad lab locations:
+
+header: 
+  seq: 534
+  stamp: 
+    secs: 1474390020
+    nsecs: 239917013
+  frame_id: level_mux/map
+  
+  
+pose: 
+  pose: 
+    position: 
+      x: 21.2056456637
+      y: -5.50910408391
+      z: 0.0
+    orientation: 
+      x: 0.0
+      y: 0.0
+      z: -0.743513931886
+      w: 0.668720444648
+
+pose: 
+  pose: 
+    position: 
+      x: 22.1898621132
+      y: -10.8303575845
+      z: 0.0
+    orientation: 
+      x: 0.0
+      y: 0.0
+      z: 0.530670855413
+      w: 0.847577986509
+
+
+pose: 
+  pose: 
+    position: 
+      x: 3.35763579995
+      y: -3.32801689138
+      z: 0.0
+    orientation: 
+      x: 0.0
+      y: 0.0
+      z: 0.668762228113
+      w: 0.743476349489
+      
+pose: 
+  pose: 
+    position: 
+      x: 2.4119821248
+      y: -12.3561450131
+      z: 0.0
+    orientation: 
+      x: 0.0
+      y: 0.0
+      z: 0.0431178732974
+      w: 0.999069992044
+
+------------------------------------
+locations in 3.100 attrium (first, have to go to l3_100)
+
+pose: 
+  pose: 
+    position: 
+      x: 7.49601381945
+      y: 2.23040987577
+      z: 0.0
+    orientation: 
+      x: 0.0
+      y: 0.0
+      z: 0.746804368547
+      w: 0.665043784363
+
