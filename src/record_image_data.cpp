@@ -32,7 +32,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
-
+#include <pcl/filters/filter.h>
 
 #include "logging_utils.h"
 #include "nav_utils.h"
@@ -45,7 +45,7 @@ using namespace std;
 #define IMAGE_TOPIC "/nav_kinect/rgb/image_raw"
 #define POINT_CLOUD_TOPIC "/nav_kinect/depth_registered/points"
 
-#define IMG_DATA_PATH "/home/bwi/bwi_data"
+#define IMG_DATA_PATH "/home/users/jsinapov/bwi_data"
 
 bool heardImage = false;
 sensor_msgs::Image current_image;
@@ -80,7 +80,7 @@ void cloudCb (const sensor_msgs::PointCloud2ConstPtr& input)
 }
 
 int main(int argc, char**argv) {
-  ros::init(argc, argv, "between_doors");
+  ros::init(argc, argv, "record_image_data");
   ros::NodeHandle n;
 
   ros::NodeHandle privateNode("~");
@@ -115,6 +115,8 @@ int main(int argc, char**argv) {
   char filename_pc_c[90];
 
 
+  std::vector< int > nan_filter;
+
   while (ros::ok()) {
 
 	ros::spinOnce();
@@ -146,10 +148,10 @@ int main(int argc, char**argv) {
 		//convert point cloud
 		//convert to PCL format
 		pcl::fromROSMsg (current_cloud, *cloud);
+		pcl::removeNaNFromPointCloud(*cloud,*cloud,nan_filter);
 		sprintf(filename_pc_c,"%s/cloud_%li.pcd",datapath.c_str(),ts_int);
 
 		pcl::io::savePCDFileASCII (filename_pc_c, *cloud);
-		
 		
 		//std::string pose_filename = IMG_DATA_PATH+"/"+ts_int+"_pose.txt";
 	}

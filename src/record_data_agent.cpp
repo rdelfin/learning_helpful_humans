@@ -49,7 +49,7 @@ bool go_to_target(struct TargetLocation T){
 	}
 	else if (T.type == "pose"){
 		//first, make sure we're in the correct location area 
-		bwi_kr_execution::ExecutePlanGoal goal = createLocationGoal(T.id);
+		bwi_kr_execution::ExecutePlanGoal goal = createLocationGoal(T.location_name);
 		
 		ROS_INFO("Sending goal:");
 		ROS_INFO_STREAM(goal);
