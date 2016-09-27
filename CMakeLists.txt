@@ -17,6 +17,8 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   sensor_msgs
   geometry_msgs
+  pcl_conversions
+  pcl_ros
 )
 
 catkin_package(CATKIN_DEPENDS actionlib_msgs bwi_msgs std_msgs)

@@ -18,6 +18,7 @@
 //msgs
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <sensor_msgs/Image.h>
+#include <sensor_msgs/PointCloud2.h>
 
 //openCV
 #include <image_transport/image_transport.h>
@@ -26,6 +27,12 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>  
+
+#include <pcl/conversions.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+#include <pcl_conversions/pcl_conversions.h>
+
 
 #include "logging_utils.h"
 #include "nav_utils.h"
@@ -36,7 +43,7 @@ using namespace std;
 
 //works on v2 in both real world and simulation
 #define IMAGE_TOPIC "/nav_kinect/rgb/image_raw"
-
+#define POINT_CLOUD_TOPIC "/nav_kinect/depth_registered/points"
 
 #define IMG_DATA_PATH "/home/bwi/bwi_data"
 
@@ -46,8 +53,12 @@ sensor_msgs::Image current_image;
 bool heardPose = false;
 geometry_msgs::PoseWithCovarianceStamped current_pose;
 
+bool heardCloud = false;
+sensor_msgs::PointCloud2 current_cloud;
 
-
+typedef pcl::PointXYZRGB PointT;
+typedef pcl::PointCloud<PointT> PointCloudT;
+PointCloudT::Ptr cloud (new PointCloudT);
 
 
 void imageCb(const sensor_msgs::ImageConstPtr& msg)
@@ -61,6 +72,13 @@ void poseCb(const geometry_msgs::PoseWithCovarianceStampedConstPtr& msg){
 	current_pose = *msg;
 }
 
+
+void cloudCb (const sensor_msgs::PointCloud2ConstPtr& input)
+{
+	heardCloud = true;
+	current_cloud = *input;
+}
+
 int main(int argc, char**argv) {
   ros::init(argc, argv, "between_doors");
   ros::NodeHandle n;
@@ -72,6 +90,10 @@ int main(int argc, char**argv) {
   image_transport::Subscriber image_sub_ = it.subscribe(IMAGE_TOPIC, 1, &imageCb);
   
   ros::Subscriber sub_pose = n.subscribe("/amcl_pose", 1, poseCb );
+  
+  ros::Subscriber sub_pc = n.subscribe (POINT_CLOUD_TOPIC, 1, cloudCb);
+ 
+   
    
   std::string datapath(IMG_DATA_PATH);
   
@@ -87,6 +109,11 @@ int main(int argc, char**argv) {
   double save_every_k = 10; //save every k seconds
  
   double secs_prev =ros::Time::now().toSec();
+
+  char filename_pose_c[90];
+  char filename_img_c[90];
+  char filename_pc_c[90];
+
 
   while (ros::ok()) {
 
@@ -107,15 +134,21 @@ int main(int argc, char**argv) {
 		
 		long int ts_int = ts.toNSec();
 		
-		char filename_pose_c[90];
+		
 		sprintf(filename_pose_c,"%s/pose_%li.txt",datapath.c_str(),ts_int);
 		std::string pose_filename(filename_pose_c);
 		save_pose(pose_filename,current_pose.pose.pose);
 		
-		char filename_img_c[90];
 		sprintf(filename_img_c,"%s/img_%li.png",datapath.c_str(),ts_int);
 		std::string img_filename(filename_img_c);
 		save_image(img_filename,current_image);
+		
+		//convert point cloud
+		//convert to PCL format
+		pcl::fromROSMsg (current_cloud, *cloud);
+		sprintf(filename_pc_c,"%s/cloud_%li.pcd",datapath.c_str(),ts_int);
+
+		pcl::io::savePCDFileASCII (filename_pc_c, *cloud);
 		
 		
 		//std::string pose_filename = IMG_DATA_PATH+"/"+ts_int+"_pose.txt";
