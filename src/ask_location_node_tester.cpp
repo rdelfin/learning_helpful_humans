@@ -14,14 +14,14 @@ int main(int argc, char* argv[]) {
     bwi_msgs::ImageQuestionRequest req;
     bwi_msgs::ImageQuestionResponse res;
     
-    ros::ServiceClient client = nh.serviceClient<bwi_msgs::ImageQuestion>("ask_location_node");
+    ros::ServiceClient client = nh.serviceClient<bwi_msgs::ImageQuestion>("ask_location");
     
     ROS_INFO("Image path: %s", argv[1]);
     
     cv::Mat image = cv::imread(argv[1], CV_LOAD_IMAGE_COLOR);
     std_msgs::Header header;
     header.stamp = header.stamp.now();
-    cv_bridge::CvImage bridgeImg(header, sensor_msgs::image_encodings::RGB16, image);
+    cv_bridge::CvImage bridgeImg(header, sensor_msgs::image_encodings::RGB8, image);
     req.image = *bridgeImg.toImageMsg();
     
     client.call(req, res);

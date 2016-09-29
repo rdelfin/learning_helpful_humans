@@ -5,6 +5,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 ros::ServiceServer server;
+std::string windowName = "Display Window";
 
 bool askQuestion(bwi_msgs::ImageQuestionRequest&, bwi_msgs::ImageQuestionResponse&);
 
@@ -20,11 +21,9 @@ int main(int argc, char* argv[]) {
 }
 
 bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionResponse& res) {
-    ROS_INFO("HELLO!");
-    std::string windowName = "Display Window";
     cv_bridge::CvImagePtr image = cv_bridge::toCvCopy(req.image);
     
     cv::namedWindow(windowName, cv::WINDOW_AUTOSIZE);
     cv::imshow(windowName, image->image);
-    ROS_INFO("Hello again!");
+    cv::waitKey(0);
 }
