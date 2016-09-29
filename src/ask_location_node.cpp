@@ -1,11 +1,14 @@
 #include <ros/ros.h>
 #include <bwi_msgs/ImageQuestion.h>
+#include <bwi_msgs/QuestionDialog.h>
 
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/highgui/highgui.hpp>
 
 ros::ServiceServer server;
+ros::ServiceClient questionClient;
 std::string windowName = "Display Window";
+std::string question = "";
 
 bool askQuestion(bwi_msgs::ImageQuestionRequest&, bwi_msgs::ImageQuestionResponse&);
 
@@ -14,6 +17,7 @@ int main(int argc, char* argv[]) {
     ros::NodeHandle nh;
     
     server = nh.advertiseService("ask_location", askQuestion);
+    questionClient = nh.serviceClient<bwi_msgs::QuestionDialog>("/question_dialog");
     
     ros::spin();
     
@@ -26,4 +30,17 @@ bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionRes
     cv::namedWindow(windowName, cv::WINDOW_AUTOSIZE);
     cv::imshow(windowName, image->image);
     cv::waitKey(0);
+    
+    bwi_msgs::QuestionDialogRequest questionReq;
+    bwi_msgs::QuestionDialogResponse questionRes;
+    
+    questionReq.message = question;
+    questionReq.timeout = 30.0;
+    questionReq.type = bwi_msgs::QuestionDialogRequest::TEXT_QUESTION;
+    questionClient.call(questionReq, questionRes);
+    
+    if(questionRes.text != "")
+        res.answers.push_back(questionRes.text);
+    
+    return true;
 }
