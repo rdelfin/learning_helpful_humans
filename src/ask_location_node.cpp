@@ -24,6 +24,8 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
+// TODO: Add go away nicely and not nicely, and answer
+
 bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionResponse& res) {
     cv_bridge::CvImagePtr image = cv_bridge::toCvCopy(req.image);
     

@@ -4,7 +4,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/highgui/highgui.hpp>
 
-
+#include <sensor_msgs/image_encodings.h>
 
 
 int main(int argc, char* argv[]) {
