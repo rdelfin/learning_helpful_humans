@@ -1,0 +1,23 @@
+locations:
+- name: "Main Lab"
+  type: "lab"
+  door: "d3_414b1"
+  location: "l3_414b"
+
+- name: "Corridor 1"
+  type: "corridor"
+  location: "l3_400"
+
+- name: "Corridor 2"
+  type: "corridor"
+  location: "l3_400"
+
+- name: "Jivko's Office"
+  type: "office"
+  door: "d3_432"
+  location: "l3_432"
+
+- name: "Peter's Office"
+  type: "office"
+  door: "d3_508"
+  location: "l3_508"
