@@ -43,6 +43,10 @@ add_executable(ask_location_node_tester src/ask_location_node_tester.cpp)
 add_dependencies(ask_location_node_tester ${catkin_EXPORTED_TARGETS})
 target_link_libraries(ask_location_node_tester ${catkin_LIBRARIES})
 
-add_executable(ask_people_node src/ask_people_node.cpp)
+add_executable(ask_people_node src/ask_people_node.cpp
+                               src/locations/AskLocation.cpp
+                               src/locations/CorridorLocation.cpp
+                               src/locations/LabLocation.cpp
+                               src/locations/OfficeLocation.cpp)
 add_dependencies(ask_people_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(ask_people_node ${catkin_LIBRARIES})
