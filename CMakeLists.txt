@@ -23,7 +23,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_package(CATKIN_DEPENDS actionlib_msgs bwi_msgs std_msgs)
 
-include_directories(${catkin_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable(record_image_data src/record_image_data.cpp)
 add_dependencies(record_image_data ${catkin_EXPORTED_TARGETS})
