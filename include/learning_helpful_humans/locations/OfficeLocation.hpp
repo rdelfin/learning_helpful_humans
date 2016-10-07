@@ -5,6 +5,8 @@
 #ifndef PROJECT_OFFICELOCATION_HPP
 #define PROJECT_OFFICELOCATION_HPP
 
+#include "AskLocation.hpp"
+
 class OfficeLocation : public AskLocation {
 public:
     OfficeLocation();
@@ -14,6 +16,8 @@ public:
     virtual bool goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&);
 private:
     std::string door;
+
+    bool goToDoor(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client);
 };
 
 #endif //PROJECT_OFFICELOCATION_HPP
