@@ -15,7 +15,7 @@ public:
     CorridorLocation(std::string name, std::string aspLocation);
     CorridorLocation(const CorridorLocation&);
     virtual ~CorridorLocation() { }
-    virtual void goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&);
+    virtual bool goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&);
 
 private:
 };

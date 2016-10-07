@@ -11,7 +11,7 @@ public:
     OfficeLocation(std::string name, std::string aspLocation, std::string aspDoor);
     OfficeLocation(const CorridorLocation&);
     virtual ~OfficeLocation() { }
-    virtual void goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&);
+    virtual bool goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&);
 private:
     std::string door;
 };

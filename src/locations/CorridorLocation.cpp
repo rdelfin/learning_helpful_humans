@@ -24,7 +24,7 @@ CorridorLocation::CorridorLocation(const CorridorLocation& cl)
 
 }
 
-void CorridorLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client) {
+bool CorridorLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client) {
 
     client.sendGoal();
 }
