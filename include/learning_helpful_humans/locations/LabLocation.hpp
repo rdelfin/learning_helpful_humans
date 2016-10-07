@@ -5,8 +5,7 @@
 #ifndef PROJECT_LABLOCATION_HPP
 #define PROJECT_LABLOCATION_HPP
 
-
-
+#include "AskLocation.hpp"
 
 class LabLocation : public AskLocation {
 public:

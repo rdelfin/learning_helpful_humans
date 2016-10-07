@@ -20,7 +20,7 @@ CorridorLocation::CorridorLocation() : CorridorLocation("", "")  {
 }
 
 CorridorLocation::CorridorLocation(const CorridorLocation& cl)
-    : AskLocation(cl.name, cl.name, cl.type) {
+    : AskLocation(cl.name, cl.aspLocation, cl.type) {
 
 }
 

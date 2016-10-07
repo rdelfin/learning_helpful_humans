@@ -24,6 +24,7 @@ public:
     AskLocation(const AskLocation&);
     virtual ~AskLocation() { }
     virtual bool goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&) = 0;
+
 protected:
     std::string name;
     std::string aspLocation;
