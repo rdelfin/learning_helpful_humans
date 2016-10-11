@@ -31,13 +31,13 @@ bool OfficeLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution
 }
 
 bool OfficeLocation::goToCorridor(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client) {
-    // Go to door
+    // Go to corridor
     bwi_kr_execution::ExecutePlanGoal goal;
 
     bwi_kr_execution::AspRule rule;
     bwi_kr_execution::AspFluent fluent;
-    fluent.name = "not facing";
-    fluent.variables.push_back(door);
+    fluent.name = "not at";
+    fluent.variables.push_back(corridor);
     rule.body.push_back(fluent);
     goal.aspGoal.push_back(rule);
 
@@ -47,26 +47,26 @@ bool OfficeLocation::goToCorridor(actionlib::SimpleActionClient<bwi_kr_execution
 
     // If goal is not done in the timeout limit (5s), cancel goal and return failed
     if (!client.getState().isDone()) {
-        ROS_ERROR_STREAM("Canceling goal to location: " << aspLocation);
+        ROS_ERROR_STREAM("Canceling goal to face door: " << door);
         client.cancelGoal();
         client.waitForResult(ros::Duration(1, 0));
         return false;
     }
     if (client.getState() == actionlib::SimpleClientGoalState::ABORTED) {
-        ROS_ERROR_STREAM("Aborted goal to location " << aspLocation);
+        ROS_ERROR_STREAM("Aborted goal to face door: " << door);
         return false;
     }
     else if (client.getState() == actionlib::SimpleClientGoalState::PREEMPTED) {
-        ROS_ERROR_STREAM("Preempted goal to location " << aspLocation);
+        ROS_ERROR_STREAM("Preempted goal to face door: " << door);
         return false;
     }
 
     else if (client.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-        ROS_ERROR_STREAM("Succeeded goal to location " << aspLocation);
+        ROS_ERROR_STREAM("Succeeded goal to face door: " << door);
         return true;
     }
     else {
-        ROS_ERROR_STREAM("Terminated goal to location " << aspLocation);
+        ROS_ERROR_STREAM("Terminated goal to face door: " << door);
         return false;
     }
 }
@@ -88,26 +88,26 @@ bool OfficeLocation::faceDoor(actionlib::SimpleActionClient<bwi_kr_execution::Ex
 
     // If goal is not done in the timeout limit (5s), cancel goal and return failed
     if (!client.getState().isDone()) {
-        ROS_ERROR_STREAM("Canceling goal to location: " << aspLocation);
+        ROS_ERROR_STREAM("Canceling goal to face door: " << door);
         client.cancelGoal();
         client.waitForResult(ros::Duration(1, 0));
         return false;
     }
     if (client.getState() == actionlib::SimpleClientGoalState::ABORTED) {
-        ROS_ERROR_STREAM("Aborted goal to location " << aspLocation);
+        ROS_ERROR_STREAM("Aborted goal to face door: " << door);
         return false;
     }
     else if (client.getState() == actionlib::SimpleClientGoalState::PREEMPTED) {
-        ROS_ERROR_STREAM("Preempted goal to location " << aspLocation);
+        ROS_ERROR_STREAM("Preempted goal to face door: " << door);
         return false;
     }
 
     else if (client.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-        ROS_ERROR_STREAM("Succeeded goal to location " << aspLocation);
+        ROS_ERROR_STREAM("Succeeded goal to face door: " << door);
         return true;
     }
     else {
-        ROS_ERROR_STREAM("Terminated goal to location " << aspLocation);
+        ROS_ERROR_STREAM("Terminated goal to face door: " << door);
         return false;
     }
 }
@@ -130,13 +130,13 @@ bool OfficeLocation::isDoorOpen(ros::ServiceClient<bwi_kr_execution::CurrentStat
 }
 
 bool OfficeLocation::enterRoom(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client) {
-    // Go to door
+    // Goal to enter room
     bwi_kr_execution::ExecutePlanGoal goal;
 
     bwi_kr_execution::AspRule rule;
     bwi_kr_execution::AspFluent fluent;
     fluent.name = "not at";
-    fluent.variables.push_back(door);
+    fluent.variables.push_back(aspLocation);
     rule.body.push_back(fluent);
     goal.aspGoal.push_back(rule);
 

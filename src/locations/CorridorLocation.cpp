@@ -83,26 +83,26 @@ bool CorridorLocation::goToPose(actionlib::SimpleActionClient<move_base_msgs::Mo
 
     // If goal is not done in the timeout limit (5s), cancel goal and return failed
     if (!client.getState().isDone()) {
-        ROS_ERROR_STREAM("Canceling goal to location: " << aspLocation);
+        ROS_ERROR_STREAM("Canceling goal to pose");
         client.cancelGoal();
         client.waitForResult(ros::Duration(1, 0));
         return false;
     }
     if (client.getState() == actionlib::SimpleClientGoalState::ABORTED) {
-        ROS_ERROR_STREAM("Aborted goal to location " << aspLocation);
+        ROS_ERROR_STREAM("Aborted goal to pose");
         return false;
     }
     else if (client.getState() == actionlib::SimpleClientGoalState::PREEMPTED) {
-        ROS_ERROR_STREAM("Preempted goal to location " << aspLocation);
+        ROS_ERROR_STREAM("Preempted goal to pose");
         return false;
     }
 
     else if (client.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-        ROS_ERROR_STREAM("Succeeded goal to location " << aspLocation);
+        ROS_ERROR_STREAM("Succeeded goal to pose");
         return true;
     }
     else {
-        ROS_ERROR_STREAM("Terminated goal to location " << aspLocation);
+        ROS_ERROR_STREAM("Terminated goal to pose");
         return false;
     }
 }
