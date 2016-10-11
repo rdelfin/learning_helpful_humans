@@ -3,6 +3,7 @@
 //
 
 #include "learning_helpful_humans/locations/AskLocation.hpp"
+#include <geometry_msgs/Pose.h>
 
 #ifndef PROJECT_CORRIDORLOCATION_HPP
 #define PROJECT_CORRIDORLOCATION_HPP
@@ -15,9 +16,14 @@ public:
     CorridorLocation(std::string name, std::string aspLocation);
     CorridorLocation(const CorridorLocation&);
     virtual ~CorridorLocation() { }
-    virtual bool goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&);
+    virtual bool goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&,
+                              actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&);
 
 private:
+    geometry_msgs::Pose pose;
+
+    bool goToCorridor(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&);
+    bool goToPose(actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&);
 };
 
 

@@ -5,6 +5,7 @@
 #include "learning_helpful_humans/locations/LabLocation.hpp"
 
 #include <string>
+#include <move_base_msgs/MoveBaseAction.h>
 
 LabLocation::LabLocation(std::string name, std::string aspLocation, std::string aspDoor)
         : AskLocation(name, aspLocation, LocationType::LOCATION_LAB), door(aspDoor) {
@@ -20,7 +21,8 @@ LabLocation::LabLocation(const LabLocation& cl)
 
 }
 
-bool LabLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client) {
+bool LabLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client,
+                               actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&) {
     bwi_kr_execution::ExecutePlanGoal goal;
 
     bwi_kr_execution::AspRule rule;

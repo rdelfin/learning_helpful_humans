@@ -13,7 +13,8 @@ public:
     LabLocation(std::string name, std::string aspLocation, std::string aspDoor);
     LabLocation(const CorridorLocation&);
     virtual ~LabLocation() { }
-    virtual bool goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&);
+    virtual bool goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&,
+                              actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&);
 private:
     std::string door;
 };

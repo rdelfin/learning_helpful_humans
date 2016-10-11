@@ -6,6 +6,7 @@
 
 #include <string>
 #include <bwi_kr_execution/CurrentStateQuery.h>
+#include <move_base_msgs/MoveBaseAction.h>
 
 OfficeLocation::OfficeLocation()
     : OfficeLocation("", "", "", "") {
@@ -22,7 +23,8 @@ OfficeLocation::OfficeLocation(const OfficeLocation& loc)
 
 }
 
-bool OfficeLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client) {
+bool OfficeLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client,
+                                  actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&) {
     bool success = goToCorridor(client) && faceDoor(client) && enterRoom(client) && faceDoor(client);
 
     return success;
