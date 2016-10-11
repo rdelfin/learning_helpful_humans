@@ -5,6 +5,8 @@
 #ifndef PROJECT_ASKLOCATION_HPP
 #define PROJECT_ASKLOCATION_HPP
 
+#include <move_base_msgs/MoveBaseAction.h>
+
 #include <string>
 
 #include <actionlib/client/simple_action_client.h>

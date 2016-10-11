@@ -8,6 +8,8 @@
 #include <bwi_kr_execution/CurrentStateQuery.h>
 #include <move_base_msgs/MoveBaseAction.h>
 
+#include <ros/ros.h>
+
 OfficeLocation::OfficeLocation()
     : OfficeLocation("", "", "", "") {
 
@@ -112,7 +114,7 @@ bool OfficeLocation::faceDoor(actionlib::SimpleActionClient<bwi_kr_execution::Ex
     }
 }
 
-bool OfficeLocation::isDoorOpen(ros::ServiceClient<bwi_kr_execution::CurrentStateQuery>& client) {
+bool OfficeLocation::isDoorOpen(ros::ServiceClient& client) {
     bwi_kr_execution::AspFluent openFluent;
     openFluent.name = "open";
     openFluent.timeStep = 0;
