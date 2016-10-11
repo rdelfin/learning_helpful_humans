@@ -10,14 +10,21 @@
 class OfficeLocation : public AskLocation {
 public:
     OfficeLocation();
-    OfficeLocation(std::string name, std::string aspLocation, std::string aspDoor);
+    OfficeLocation(std::string name, std::string aspLocation, std::string aspDoor, std::string aspCorridor);
     OfficeLocation(const CorridorLocation&);
     virtual ~OfficeLocation() { }
     virtual bool goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&);
 private:
     std::string door;
+    std::string corridor;
 
-    bool goToDoor(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client);
+    bool faceDoor(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client);
+    // Necessary because asp goToDoor action fails when it has to cross another door to get to said door
+    bool goToCorridor(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client);
+
+    bool isDoorOpen(ros::ServiceClient<bwi_kr_execution::CurrentStateQuery>& client);
+
+    bool enterRoom(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client);
 };
 
 #endif //PROJECT_OFFICELOCATION_HPP

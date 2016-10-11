@@ -17,8 +17,10 @@ ask_image_location_data:
     type: "office"
     door: "d3_432"
     location: "l3_432"
+    corridor: "l3_400"
 
   - name: "Peter's Office"
     type: "office"
     door: "d3_508"
     location: "l3_508"
+    corridor: "l3_400"
