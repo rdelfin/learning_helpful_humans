@@ -21,6 +21,16 @@ LabLocation::LabLocation(const LabLocation& cl)
 
 }
 
+void LabLocation::load(XmlRpc::XmlRpcValue& val) {
+    XmlRpc::XmlRpcValue door = val["door"];
+    XmlRpc::XmlRpcValue name = val["name"];
+    XmlRpc::XmlRpcValue location = val["location"];
+
+    this->door = door;
+    this->name = name;
+    this->aspLocation = location;
+}
+
 bool LabLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client,
                                actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&) {
     bwi_kr_execution::ExecutePlanGoal goal;
