@@ -11,6 +11,9 @@
 #include <actionlib/client/simple_action_client.h>
 #include <move_base_msgs/MoveBaseAction.h>
 
+#include <geometry_msgs/Pose.h>
+#include <tf/transform_datatypes.h>
+
 CorridorLocation::CorridorLocation(std::string name, std::string aspLocation)
     : AskLocation(name, aspLocation, LocationType::LOCATION_CORRIDOR) {
 
@@ -23,6 +26,18 @@ CorridorLocation::CorridorLocation() : CorridorLocation("", "")  {
 CorridorLocation::CorridorLocation(const CorridorLocation& cl)
     : AskLocation(cl.name, cl.aspLocation, cl.type) {
 
+}
+
+void CorridorLocation::load(XmlRpc::XmlRpcValue& val) {
+    XmlRpc::XmlRpcValue name = val["name"];
+    XmlRpc::XmlRpcValue location = val["location"];
+    XmlRpc::XmlRpcValue pose = val["pose"];
+    this->name = name;
+    this->aspLocation = location;
+    this->pose.position.x = pose["x"];
+    this->pose.position.y = pose["y"];
+    this->pose.position.z = 0.0f;
+    this->pose.orientation = tf::createQuaternionMsgFromYaw(pose["theta"]);
 }
 
 bool CorridorLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& planClient,
@@ -73,7 +88,7 @@ bool CorridorLocation::goToCorridor(actionlib::SimpleActionClient<bwi_kr_executi
 bool CorridorLocation::goToPose(actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>& client) {
     move_base_msgs::MoveBaseGoal goal;
     goal.target_pose.header.stamp = ros::Time::now();
-    goal.target_pose.header.frame_id = "/base_link";
+    goal.target_pose.header.frame_id = "/map";
 
     goal.target_pose.pose = pose;
 
