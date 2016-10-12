@@ -8,10 +8,12 @@ ask_image_location_data:
   - name: "Corridor 1"
     type: "corridor"
     location: "l3_400"
+    pose: { x: , y: ,theta: }
 
   - name: "Corridor 2"
     type: "corridor"
     location: "l3_400"
+    pose: { x: , y: ,theta: }
 
   - name: "Jivko's Office"
     type: "office"

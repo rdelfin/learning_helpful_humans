@@ -13,6 +13,7 @@ public:
     OfficeLocation(std::string name, std::string aspLocation, std::string aspDoor, std::string aspCorridor);
     OfficeLocation(const OfficeLocation&);
     virtual ~OfficeLocation() { }
+    virtual void load(XmlRpc::XmlRpcValue&);
     virtual bool goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&,
                               actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&);
 private:
