@@ -25,6 +25,18 @@ OfficeLocation::OfficeLocation(const OfficeLocation& loc)
 
 }
 
+void OfficeLocation::load(XmlRpc::XmlRpcValue& val) {
+    XmlRpc::XmlRpcValue door = val["door"];
+    XmlRpc::XmlRpcValue name = val["name"];
+    XmlRpc::XmlRpcValue location = val["location"];
+    XmlRpc::XmlRpcValue corridor = val["corridor"];
+
+    this->door = door;
+    this->name = name;
+    this->aspLocation = location;
+    this->corridor = corridor;
+}
+
 bool OfficeLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client,
                                   actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&) {
     bool success = goToCorridor(client) && faceDoor(client) && enterRoom(client) && faceDoor(client);
