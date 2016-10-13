@@ -22,19 +22,25 @@ void loadLocations();
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "ask_people_node");
 
-    actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction> client("action_executor/execute_plan", true);
-    client.waitForServer();
+    actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction> planClient("action_executor/execute_plan", true);
+    actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> moveBaseClient("move_base", true);
+    planClient.waitForServer();
+    moveBaseClient.waitForServer();
 
     loadLocations();
 
     int idx = 0;
     while(ros::ok()) {
 
+        locations[idx]->goToLocation(planClient, moveBaseClient);
 
         idx++;
         if(idx >= locations.size())
             idx = 0;
     }
+
+    for(AskLocation* loc : locations)
+        delete loc;
 
     return 0;
 }
