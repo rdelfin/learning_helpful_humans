@@ -1,0 +1,5 @@
+<launch>
+    <rosparam command="load" file="$(find learning_helpful_humans)/config/locations.yaml" />
+    <node pkg="learning_helpful_humans" name="room_traversal" type="ask_people_node" />
+    <node pkg="learning_helpful_humans" name="dialog_box" type="ask_location_node" />
+</launch>
