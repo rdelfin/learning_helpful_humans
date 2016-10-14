@@ -15,6 +15,8 @@
 #include <string>
 #include <vector>
 
+#include <XmlRpcException.h>
+
 std::vector<AskLocation*> locations;
 
 void loadLocations();
@@ -49,28 +51,39 @@ int main(int argc, char* argv[]) {
 }
 
 void loadLocations() {
+    try {
     ros::NodeHandle nh;
     XmlRpc::XmlRpcValue list;
-    nh.getParam("/ask_image_location_data/locations", list);
+    nh.param("/ask_image_location_data/locations", list, list);
+    ROS_INFO("Loading /ask_image_location_data/locations");
     ROS_ASSERT(list.getType() == XmlRpc::XmlRpcValue::TypeArray);
+    
 
     for(auto it = list.begin(); it != list.end(); ++it) {
+        ROS_INFO("GETTING LOCATION");
         XmlRpc::XmlRpcValue item = it->second;
         XmlRpc::XmlRpcValue type = item["type"];
         ROS_ASSERT(type.getType() == XmlRpc::XmlRpcValue::TypeString);
         AskLocation* loc;
         if(type == "lab") {
+            ROS_INFO("LAB");
             loc = new LabLocation();
             loc->load(item);
         } else if(type == "corridor") {
+            ROS_INFO("CORRIDOR");
             loc = new CorridorLocation();
             loc->load(item);
         } else if(type == "office") {
+            ROS_INFO("OFFICE");
             loc = new OfficeLocation();
             loc->load(item);
         } else
             continue;
 
         locations.push_back(loc);
+    }
+    } catch(XmlRpc::XmlRpcException e) {
+        ROS_ERROR_STREAM("XML RPC EXCEPTION: " << e.getMessage());
+        ROS_ERROR_STREAM("Code: " << e.getCode());
     }
 }
