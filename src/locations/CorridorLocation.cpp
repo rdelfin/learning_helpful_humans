@@ -55,6 +55,7 @@ bool CorridorLocation::goToCorridor(actionlib::SimpleActionClient<bwi_kr_executi
     rule.body.push_back(fluent);
     goal.aspGoal.push_back(rule);
 
+    ROS_INFO_STREAM("Going to " << aspLocation);
     client.sendGoal(goal);
 
     client.waitForResult(ros::Duration(300, 0));
@@ -86,6 +87,9 @@ bool CorridorLocation::goToCorridor(actionlib::SimpleActionClient<bwi_kr_executi
 }
 
 bool CorridorLocation::goToPose(actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>& client) {
+    ROS_INFO_STREAM("Going to pose (" << pose.position.x << ", " << pose.position.y << ", "
+              << tf::Quaternion(pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w).getAngle() << ")");
+
     move_base_msgs::MoveBaseGoal goal;
     goal.target_pose.header.stamp = ros::Time::now();
     goal.target_pose.header.frame_id = "/map";

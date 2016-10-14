@@ -42,6 +42,8 @@ bool LabLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::E
     rule.body.push_back(fluent);
     goal.aspGoal.push_back(rule);
 
+    ROS_INFO_STREAM("Going to location " << aspLocation);
+
     client.sendGoal(goal);
 
     client.waitForResult(ros::Duration(300, 0));

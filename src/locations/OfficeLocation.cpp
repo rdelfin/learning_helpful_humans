@@ -55,6 +55,8 @@ bool OfficeLocation::goToCorridor(actionlib::SimpleActionClient<bwi_kr_execution
     rule.body.push_back(fluent);
     goal.aspGoal.push_back(rule);
 
+    ROS_INFO_STREAM("Going to corridor (" << corridor << ")");
+
     client.sendGoal(goal);
 
     client.waitForResult(ros::Duration(300, 0));
@@ -96,6 +98,8 @@ bool OfficeLocation::faceDoor(actionlib::SimpleActionClient<bwi_kr_execution::Ex
     rule.body.push_back(fluent);
     goal.aspGoal.push_back(rule);
 
+    ROS_INFO_STREAM("Facing door (" << door << ")");
+
     client.sendGoal(goal);
 
     client.waitForResult(ros::Duration(300, 0));
@@ -132,6 +136,8 @@ bool OfficeLocation::isDoorOpen(ros::ServiceClient& client) {
     openFluent.timeStep = 0;
     openFluent.variables.push_back(door);
 
+    ROS_INFO_STREAM("Checking if door (" << door << ") is open");
+
     bwi_kr_execution::AspRule rule;
     rule.head.push_back(openFluent);
 
@@ -153,6 +159,8 @@ bool OfficeLocation::enterRoom(actionlib::SimpleActionClient<bwi_kr_execution::E
     fluent.variables.push_back(aspLocation);
     rule.body.push_back(fluent);
     goal.aspGoal.push_back(rule);
+
+    ROS_INFO_STREAM("Entering room (" << aspLocation << ") is open");
 
     client.sendGoal(goal);
 

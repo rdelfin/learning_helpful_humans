@@ -29,6 +29,10 @@ public:
     virtual bool goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&,
                               actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&) = 0;
 
+    const std::string& getName();
+    const std::string& getAspLocation();
+    const std::string& getTypeString();
+
 protected:
     std::string name;
     std::string aspLocation;

@@ -31,6 +31,9 @@ int main(int argc, char* argv[]) {
 
     int idx = 0;
     while(ros::ok()) {
+        ROS_INFO_STREAM("Going to " << locations[idx]->getName()
+                  << " (" << locations[idx]->getAspLocation()
+                  << ") of type " << locations[idx]->getTypeString());
 
         locations[idx]->goToLocation(planClient, moveBaseClient);
 
