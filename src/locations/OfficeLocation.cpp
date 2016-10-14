@@ -31,10 +31,10 @@ void OfficeLocation::load(XmlRpc::XmlRpcValue& val) {
     XmlRpc::XmlRpcValue location = val["location"];
     XmlRpc::XmlRpcValue corridor = val["corridor"];
 
-    this->door = door;
-    this->name = name;
-    this->aspLocation = location;
-    this->corridor = corridor;
+    this->door = static_cast<std::string>(door);
+    this->name = static_cast<std::string>(name);
+    this->aspLocation = static_cast<std::string>(location);
+    this->corridor = static_cast<std::string>(corridor);
 }
 
 bool OfficeLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client,

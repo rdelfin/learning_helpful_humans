@@ -32,12 +32,13 @@ void CorridorLocation::load(XmlRpc::XmlRpcValue& val) {
     XmlRpc::XmlRpcValue name = val["name"];
     XmlRpc::XmlRpcValue location = val["location"];
     XmlRpc::XmlRpcValue pose = val["pose"];
-    this->name = name;
-    this->aspLocation = location;
-    this->pose.position.x = pose["x"];
-    this->pose.position.y = pose["y"];
+
+    this->name = static_cast<std::string>(name);
+    this->aspLocation = static_cast<std::string>(location);
+    this->pose.position.x = static_cast<double>(pose["x"]);
+    this->pose.position.y = static_cast<double>(pose["y"]);
     this->pose.position.z = 0.0f;
-    this->pose.orientation = tf::createQuaternionMsgFromYaw(pose["theta"]);
+    this->pose.orientation = tf::createQuaternionMsgFromYaw(static_cast<double>(pose["theta"]));
 }
 
 bool CorridorLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& planClient,

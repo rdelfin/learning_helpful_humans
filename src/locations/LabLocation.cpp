@@ -26,9 +26,9 @@ void LabLocation::load(XmlRpc::XmlRpcValue& val) {
     XmlRpc::XmlRpcValue name = val["name"];
     XmlRpc::XmlRpcValue location = val["location"];
 
-    this->door = door;
-    this->name = name;
-    this->aspLocation = location;
+    this->door = static_cast<std::string>(door);
+    this->name = static_cast<std::string>(name);
+    this->aspLocation = static_cast<std::string>(location);
 }
 
 bool LabLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client,
