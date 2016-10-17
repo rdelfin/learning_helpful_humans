@@ -58,41 +58,48 @@ int main(int argc, char* argv[]) {
 }
 
 void loadLocations() {
-    std::string locFilePath = ros::package::getPath("learning_helpful_humans") + "config/locations.json";
-    ROS_INFO_STREAM("READING CONFIG FILE \"" << locFilePath << "\"");
+    try {
+        std::string locFilePath = ros::package::getPath("learning_helpful_humans") + "/config/locations.json";
+        ROS_INFO_STREAM("READING CONFIG FILE \"" << locFilePath << "\"");
 
-    std::ifstream locFile(locFilePath, std::ifstream::in);
-    std::string locString((std::istreambuf_iterator<char>(locFile)),
-                           std::istreambuf_iterator<char>());
+        std::ifstream locFile(locFilePath, std::ifstream::in);
+        std::string locString((std::istreambuf_iterator<char>(locFile)),
+                              std::istreambuf_iterator<char>());
 
-    // Load in JSON
-    json locJson = json::parse(locString);
+        ROS_INFO("Parsing JSON...");
 
-    json list = locJson["locations"];
+        // Load in JSON
+        json locJson = json::parse(locString);
 
-    // Iterate over all locations
-    for (json::iterator it = list.begin(); it != list.end(); ++it) {
-        ROS_INFO("GETTING LOCATION");
-        json item = *it;
-        std::string type = item["type"];
-        AskLocation* loc;
-        if(type == "lab") {
-            ROS_INFO("LAB");
-            loc = new LabLocation();
-            loc->load(item);
-        } else if(type == "corridor") {
-            ROS_INFO("CORRIDOR");
-            loc = new CorridorLocation();
-            loc->load(item);
-        } else if(type == "office") {
-            ROS_INFO("OFFICE");
-            loc = new OfficeLocation();
-            loc->load(item);
-        } else
-            continue;
 
-        locations.push_back(loc);
+        json list = locJson["locations"];
+
+        // Iterate over all locations
+        for (json::iterator it = list.begin(); it != list.end(); ++it) {
+            ROS_INFO("GETTING LOCATION");
+            json item = *it;
+            std::string type = item["type"];
+            AskLocation *loc;
+            if (type == "lab") {
+                ROS_INFO("LAB");
+                loc = new LabLocation();
+                loc->load(item);
+            } else if (type == "corridor") {
+                ROS_INFO("CORRIDOR");
+                loc = new CorridorLocation();
+                loc->load(item);
+            } else if (type == "office") {
+                ROS_INFO("OFFICE");
+                loc = new OfficeLocation();
+                loc->load(item);
+            } else
+                continue;
+
+            locations.push_back(loc);
+        }
+
+        ROS_INFO("DONE");
+    } catch(std::invalid_argument e) {
+        std::cerr << "Error recieved! Invalid argument: " << e.what() << std::endl;
     }
-
-    ROS_INFO("DONE");
 }
