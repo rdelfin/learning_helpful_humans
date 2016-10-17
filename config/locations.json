@@ -1,0 +1,86 @@
+{
+  "ask_image_location_data": {
+    "locations": [
+      {
+        "name": "Main Lab",
+        "type": "lab",
+        "door": "d3_414b1",
+        "location": "l3_414b"
+      },
+
+      {
+        "name": "Corridor 500",
+        "type": "corridor",
+        "location": "l3_500",
+        "pose": {
+          "x": -31.335,
+          "y": -4.153,
+          "theta": 1.780
+        }
+      },
+
+      {
+        "name": "Corridor 400",
+        "type": "corridor",
+        "location": "l3_400",
+        "pose": {
+          "x": -36.993,
+          "y": -11.574,
+          "theta": 1.745
+        }
+      },
+
+      {
+        "name": "Grad Student Area 410",
+        "type": "corridor",
+        "location": "l3_410",
+        "pose": {
+          "x": -13.455,
+          "y": -7.998,
+          "theta": 2.852
+        }
+      },
+
+      {
+        "name": "Undergrad Lab Couches",
+        "type": "corridor",
+        "location": "l3_300",
+        "pose": {
+          "x": 14.533,
+          "y": -11.723,
+          "theta": 1.745
+        }
+      },
+
+      {
+        "name": "Undergrad Lab Entrance",
+        "type": "corridor",
+        "location": "l3_300",
+        "pose": {
+          "x": 4.334,
+          "y": -3.101,
+          "theta": 3.011
+        }
+      },
+
+      {
+        "name": "3rd Floor Bridge",
+        "type": "corridor",
+        "location": "l3_100",
+        "pose": {
+          "x": 8.678,
+          "y": 3.843,
+          "theta": -2.457
+        }
+      },
+
+      {
+        "name": "Jivko's Office",
+        "type": "office",
+        "door": "d3_432",
+        "location": "l3_432",
+        "corridor": "l3_400"
+      }
+    ]
+  }
+}
