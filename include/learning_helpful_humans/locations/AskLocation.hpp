@@ -34,7 +34,7 @@ public:
 
     const std::string& getName();
     const std::string& getAspLocation();
-    const std::string& getTypeString();
+    std::string getTypeString();
 
 protected:
     std::string name;

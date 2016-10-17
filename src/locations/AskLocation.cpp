@@ -17,7 +17,7 @@ AskLocation::AskLocation(const AskLocation& loc)
 
 const std::string& AskLocation::getName() { return name;  }
 const std::string& AskLocation::getAspLocation() { return aspLocation; }
-const std::string& AskLocation::getTypeString() {
+std::string AskLocation::getTypeString() {
     switch(type) {
         case LOCATION_LAB: return "lab";
         case LOCATION_CORRIDOR: return "corridor";
