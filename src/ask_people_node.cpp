@@ -24,12 +24,13 @@ void loadLocations();
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "ask_people_node");
 
+    loadLocations();
+
     actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction> planClient("action_executor/execute_plan", true);
     actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> moveBaseClient("move_base", true);
     planClient.waitForServer();
     moveBaseClient.waitForServer();
 
-    loadLocations();
 
     int idx = 0;
     while(ros::ok()) {
@@ -83,7 +84,10 @@ void loadLocations() {
         locations.push_back(loc);
     }
     } catch(XmlRpc::XmlRpcException e) {
-        ROS_ERROR_STREAM("XML RPC EXCEPTION: " << e.getMessage());
-        ROS_ERROR_STREAM("Code: " << e.getCode());
+        ROS_INFO_STREAM("XML RPC EXCEPTION: " << e.getMessage());
+        ROS_INFO_STREAM("Code: " << e.getCode());
+        exit(-1);
     }
+
+    ROS_INFO("DONE");
 }
