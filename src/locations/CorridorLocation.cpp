@@ -13,6 +13,9 @@
 
 #include <geometry_msgs/Pose.h>
 #include <tf/transform_datatypes.h>
+#include <json/json.hpp>
+
+using json = nlohmann::json;
 
 CorridorLocation::CorridorLocation(std::string name, std::string aspLocation)
     : AskLocation(name, aspLocation, LocationType::LOCATION_CORRIDOR) {
@@ -37,6 +40,17 @@ void CorridorLocation::load(XmlRpc::XmlRpcValue& val) {
     this->aspLocation = static_cast<std::string>(location);
     this->pose.position.x = static_cast<double>(pose["x"]);
     this->pose.position.y = static_cast<double>(pose["y"]);
+    this->pose.position.z = 0.0f;
+    this->pose.orientation = tf::createQuaternionMsgFromYaw(static_cast<double>(pose["theta"]));
+}
+
+void CorridorLocation::load(json& val) {
+    json pose = val["pose"];
+
+    this->name = val["name"];
+    this->aspLocation = val["location"];
+    this->pose.position.x = pose["x"];
+    this->pose.position.y = pose["y"];
     this->pose.position.z = 0.0f;
     this->pose.orientation = tf::createQuaternionMsgFromYaw(static_cast<double>(pose["theta"]));
 }

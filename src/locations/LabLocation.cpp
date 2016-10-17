@@ -6,6 +6,9 @@
 
 #include <string>
 #include <move_base_msgs/MoveBaseAction.h>
+#include <json/json.hpp>
+
+using json = nlohmann::json;
 
 LabLocation::LabLocation(std::string name, std::string aspLocation, std::string aspDoor)
         : AskLocation(name, aspLocation, LocationType::LOCATION_LAB), door(aspDoor) {
@@ -29,6 +32,12 @@ void LabLocation::load(XmlRpc::XmlRpcValue& val) {
     this->door = static_cast<std::string>(door);
     this->name = static_cast<std::string>(name);
     this->aspLocation = static_cast<std::string>(location);
+}
+
+void LabLocation::load(json& val) {
+    this->door = val["door"];
+    this->name = val["name"];
+    this->aspLocation = val["location"];
 }
 
 bool LabLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client,

@@ -12,6 +12,8 @@
 #include <actionlib/client/simple_action_client.h>
 #include <bwi_kr_execution/ExecutePlanAction.h>
 
+#include <json/json.hpp>
+
 enum LocationType {
     LOCATION_NONE,     // Used for default. No child should use this
     LOCATION_CORRIDOR,
@@ -26,6 +28,7 @@ public:
     AskLocation(const AskLocation&);
     virtual ~AskLocation() { }
     virtual void load(XmlRpc::XmlRpcValue&) = 0;
+    virtual void load(nlohmann::json&) = 0;
     virtual bool goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&,
                               actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&) = 0;
 

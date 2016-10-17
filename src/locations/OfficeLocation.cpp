@@ -9,6 +9,9 @@
 #include <move_base_msgs/MoveBaseAction.h>
 
 #include <ros/ros.h>
+#include <json/json.hpp>
+
+using json = nlohmann::json;
 
 OfficeLocation::OfficeLocation()
     : OfficeLocation("", "", "", "") {
@@ -35,6 +38,13 @@ void OfficeLocation::load(XmlRpc::XmlRpcValue& val) {
     this->name = static_cast<std::string>(name);
     this->aspLocation = static_cast<std::string>(location);
     this->corridor = static_cast<std::string>(corridor);
+}
+
+void OfficeLocation::load(json& val) {
+    this->door = val["door"];
+    this->name = val["name"];
+    this->aspLocation = val["location"];
+    this->corridor = val["corridor"];
 }
 
 bool OfficeLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client,

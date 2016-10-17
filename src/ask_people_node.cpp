@@ -12,10 +12,16 @@
 #include <learning_helpful_humans/locations/CorridorLocation.hpp>
 #include <learning_helpful_humans/locations/OfficeLocation.hpp>
 
+#include <fstream>
 #include <string>
 #include <vector>
 
 #include <XmlRpcException.h>
+#include <ros/package.h>
+
+#include <json/json.hpp>
+
+using json = nlohmann::json;
 
 std::vector<AskLocation*> locations;
 
@@ -52,19 +58,23 @@ int main(int argc, char* argv[]) {
 }
 
 void loadLocations() {
-    try {
-    ros::NodeHandle nh;
-    XmlRpc::XmlRpcValue list;
-    nh.param("/ask_image_location_data/locations", list, list);
-    ROS_INFO("Loading /ask_image_location_data/locations");
-    ROS_ASSERT(list.getType() == XmlRpc::XmlRpcValue::TypeArray);
-    
+    std::string locFilePath = ros::package::getPath("learning_helpful_humans") + "config/locations.json";
+    ROS_INFO_STREAM("READING CONFIG FILE \"" << locFilePath << "\"");
 
-    for(auto it = list.begin(); it != list.end(); ++it) {
+    std::ifstream locFile(locFilePath, std::ifstream::in);
+    std::string locString((std::istreambuf_iterator<char>(locFile)),
+                           std::istreambuf_iterator<char>());
+
+    // Load in JSON
+    json locJson = json::parse(locString);
+
+    json list = locJson["locations"];
+
+    // Iterate over all locations
+    for (json::iterator it = list.begin(); it != list.end(); ++it) {
         ROS_INFO("GETTING LOCATION");
-        XmlRpc::XmlRpcValue item = it->second;
-        XmlRpc::XmlRpcValue type = item["type"];
-        ROS_ASSERT(type.getType() == XmlRpc::XmlRpcValue::TypeString);
+        json item = *it;
+        std::string type = item["type"];
         AskLocation* loc;
         if(type == "lab") {
             ROS_INFO("LAB");
@@ -82,11 +92,6 @@ void loadLocations() {
             continue;
 
         locations.push_back(loc);
-    }
-    } catch(XmlRpc::XmlRpcException e) {
-        ROS_INFO_STREAM("XML RPC EXCEPTION: " << e.getMessage());
-        ROS_INFO_STREAM("Code: " << e.getCode());
-        exit(-1);
     }
 
     ROS_INFO("DONE");
