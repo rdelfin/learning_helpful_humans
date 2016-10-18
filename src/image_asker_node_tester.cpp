@@ -8,7 +8,7 @@
 
 
 int main(int argc, char* argv[]) {
-    ros::init(argc, argv, "ask_location_node_tester");
+    ros::init(argc, argv, "image_asker_node_tester");
     ros::NodeHandle nh;
     
     bwi_msgs::ImageQuestionRequest req;

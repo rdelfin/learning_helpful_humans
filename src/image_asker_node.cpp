@@ -13,7 +13,7 @@ std::string question = "";
 bool askQuestion(bwi_msgs::ImageQuestionRequest&, bwi_msgs::ImageQuestionResponse&);
 
 int main(int argc, char* argv[]) {
-    ros::init(argc, argv, "ask_location_node");
+    ros::init(argc, argv, "image_asker_node");
     ros::NodeHandle nh;
     
     server = nh.advertiseService("ask_location", askQuestion);
