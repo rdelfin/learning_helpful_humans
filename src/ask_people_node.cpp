@@ -13,10 +13,7 @@
 #include <learning_helpful_humans/locations/OfficeLocation.hpp>
 
 #include <fstream>
-#include <string>
-#include <vector>
 
-#include <XmlRpcException.h>
 #include <ros/package.h>
 
 #include <json/json.hpp>
@@ -37,7 +34,7 @@ int main(int argc, char* argv[]) {
     planClient.waitForServer();
     moveBaseClient.waitForServer();
 
-
+    ros::Rate r(10);
     int idx = 0;
     while(ros::ok()) {
         ROS_INFO_STREAM("Going to " << locations[idx]->getName()
@@ -49,6 +46,9 @@ int main(int argc, char* argv[]) {
         idx++;
         if(idx >= locations.size())
             idx = 0;
+
+        ros::spinOnce();
+        r.sleep();
     }
 
     for(AskLocation* loc : locations)
