@@ -34,7 +34,7 @@ bool nextQuestionCallback(bwi_msgs::NextLocationRequest& req, bwi_msgs::NextLoca
 void loadLocations();
 
 int main(int argc, char* argv[]) {
-    ros::init(argc, argv, "ask_people_node");
+    ros::init(argc, argv, "location_selector_node");
     ros::NodeHandle nh;
 
     loadLocations();
