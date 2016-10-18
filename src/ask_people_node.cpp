@@ -17,36 +17,36 @@
 #include <ros/package.h>
 
 #include <json/json.hpp>
+#include <bwi_msgs/ImageQuestion.h>
+#include <bwi_msgs/NextLocation.h>
 
 using json = nlohmann::json;
 
 std::vector<AskLocation*> locations;
+actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction> planClient;
+actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> moveBaseClient;
+
+
+int locIdx = 0;
+
+bool nextQuestionCallback(bwi_msgs::NextLocationRequest& req, bwi_msgs::NextLocationResponse& res);
 
 void loadLocations();
 
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "ask_people_node");
+    ros::NodeHandle nh;
 
     loadLocations();
 
-    actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction> planClient("action_executor/execute_plan", true);
-    actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> moveBaseClient("move_base", true);
+    //ros::ServiceServer server = nh.advertiseService("next_question_location", nextQuestionCallback);
+    planClient = actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>("action_executor/execute_plan", true);
+    moveBaseClient = actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>("move_base", true);
     planClient.waitForServer();
     moveBaseClient.waitForServer();
 
     ros::Rate r(10);
-    int idx = 0;
     while(ros::ok()) {
-        ROS_INFO_STREAM("Going to " << locations[idx]->getName()
-                  << " (" << locations[idx]->getAspLocation()
-                  << ") of type " << locations[idx]->getTypeString());
-
-        locations[idx]->goToLocation(planClient, moveBaseClient);
-
-        idx++;
-        if(idx >= locations.size())
-            idx = 0;
-
         ros::spinOnce();
         r.sleep();
     }
@@ -102,4 +102,16 @@ void loadLocations() {
     } catch(std::invalid_argument e) {
         std::cerr << "Error recieved! Invalid argument: " << e.what() << std::endl;
     }
+}
+
+bool nextQuestionCallback(bwi_msgs::NextLocationRequest& req, bwi_msgs::NextLocationResponse& res) {
+    ROS_INFO_STREAM("Going to \"" << locations[locIdx]->getName()
+              << "\" (" << locations[locIdx]->getAspLocation()
+              << ") of type " << locations[locIdx]->getTypeString());
+
+    res.success = locations[locIdx]->goToLocation(planClient, moveBaseClient);
+
+    locIdx++;
+    if(locIdx >= locations.size())
+        locIdx = 0;
 }
