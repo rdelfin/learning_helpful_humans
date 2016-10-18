@@ -73,26 +73,26 @@ bool OfficeLocation::goToCorridor(actionlib::SimpleActionClient<bwi_kr_execution
 
     // If goal is not done in the timeout limit (5s), cancel goal and return failed
     if (!client.getState().isDone()) {
-        ROS_ERROR_STREAM("Canceling goal to face door: " << door);
+        ROS_WARN_STREAM("Canceling goal to face door: " << door);
         client.cancelGoal();
         client.waitForResult(ros::Duration(1, 0));
         return false;
     }
     if (client.getState() == actionlib::SimpleClientGoalState::ABORTED) {
-        ROS_ERROR_STREAM("Aborted goal to face door: " << door);
+        ROS_WARN_STREAM("Aborted goal to face door: " << door);
         return false;
     }
     else if (client.getState() == actionlib::SimpleClientGoalState::PREEMPTED) {
-        ROS_ERROR_STREAM("Preempted goal to face door: " << door);
+        ROS_WARN_STREAM("Preempted goal to face door: " << door);
         return false;
     }
 
     else if (client.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-        ROS_ERROR_STREAM("Succeeded goal to face door: " << door);
+        ROS_WARN_STREAM("Succeeded goal to face door: " << door);
         return true;
     }
     else {
-        ROS_ERROR_STREAM("Terminated goal to face door: " << door);
+        ROS_WARN_STREAM("Terminated goal to face door: " << door);
         return false;
     }
 }
@@ -116,26 +116,26 @@ bool OfficeLocation::faceDoor(actionlib::SimpleActionClient<bwi_kr_execution::Ex
 
     // If goal is not done in the timeout limit (5s), cancel goal and return failed
     if (!client.getState().isDone()) {
-        ROS_ERROR_STREAM("Canceling goal to face door: " << door);
+        ROS_WARN_STREAM("Canceling goal to face door: " << door);
         client.cancelGoal();
         client.waitForResult(ros::Duration(1, 0));
         return false;
     }
     if (client.getState() == actionlib::SimpleClientGoalState::ABORTED) {
-        ROS_ERROR_STREAM("Aborted goal to face door: " << door);
+        ROS_WARN_STREAM("Aborted goal to face door: " << door);
         return false;
     }
     else if (client.getState() == actionlib::SimpleClientGoalState::PREEMPTED) {
-        ROS_ERROR_STREAM("Preempted goal to face door: " << door);
+        ROS_WARN_STREAM("Preempted goal to face door: " << door);
         return false;
     }
 
     else if (client.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-        ROS_ERROR_STREAM("Succeeded goal to face door: " << door);
+        ROS_WARN_STREAM("Succeeded goal to face door: " << door);
         return true;
     }
     else {
-        ROS_ERROR_STREAM("Terminated goal to face door: " << door);
+        ROS_WARN_STREAM("Terminated goal to face door: " << door);
         return false;
     }
 }
@@ -178,26 +178,26 @@ bool OfficeLocation::enterRoom(actionlib::SimpleActionClient<bwi_kr_execution::E
 
     // If goal is not done in the timeout limit (5s), cancel goal and return failed
     if (!client.getState().isDone()) {
-        ROS_ERROR_STREAM("Canceling goal to location: " << aspLocation);
+        ROS_WARN_STREAM("Canceling goal to location: " << aspLocation);
         client.cancelGoal();
         client.waitForResult(ros::Duration(1, 0));
         return false;
     }
     if (client.getState() == actionlib::SimpleClientGoalState::ABORTED) {
-        ROS_ERROR_STREAM("Aborted goal to location " << aspLocation);
+        ROS_WARN_STREAM("Aborted goal to location " << aspLocation);
         return false;
     }
     else if (client.getState() == actionlib::SimpleClientGoalState::PREEMPTED) {
-        ROS_ERROR_STREAM("Preempted goal to location " << aspLocation);
+        ROS_WARN_STREAM("Preempted goal to location " << aspLocation);
         return false;
     }
 
     else if (client.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-        ROS_ERROR_STREAM("Succeeded goal to location " << aspLocation);
+        ROS_INFO_STREAM("Succeeded goal to location " << aspLocation);
         return true;
     }
     else {
-        ROS_ERROR_STREAM("Terminated goal to location " << aspLocation);
+        ROS_WARN_STREAM("Terminated goal to location " << aspLocation);
         return false;
     }
 }
