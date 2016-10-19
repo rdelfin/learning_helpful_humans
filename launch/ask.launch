@@ -1,5 +1,7 @@
 <launch>
     <rosparam command="load" file="$(find learning_helpful_humans)/config/locations.yml" />
-    <node pkg="learning_helpful_humans" name="room_traversal" type="ask_people_node" />
-    <node pkg="learning_helpful_humans" name="dialog_box" type="ask_location_node" />
+    <node pkg="learning_helpful_humans" name="image_asker" type="image_asker_node" />
+    <node pkg="learning_helpful_humans" name="location_selector" type="location_selector_node" />
+    <node pkg="learning_helpful_humans" name="location_asker" type="location_asker_node" />
+    <node pkg="sound_play" name="soundplay" type="soundplay_node.py" />
 </launch>

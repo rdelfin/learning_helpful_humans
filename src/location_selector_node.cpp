@@ -23,8 +23,8 @@
 using json = nlohmann::json;
 
 std::vector<AskLocation*> locations;
-actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction> planClient;
-actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> moveBaseClient;
+actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>* planClient;
+actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>* moveBaseClient;
 
 
 int locIdx = 0;
@@ -40,10 +40,10 @@ int main(int argc, char* argv[]) {
     loadLocations();
 
     ros::ServiceServer server = nh.advertiseService("next_question_location", nextQuestionCallback);
-    planClient = actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>("action_executor/execute_plan", true);
-    moveBaseClient = actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>("move_base", true);
-    planClient.waitForServer();
-    moveBaseClient.waitForServer();
+    planClient = new actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>("action_executor/execute_plan", true);
+    moveBaseClient = new actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>("move_base", true);
+    planClient->waitForServer();
+    moveBaseClient->waitForServer();
 
     ros::Rate r(10);
     while(ros::ok()) {
@@ -109,7 +109,7 @@ bool nextQuestionCallback(bwi_msgs::NextLocationRequest& req, bwi_msgs::NextLoca
               << "\" (" << locations[locIdx]->getAspLocation()
               << ") of type " << locations[locIdx]->getTypeString());
 
-    res.success = locations[locIdx]->goToLocation(planClient, moveBaseClient);
+    res.success = locations[locIdx]->goToLocation(*planClient, *moveBaseClient);
 
     locIdx++;
     if(locIdx >= locations.size())
