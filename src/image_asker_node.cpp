@@ -8,7 +8,7 @@
 ros::ServiceServer server;
 ros::ServiceClient questionClient;
 std::string windowName = "Display Window";
-std::string question = "";
+std::string question = "How would you describe the image on the right?\n(type nothing in box and press enter to make me leave)";
 
 bool askQuestion(bwi_msgs::ImageQuestionRequest&, bwi_msgs::ImageQuestionResponse&);
 
