@@ -11,6 +11,8 @@
 #include <opencv2/opencv.hpp>
 #include <cv_bridge/cv_bridge.h>
 
+#include <sensor_msgs/image_encodings.h>
+
 sensor_msgs::Image getQuestionImg();
 
 int main(int argc, char* argv[]) {
@@ -57,7 +59,7 @@ int main(int argc, char* argv[]) {
 
 sensor_msgs::Image getQuestionImg() {
     // We'll be returning a fixed image bc why not
-    cv::Mat image = cv::imread("/home/rdelfin/Downloads/bwi_data/img_1474998260668572241.png", CV_LOAD_IMAGE_COLOR);
+    cv::Mat image = cv::imread("/home/users/rdelfin/Downloads/img_1474998260668572241.png", CV_LOAD_IMAGE_COLOR);
 
     std_msgs::Header header;
     header.stamp = header.stamp.now();
