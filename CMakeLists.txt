@@ -61,3 +61,7 @@ add_executable(location_selector_node src/location_selector_node.cpp
                                       src/locations/OfficeLocation.cpp)
 add_dependencies(location_selector_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(location_selector_node ${catkin_LIBRARIES})
+
+add_executable(location_asker_node src/location_asker_node.cpp)
+add_dependencies(location_asker_node ${catkin_EXPORTED_TARGETS})
+target_link_libraries(location_asker_node ${catkin_LIBRARIES})
