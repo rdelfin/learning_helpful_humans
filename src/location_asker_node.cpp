@@ -52,8 +52,6 @@ int main(int argc, char* argv[]) {
         askerClient.call(qReq, qRes);
 
         ROS_INFO_STREAM("Answer: \"" << qRes.answers[0] << '"');
-
-
     }
 }
 
