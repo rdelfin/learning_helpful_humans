@@ -43,10 +43,12 @@ int main(int argc, char* argv[]) {
 
 bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionResponse& res) {
     ROS_INFO("Question request made");
-    m.lock();
+    //m.lock();
     //cv::namedWindow(windowName, cv::WINDOW_AUTOSIZE);
     img = cv_bridge::toCvCopy(req.image);
-    m.unlock();
+    cv::imshow(windowName, img->image);
+	cv::waitKey(3);
+    //m.unlock();
 
     bwi_msgs::QuestionDialogRequest questionReq;
     bwi_msgs::QuestionDialogResponse questionRes;
@@ -67,7 +69,7 @@ bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionRes
 }
 
 void imgThread() {
-    ROS_INFO("Second thread!");
+    /*ROS_INFO("Second thread!");
     ros::Rate r(10);
     while(ros::ok()) {
         if(img != nullptr) {
@@ -78,5 +80,5 @@ void imgThread() {
             m.unlock();
         }
         r.sleep();
-    }
+    }*/
 }
