@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
 bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionResponse& res) {
     ROS_INFO("Question request made");
     m.lock();
-    cv::namedWindow(windowName, cv::WINDOW_AUTOSIZE);
+    //cv::namedWindow(windowName, cv::WINDOW_AUTOSIZE);
     img = cv_bridge::toCvCopy(req.image);
     m.unlock();
 
@@ -56,9 +56,9 @@ bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionRes
     questionReq.type = bwi_msgs::QuestionDialogRequest::TEXT_QUESTION;
     questionClient.call(questionReq, questionRes);
 
-    m.lock();
-    cv::destroyWindow(windowName);
-    m.unlock();
+    //m.lock();
+    //cv::destroyWindow(windowName);
+    //m.unlock();
     
     if(questionRes.text != "")
         res.answers.push_back(questionRes.text);
