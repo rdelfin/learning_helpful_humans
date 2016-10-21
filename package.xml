@@ -24,6 +24,8 @@
   <depend>image_transport</depend>  
   <depend>cv_bridge</depend>  
   <depend>sensor_msgs</depend>  
-  <depend>geometry_msgs</depend>  
+  <depend>geometry_msgs</depend>
+  <depend>fltk</depend>
+  <depend>opengl</depend>
 
 </package>

@@ -12,9 +12,15 @@ else()
     message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
+
 # we are now using the OpenCV library
 find_package(OpenCV 2)
 include_directories(${OpenCV_INCLUDE_DIRS})
+
+SET(FLTK_SKIP_FLUID TRUE)
+FIND_PACKAGE(FLTK REQUIRED)
+FIND_PACKAGE(OpenGL REQUIRED)
+add_definitions(${FLTK_DEFINITIONS})
 
 find_package(catkin REQUIRED COMPONENTS
   actionlib
@@ -34,7 +40,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_package(CATKIN_DEPENDS actionlib_msgs bwi_msgs std_msgs)
 
-include_directories(include ${catkin_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS} ${FLTK_INCLUDE_DIR})
 
 add_executable(record_image_data src/record_image_data.cpp)
 add_dependencies(record_image_data ${catkin_EXPORTED_TARGETS})
@@ -48,6 +54,10 @@ target_link_libraries(record_data_agent ${catkin_LIBRARIES})
 add_executable(image_asker_node src/image_asker_node.cpp)
 add_dependencies(image_asker_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(image_asker_node ${catkin_LIBRARIES})
+
+target_link_libraries(image_asker_node ${OPENGL_LIBRARIES})
+target_link_libraries(image_asker_node ${FLTK_LIBRARIES})
+
 
 
 add_executable(image_asker_node_tester src/image_asker_node_tester.cpp)
