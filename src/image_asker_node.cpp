@@ -18,11 +18,15 @@ std::string question = "How would you describe the image on the right?\n(type no
 cv_bridge::CvImagePtr img = nullptr;
 std::mutex m;
 
+int g_argc;
+char** g_argv;
 
 bool askQuestion(bwi_msgs::ImageQuestionRequest&, bwi_msgs::ImageQuestionResponse&);
 void imgThread();
 
 int main(int argc, char* argv[]) {
+    g_argc = argc;
+    g_argv = argv;
     ros::init(argc, argv, "image_asker_node");
     ros::NodeHandle nh;
     
@@ -52,13 +56,13 @@ bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionRes
 }
 
 void imgThread() {
-    Fl_Window *window = new Fl_Window(300,180);
+    Fl_Window *window = new Fl_Window(400,180);
     Fl_Box *box = new Fl_Box(20,40,260,100,"Hello, World!");
     box->box(FL_UP_BOX);
     box->labelsize(36);
     box->labelfont(FL_BOLD+FL_ITALIC);
     box->labeltype(FL_SHADOW_LABEL);
     window->end();
-    window->show(0, {});
+    window->show(g_argc, g_argv);
     Fl::run();
 }
