@@ -20,6 +20,11 @@ std::string question = "How would you describe the image above?";
 cv_bridge::CvImagePtr img = nullptr;
 std::mutex m;
 
+Fl_Window* g_window;
+Fl_Input* g_ansBox;
+
+std::string textbox;
+
 int g_argc;
 char** g_argv;
 
@@ -53,42 +58,54 @@ bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionRes
     img = cv_bridge::toCvCopy(req.image);
     showQuestion();
 
+    if(textbox != "")
+        res.answers.push_back(textbox);
+
     return true;
 }
 
 void btnOkCallback(Fl_Widget* widget, void*) {
     std::cout << "Ok pressed" << std::endl;
+    textbox = std::string(g_ansBox->value());
+    g_window->hide();
 }
 
 void btnGoAwayCallback(Fl_Widget* widget, void*) {
     std::cout << "Go away pressed" << std::endl;
+    textbox = "";
+    g_window->hide();
 }
 
 
 void textboxCallback(Fl_Widget* widget, void*) {
     std::cout << "Enter pressed" << std::endl;
+    textbox = std::string(g_ansBox->value());
+    g_window->hide();
 }
 
 void windowCallback(Fl_Widget* widget, void*) {
     std::cout << "Close pressed" << std::endl;
+    textbox = "";
     ((Fl_Window*)widget)->hide();
 }
 
 void showQuestion() {
-    Fl_Window *window = new Fl_Window(700,800);
-    window->callback(windowCallback);
+    // Clear out textbox
+    textbox = "";
+
+    g_window = new Fl_Window(700,800);
+    g_window->callback(windowCallback);
 
     // Question Label
     Fl_Box* questionBox = new Fl_Box(20, 625, 660, 20);
     questionBox->label(question.c_str());
     questionBox->labelsize(20);
-    questionBox->callback();
 
     // Input Text Box
-    Fl_Input* ansBox = new Fl_Input(50, 660, 600, 30);
-    ansBox->textsize(20);
-    ansBox->when(FL_WHEN_ENTER_KEY);
-    ansBox->callback(textboxCallback);
+    g_ansBox = new Fl_Input(50, 660, 600, 30);
+    g_ansBox->textsize(20);
+    g_ansBox->when(FL_WHEN_ENTER_KEY);
+    g_ansBox->callback(textboxCallback);
 
     // Image
     Fl_ViewerCV* viewer = new Fl_ViewerCV(50, 10, 600, 600);
@@ -106,9 +123,10 @@ void showQuestion() {
     leaveBtn->when(FL_WHEN_RELEASE);
     leaveBtn->callback(btnGoAwayCallback);
 
-    window->end();
-    window->show(g_argc, g_argv);
+    g_window->end();
+    g_window->show(g_argc, g_argv);
     Fl::run();
 
-    delete window;
+    delete g_window;
+    g_window = 0;
 }

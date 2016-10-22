@@ -26,6 +26,9 @@ int main(int argc, char* argv[]) {
     
     client.call(req, res);
     ROS_INFO("Client called");
+    ROS_INFO("Response:");
+    for(auto it = res.answers.begin(); it != res.answers.end(); ++it)
+        ROS_INFO_STREAM("\t" << *it);
     
     ros::spinOnce();
     
