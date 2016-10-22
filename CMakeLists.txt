@@ -51,7 +51,8 @@ add_executable(record_data_agent src/record_data_agent.cpp)
 add_dependencies(record_data_agent ${catkin_EXPORTED_TARGETS})
 target_link_libraries(record_data_agent ${catkin_LIBRARIES})
 
-add_executable(image_asker_node src/image_asker_node.cpp)
+add_executable(image_asker_node src/image_asker_node.cpp
+                                src/Fl_ViewerCV.cxx)
 add_dependencies(image_asker_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(image_asker_node ${catkin_LIBRARIES})
 

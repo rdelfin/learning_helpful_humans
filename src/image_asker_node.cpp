@@ -10,6 +10,8 @@
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Button.H>
 
+#include <learning_helpful_humans/Fl_ViewerCV.h>
+
 ros::ServiceServer server;
 //ros::ServiceClient questionClient;
 std::string windowName = "Display Window";
@@ -68,6 +70,10 @@ void windowCallback(Fl_Widget* widget, void*) {
 void showQuestion() {
     Fl_Window *window = new Fl_Window(800,800);
     window->callback(windowCallback);
+
+    Fl_ViewerCV* viewer = new Fl_ViewerCV(20, 20, 700, 700);
+    viewer->SetImage(&img->image);
+
 
     Fl_Button* okBtn = new Fl_Button(20, 720, 100, 50, "Ok");
     Fl_Button* leaveBtn = new Fl_Button(150, 720, 150, 50, "Please Leave");
