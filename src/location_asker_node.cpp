@@ -53,7 +53,12 @@ int main(int argc, char* argv[]) {
         qReq.image = getQuestionImg();
         askerClient.call(qReq, qRes);
 
-        ROS_INFO_STREAM("Answer: \"" << qRes.answers[0] << '"');
+        pub.publish(thanksSound);
+
+        if(qRes.size() > 0)
+          ROS_INFO_STREAM("Answer: \"" << qRes.answers[0] << '"');
+        else
+          ROS_INFO("No answer provided!");
     }
 }
 
