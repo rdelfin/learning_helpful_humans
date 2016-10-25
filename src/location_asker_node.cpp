@@ -59,8 +59,8 @@ int main(int argc, char* argv[]) {
 
 sensor_msgs::Image getQuestionImg() {
     // We'll be returning a fixed image bc why not
-    //cv::Mat image = cv::imread("/home/users/rdelfin/Downloads/img_1474998260668572241.png", CV_LOAD_IMAGE_COLOR);
-    cv::Mat image = cv::imread("/home/users/rdelfin/Downloads/12637-hallway-corridor-transition-doors.1200w.tn.jpg", CV_LOAD_IMAGE_COLOR);
+    cv::Mat image = cv::imread("/home/users/rdelfin/Downloads/img_1474998260668572241.png", CV_LOAD_IMAGE_COLOR);
+    //cv::Mat image = cv::imread("/home/users/rdelfin/Downloads/12637-hallway-corridor-transition-doors.1200w.tn.jpg", CV_LOAD_IMAGE_COLOR);
 
     std_msgs::Header header;
     header.stamp = header.stamp.now();

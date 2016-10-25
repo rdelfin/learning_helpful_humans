@@ -1,6 +1,48 @@
 {
   "locations": [
     {
+      "name": "MAD office",
+      "type": "office",
+      "door": "d3_314",
+      "location": "l3_314",
+      "corridor": "l3_300"
+    },
+
+
+    {
+      "name": "Undergrad Lab Couches",
+      "type": "corridor",
+      "location": "l3_300",
+      "pose": {
+        "x": 14.533,
+        "y": -11.723,
+        "theta": 1.745
+      }
+    },
+
+    {
+      "name": "Undergrad Lab Entrance",
+      "type": "corridor",
+      "location": "l3_300",
+      "pose": {
+        "x": 4.334,
+        "y": -3.101,
+        "theta": 3.011
+      }
+    },
+
+    {
+      "name": "3rd Floor Bridge",
+      "type": "corridor",
+      "location": "l3_100",
+      "pose": {
+        "x": 8.678,
+        "y": 3.843,
+        "theta": -2.457
+      }
+    },
+
+    {
       "name": "Main Lab",
       "type": "lab",
       "door": "d3_414b1",
@@ -37,39 +79,6 @@
         "x": -13.455,
         "y": -7.998,
         "theta": 2.852
-      }
-    },
-
-    {
-      "name": "Undergrad Lab Couches",
-      "type": "corridor",
-      "location": "l3_300",
-      "pose": {
-        "x": 14.533,
-        "y": -11.723,
-        "theta": 1.745
-      }
-    },
-
-    {
-      "name": "Undergrad Lab Entrance",
-      "type": "corridor",
-      "location": "l3_300",
-      "pose": {
-        "x": 4.334,
-        "y": -3.101,
-        "theta": 3.011
-      }
-    },
-
-    {
-      "name": "3rd Floor Bridge",
-      "type": "corridor",
-      "location": "l3_100",
-      "pose": {
-        "x": 8.678,
-        "y": 3.843,
-        "theta": -2.457
       }
     },
 

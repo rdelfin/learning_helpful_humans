@@ -42,12 +42,12 @@ int main(int argc, char* argv[]) {
     g_argv = argv;
     ros::init(argc, argv, "image_asker_node");
     ros::NodeHandle nh;
-    
+
     server = nh.advertiseService("ask_location", askQuestion);
     //questionClient = nh.serviceClient<bwi_msgs::QuestionDialog>("/question_dialog");
 
     ros::spin();
-    
+
     return 0;
 }
 
@@ -93,32 +93,32 @@ void showQuestion() {
     // Clear out textbox
     textbox = "";
 
-    g_window = new Fl_Window(700,800);
+    g_window = new Fl_Window(700,700);
     g_window->callback(windowCallback);
 
     // Question Label
-    Fl_Box* questionBox = new Fl_Box(20, 625, 660, 20);
+    Fl_Box* questionBox = new Fl_Box(20, 525, 660, 20);
     questionBox->label(question.c_str());
     questionBox->labelsize(20);
 
     // Input Text Box
-    g_ansBox = new Fl_Input(50, 660, 600, 30);
+    g_ansBox = new Fl_Input(50, 560, 600, 30);
     g_ansBox->textsize(20);
     g_ansBox->when(FL_WHEN_ENTER_KEY);
     g_ansBox->callback(textboxCallback);
 
     // Image
-    Fl_ViewerCV* viewer = new Fl_ViewerCV(50, 10, 600, 600);
+    Fl_ViewerCV* viewer = new Fl_ViewerCV(50, 10, 500, 500);
     viewer->SetImage(&img->image);
 
     // Ok Button
-    Fl_Button* okBtn = new Fl_Button(20, 720, 100, 50, "Ok");
+    Fl_Button* okBtn = new Fl_Button(20, 620, 100, 50, "Ok");
     okBtn->labelsize(20);
     okBtn->when(FL_WHEN_RELEASE);
     okBtn->callback(btnOkCallback);
 
     // Leave Button
-    Fl_Button* leaveBtn = new Fl_Button(150, 720, 150, 50, "Please Leave");
+    Fl_Button* leaveBtn = new Fl_Button(150, 620, 150, 50, "Please Leave");
     leaveBtn->labelsize(20);
     leaveBtn->when(FL_WHEN_RELEASE);
     leaveBtn->callback(btnGoAwayCallback);
