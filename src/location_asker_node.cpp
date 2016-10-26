@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
 
         pub.publish(thanksSound);
 
-        if(qRes.size() > 0)
+        if(qRes.answers.size() > 0)
           ROS_INFO_STREAM("Answer: \"" << qRes.answers[0] << '"');
         else
           ROS_INFO("No answer provided!");
