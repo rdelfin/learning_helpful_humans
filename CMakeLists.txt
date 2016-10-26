@@ -17,6 +17,8 @@ endif()
 find_package(OpenCV 2)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
+find_package(CURL REQUIRED)
+
 SET(FLTK_SKIP_FLUID TRUE)
 FIND_PACKAGE(FLTK REQUIRED)
 FIND_PACKAGE(OpenGL REQUIRED)
@@ -38,9 +40,16 @@ find_package(catkin REQUIRED COMPONENTS
   pcl_ros
 )
 
-catkin_package(CATKIN_DEPENDS actionlib_msgs bwi_msgs std_msgs)
+catkin_package(
+        CATKIN_DEPENDS actionlib_msgs bwi_msgs std_msgs
+        DEPENDS system_lib curl curlpp
+        )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${FLTK_INCLUDE_DIR})
+include_directories(include
+        ${catkin_INCLUDE_DIRS}
+        ${FLTK_INCLUDE_DIR}
+        ${CURL_INCLUDE_DIR}
+        )
 
 add_executable(record_image_data src/record_image_data.cpp)
 add_dependencies(record_image_data ${catkin_EXPORTED_TARGETS})
@@ -76,3 +85,11 @@ target_link_libraries(location_selector_node ${catkin_LIBRARIES})
 add_executable(location_asker_node src/location_asker_node.cpp)
 add_dependencies(location_asker_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(location_asker_node ${catkin_LIBRARIES})
+
+
+add_executable(image_tool_node src/image_tool_node.cpp)
+add_dependencies(image_tool_node ${catkin_EXPORTED_TARGETS})
+target_link_libraries(image_tool_node
+        ${catkin_LIBRARIES}
+        ${CURL_LIBRARIES}
+        curlpp)
