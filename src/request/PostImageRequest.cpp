@@ -9,24 +9,26 @@
 #include <sstream>
 #include <learning_helpful_humans/bytestream.h>
 
-PostImageRequest::PostImageRequest(uint8_t* jpegData, long len, std::string name)
+PostImageRequest::PostImageRequest(uint8_t* jpegData, size_t len, std::string name)
     : name(name), data(jpegData), len(len),
       server("https://firebasestorage.googleapis.com"),
-      imageroot("v0/b/robotimages-dacc9.appspot.com/o") {
+      imageroot("v0/b/robotimages-dacc9.appspot.com/o"),
+      postFields("alt=media&token=5bd2e983-3818-4721-b3f2-03e6677e9278") {
 
 }
 
-PostImageRequest::PostImageRequest(uint8_t* jpegData, long len)
+PostImageRequest::PostImageRequest(uint8_t* jpegData, size_t len)
     : name(name), data(jpegData), len(len),
       server("https://firebasestorage.googleapis.com"),
-      imageroot("v0/b/robotimages-dacc9.appspot.com/o") {
+      imageroot("v0/b/robotimages-dacc9.appspot.com/o"),
+      postFields("alt=media&token=5bd2e983-3818-4721-b3f2-03e6677e9278") {
 
 }
 
 
 bool PostImageRequest::perform() {
     std::stringstream urlss;
-    urlss << server << "/" << imageroot << "/" << name;
+    urlss << server << "/" << imageroot << "/" << name << "?" << postFields;
     std::string url(urlss.str());
 
     try {
@@ -38,15 +40,17 @@ bool PostImageRequest::perform() {
         // Setup Headers and add content header
         std::list<std::string> headers;
         headers.push_back("Content-Type: image/jpeg");
-        sprintf(buf, "Content-Length: %ld", len);
+        sprintf(buf, "Content-Length: %lu", len);
         headers.push_back(buf);
 
         // Create data stream
         memstream dataStream(data, len);
 
+        // POST field
+
         req.setOpt(new curlpp::options::ReadStream(&dataStream));
         req.setOpt(new curlpp::options::InfileSize(len));
-        req.setOpt(new curlpp::options::Upload(true));
+        req.setOpt(new curlpp::options::Post(true));
         req.setOpt(new curlpp::options::HttpHeader(headers));
         req.setOpt(new curlpp::options::Url(url));
 

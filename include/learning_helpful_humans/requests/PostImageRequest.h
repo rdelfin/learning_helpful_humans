@@ -9,16 +9,16 @@
 
 class PostImageRequest {
 public:
-    PostImageRequest(uint8_t* jpegData, long len, std::string name);
-    PostImageRequest(uint8_t* jpegData, long len);
+    PostImageRequest(uint8_t* jpegData, size_t len, std::string name);
+    PostImageRequest(uint8_t* jpegData, size_t len);
     bool perform();
 
     ~PostImageRequest();
 private:
     uint8_t* data;
-    long len;
+    size_t len;
     std::string name;
-    std::string server, imageroot;
+    std::string server, imageroot, postFields;
 };
 
 #endif
