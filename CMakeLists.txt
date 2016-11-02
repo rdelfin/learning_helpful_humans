@@ -13,6 +13,9 @@ else()
 endif()
 
 
+# Boost library (used for UUID generation)
+FIND_PACKAGE(Boost COMPONENTS system REQUIRED)
+
 # we are now using the OpenCV library
 find_package(OpenCV 2)
 include_directories(${OpenCV_INCLUDE_DIRS})
@@ -49,6 +52,7 @@ include_directories(include
         ${catkin_INCLUDE_DIRS}
         ${FLTK_INCLUDE_DIR}
         ${CURL_INCLUDE_DIR}
+        ${Boost_INCLUDE_DIRS}
         )
 
 add_executable(record_image_data src/record_image_data.cpp)
@@ -87,9 +91,11 @@ add_dependencies(location_asker_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(location_asker_node ${catkin_LIBRARIES})
 
 
-add_executable(image_tool_node src/image_tool_node.cpp)
+add_executable(image_tool_node src/image_tool_node.cpp
+                               src/request/PostImageRequest.cpp)
 add_dependencies(image_tool_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(image_tool_node
         ${catkin_LIBRARIES}
         ${CURL_LIBRARIES}
+        ${Boost_LIBRARIES}
         curlpp)

@@ -24,9 +24,6 @@ http://derindelimavi.blogspot.com/ bluekid70@gmail.com
 */
 #include "learning_helpful_humans/Fl_ViewerCV.h"
 
-
-
-
 Fl_ViewerCV::Fl_ViewerCV(int X,int Y,int W,int H, float mzoom):Fl_Widget(X,Y,W,H,0)
 {
   x(X);y(Y);w(W);h(H);
@@ -545,7 +542,3 @@ int Fl_ViewerCV::handle(int event)
 Fl_ViewerCV::~Fl_ViewerCV()
 {
 }
-
-
-
-
