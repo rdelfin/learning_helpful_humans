@@ -3,26 +3,34 @@
 //
 
 #include <learning_helpful_humans/requests/PostImageRequest.h>
+#include <learning_helpful_humans/bytestream.h>
+
 #include <curlpp/cURLpp.hpp>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
+
 #include <sstream>
-#include <learning_helpful_humans/bytestream.h>
 
-PostImageRequest::PostImageRequest(uint8_t* jpegData, size_t len, std::string name)
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
+PostImageRequest::PostImageRequest(uint8_t* jpegData, size_t len, std::string name, bool generate)
     : name(name), data(jpegData), len(len),
       server("https://firebasestorage.googleapis.com"),
       imageroot("v0/b/robotimages-dacc9.appspot.com/o"),
       postFields("alt=media&token=5bd2e983-3818-4721-b3f2-03e6677e9278") {
 
-}
+    if(generate) {
+        // Generate UUID to represent file
+        boost::uuids::random_generator generator;
+        boost::uuids::uuid nameUuid = generator();
 
-PostImageRequest::PostImageRequest(uint8_t* jpegData, size_t len)
-    : name(name), data(jpegData), len(len),
-      server("https://firebasestorage.googleapis.com"),
-      imageroot("v0/b/robotimages-dacc9.appspot.com/o"),
-      postFields("alt=media&token=5bd2e983-3818-4721-b3f2-03e6677e9278") {
-
+        // Store onto stream and set to name
+        std::stringstream fileNameStream;
+        fileNameStream << boost::uuids::to_string(nameUuid) << name;
+        this->name = fileNameStream.str();
+    }
 }
 
 
@@ -65,6 +73,10 @@ bool PostImageRequest::perform() {
         std::cerr << e.what() << std::endl;
         return false;
     }
+}
+
+std::string PostImageRequest::getName() {
+    return name;
 }
 
 PostImageRequest::~PostImageRequest() {

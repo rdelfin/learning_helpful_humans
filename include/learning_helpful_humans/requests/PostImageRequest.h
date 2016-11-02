@@ -9,9 +9,17 @@
 
 class PostImageRequest {
 public:
-    PostImageRequest(uint8_t* jpegData, size_t len, std::string name);
-    PostImageRequest(uint8_t* jpegData, size_t len);
+    /**
+     * Default constructor for PostImageRequest
+     * @param jpegData Starting address of the JPEG data to send
+     * @param len Length of the data array to read
+     * @param name Name of the file or, if generate is true, the extension of the file
+     * @param generate When set to true, name will be used as an extension and a randomly assigned name will be given
+     */
+    PostImageRequest(uint8_t* jpegData, size_t len, std::string name, bool generate = false);
     bool perform();
+
+    std::string getName();
 
     ~PostImageRequest();
 private:
