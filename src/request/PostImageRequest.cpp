@@ -15,8 +15,8 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-PostImageRequest::PostImageRequest(uint8_t* jpegData, size_t len, std::string name, bool generate)
-    : name(name), data(jpegData), len(len),
+PostImageRequest::PostImageRequest(uint8_t* jpegData, size_t len, std::string name, std::string mime_type, bool generate)
+    : name(name), data(jpegData), mime_type(mime_type), len(len),
       server("https://firebasestorage.googleapis.com"),
       imageroot("v0/b/robotimages-dacc9.appspot.com/o"),
       postFields("alt=media&token=5bd2e983-3818-4721-b3f2-03e6677e9278") {
@@ -47,7 +47,7 @@ bool PostImageRequest::perform() {
 
         // Setup Headers and add content header
         std::list<std::string> headers;
-        headers.push_back("Content-Type: image/jpeg");
+        headers.push_back("Content-Type: " + mime_type);
         sprintf(buf, "Content-Length: %lu", len);
         headers.push_back(buf);
 

@@ -68,6 +68,6 @@ bool uploadImage(std::string base_name, sensor_msgs::Image& img) {
     std::vector<uchar> dataBuffer;
     cv::imencode("jpg", imageBridge->image, dataBuffer); // Stores jpg data in dataBuffer
 
-    PostImageRequest postReq(&dataBuffer[0], dataBuffer.size(), base_name); // Create the HTTP request
+    PostImageRequest postReq(&dataBuffer[0], dataBuffer.size(), base_name, "image/jpeg"); // Create the HTTP request
     return postReq.perform();                               // Post request to firebase
 }
