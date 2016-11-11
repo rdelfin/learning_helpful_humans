@@ -2,7 +2,7 @@
 // Created by rdelfin on 11/1/16.
 //
 
-#include <learning_helpful_humans/requests/PostImageRequest.h>
+#include <learning_helpful_humans/request/PostImageRequest.h>
 #include <learning_helpful_humans/bytestream.h>
 
 #include <curlpp/cURLpp.hpp>

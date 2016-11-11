@@ -14,7 +14,8 @@ class GetFieldValue {
 public:
     GetFieldValue(std::string path);
 
-    json perform();
+    json performAsJson();
+    std::string performAsString();
 
     ~GetFieldValue();
 private:
