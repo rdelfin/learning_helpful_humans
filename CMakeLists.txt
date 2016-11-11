@@ -95,7 +95,8 @@ add_executable(image_tool_node src/image_tool_node.cpp
                                src/request/PostImageRequest.cpp
                                src/request/PostFieldValue.cpp
                                src/request/GetFieldValue.cpp
-                               src/request/AppendFieldValue.cpp)
+                               src/request/AppendFieldValue.cpp
+                               src/imagetool/DatabaseImage.cpp)
 add_dependencies(image_tool_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(image_tool_node
         ${catkin_LIBRARIES}
