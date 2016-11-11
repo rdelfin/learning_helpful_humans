@@ -14,7 +14,7 @@
 
 #include <cv_bridge/cv_bridge.h>
 
-#include <learning_helpful_humans/requests/PostImageRequest.h>
+#include <learning_helpful_humans/request/PostImageRequest.h>
 
 #include <opencv2/opencv.hpp>
 
