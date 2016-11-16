@@ -12,6 +12,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <boost/uuid/uuid_io.hpp>
 #include <learning_helpful_humans/request/GetImage.h>
+#include <tf/transform_datatypes.h>
 
 char imageFormatString[] = R"(
 {
@@ -44,6 +45,7 @@ DatabaseImage::DatabaseImage(const sensor_msgs::Image& imageData, geometry_msgs:
 }
 
 bool DatabaseImage::fetch() {
+    // Fetch image
     GetImage getImg(identifier, "jpg");
 
     cv::Mat img = getImg.performImage();
@@ -51,6 +53,20 @@ bool DatabaseImage::fetch() {
     header.stamp = ros::Time::now();
 
     imageData = *cv_bridge::CvImage(header, "bgr8", img).toImageMsg();
+
+    // Fetch pose
+    std::stringstream pathString;
+    pathString << boost::uuids::to_string(identifier) << "/pose.json";
+    GetFieldValue poseGet(pathString.str());
+    json poseJson = poseGet.performAsJson();
+
+    pose.position.x = poseJson["x"];
+    pose.position.y = poseJson["y"];
+    pose.position.z = poseJson["z"];
+    pose.orientation.x = poseJson["rx"];
+    pose.orientation.y = poseJson["ry"];
+    pose.orientation.z = poseJson["rz"];
+    pose.orientation.w = poseJson["rw"];
 }
 
 
@@ -67,6 +83,7 @@ bool DatabaseImage::post() {
     success = imagePost.perform();                               // Post request to firebase
 
     // TODO: Post point cloud image somehow
+    // TODO: Post JSON data, pose, etc
 
     // Check for failure and abort
     if(!success)
