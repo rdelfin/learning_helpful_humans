@@ -11,6 +11,7 @@
 
 #include <cv_bridge/cv_bridge.h>
 #include <boost/uuid/uuid_io.hpp>
+#include <learning_helpful_humans/request/GetImage.h>
 
 char imageFormatString[] = R"(
 {
@@ -43,7 +44,13 @@ DatabaseImage::DatabaseImage(const sensor_msgs::Image& imageData, geometry_msgs:
 }
 
 bool DatabaseImage::fetch() {
-    GetImage
+    GetImage getImg(identifier, "jpg");
+
+    cv::Mat img = getImg.performImage();
+    std_msgs::Header header;
+    header.stamp = ros::Time::now();
+
+    imageData = *cv_bridge::CvImage(header, "bgr8", img).toImageMsg();
 }
 
 
