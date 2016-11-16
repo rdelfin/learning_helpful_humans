@@ -43,7 +43,10 @@ std::vector<uint8_t> GetImage::performRaw() {
 }
 
 cv::Mat GetImage::performImage() {
+    std::vector<uint8_t> data = performRaw();
+    cv::InputArray dataArray(data);
 
+    return cv::imdecode(data, cv::IMREAD_COLOR);
 }
 
 GetImage::~GetImage() {

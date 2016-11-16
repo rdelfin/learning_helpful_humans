@@ -39,7 +39,7 @@ bool AppendFieldValue::perform() {
         curlpp::Cleanup myCleanup;
         curlpp::Easy req;
 
-        memstream dataStream((uint8_t*) value.c_str(), value.length());
+        imemstream dataStream((uint8_t*) value.c_str(), value.length());
 
 
         // Setup Headers and add content header
@@ -47,10 +47,11 @@ bool AppendFieldValue::perform() {
         headers.push_back("Content-Type: application/json");
         sprintf(buf, "Content-Length: %lu", value.length());
         headers.push_back(buf);
+        headers.push_back("X-HTTP-Method-Override: PATCH");
 
         // POST field
         req.setOpt(new curlpp::options::Url(url));
-        req.setOpt(new curlpp::options::Patch(true));
+        req.setOpt(new curlpp::options::Post(true));
 
         req.perform();
 

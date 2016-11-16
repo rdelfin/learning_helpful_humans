@@ -40,7 +40,7 @@ bool PostFieldValue::perform() {
         curlpp::Cleanup myCleanup;
         curlpp::Easy req;
 
-        memstream dataStream((uint8_t*) value.c_str(), value.length());
+        imemstream dataStream((uint8_t*) value.c_str(), value.length());
 
 
         // Setup Headers and add content header
