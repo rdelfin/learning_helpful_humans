@@ -18,7 +18,7 @@ using json = nlohmann::json;
 class GetImage {
 public:
     GetImage();
-    GetImage(boost::uuids::uuid identifier, std::string extension, std::string server);
+    GetImage(boost::uuids::uuid identifier, std::string extension);
 
     std::vector<uint8_t> performRaw();
     cv::Mat performImage();
@@ -26,7 +26,7 @@ public:
     ~GetImage();
 private:
     boost::uuids::uuid identifier;
-    std::string server, extension;
+    std::string server, extension, imageRoot, postFields;
 };
 
 #endif //PROJECT_GETIMAGE_HPP

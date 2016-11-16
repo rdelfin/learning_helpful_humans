@@ -10,13 +10,25 @@
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
 
-GetImage::GetImage() {
+GetImage::GetImage()
+        : server("https://firebasestorage.googleapis.com"),
+         imageRoot("v0/b/robotimages-dacc9.appspot.com/o") {
+
+}
+
+GetImage::GetImage(boost::uuids::uuid identifier, std::string extension)
+    : identifier(identifier), extension(extension),
+      server("https://firebasestorage.googleapis.com"),
+      imageRoot("v0/b/robotimages-dacc9.appspot.com/o"),
+      postFields("alt=media"){
 
 }
 
 std::vector<uint8_t> GetImage::performRaw() {
     std::stringstream urlStream;
-    urlStream << server << "/" << boost::uuids::to_string(identifier) << "." << extension;
+    urlStream << server << "/" << imageRoot << "/"
+              << boost::uuids::to_string(identifier) << "." << extension
+              << "?" << postFields;
     std::string url = urlStream.str();
 
     try {
