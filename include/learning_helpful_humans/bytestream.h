@@ -1,4 +1,5 @@
 #include <istream>
+#include <ostream>
 
 #pragma once
 
@@ -9,9 +10,9 @@ public:
   }
 };
 
-class memstream : public std::istream {
+class imemstream : public std::istream {
 public:
-  memstream(const uint8_t *p, size_t l) :
+  imemstream(const uint8_t *p, size_t l) :
     std::istream(&_buffer),
     _buffer(p, l) {
     rdbuf(&_buffer);

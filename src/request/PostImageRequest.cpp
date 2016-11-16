@@ -52,7 +52,7 @@ bool PostImageRequest::perform() {
         headers.push_back(buf);
 
         // Create data stream
-        memstream dataStream(data, len);
+        imemstream dataStream(data, len);
 
         // POST field
 

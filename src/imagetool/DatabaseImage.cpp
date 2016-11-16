@@ -45,6 +45,8 @@ DatabaseImage::DatabaseImage(const sensor_msgs::Image& imageData, geometry_msgs:
 bool DatabaseImage::fetch() {
 
 }
+
+
 bool DatabaseImage::post() {
     bool success;
 
