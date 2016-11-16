@@ -24,7 +24,11 @@ char imageFormatString[] = R"(
         "pose": {
             "x": %f,
             "y": %f,
-            "theta": %f
+            "z": %f,
+            "rx": %f,
+            "ry": %f,
+            "rz": %f,
+            "rw": %f
         }
     }
 }
@@ -83,7 +87,6 @@ bool DatabaseImage::post() {
     success = imagePost.perform();                               // Post request to firebase
 
     // TODO: Post point cloud image somehow
-    // TODO: Post JSON data, pose, etc
 
     // Check for failure and abort
     if(!success)
@@ -92,7 +95,9 @@ bool DatabaseImage::post() {
 
 
     char buf[1024];
-    snprintf(buf, 1024, imageFormatString, boost::uuids::to_string(identifier), pose.position.x, pose.position.y, pose.orientation.z);
+    snprintf(buf, 1024, imageFormatString, boost::uuids::to_string(identifier),
+             pose.position.x, pose.position.y, pose.position.z, pose.orientation.x,
+             pose.orientation.y, pose.orientation.z, pose.orientation.w);
 
     json imageData = json::parse(std::string(buf));
 
