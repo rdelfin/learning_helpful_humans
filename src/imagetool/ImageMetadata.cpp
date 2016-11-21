@@ -7,27 +7,6 @@
 #include <learning_helpful_humans/request/AppendFieldValue.h>
 #include "learning_helpful_humans/imagetool/ImageMetadata.h"
 
-
-char imageFormatString[] = R"(
-{
-    "%s": {
-        "questions": {
-            "count": 0,
-            "list": []
-        },
-        "pose": {
-            "x": %f,
-            "y": %f,
-            "z": %f,
-            "rx": %f,
-            "ry": %f,
-            "rz": %f,
-            "rw": %f
-        }
-    }
-}
-)";
-
 ImageMetadata::ImageMetadata(const std::string& jsonData, boost::uuids::uuid id)
     : ImageMetadata(json::parse(jsonData), id)
 {
@@ -78,14 +57,43 @@ ImageMetadata::ImageMetadata(const boost::uuids::uuid& identifier, const geometr
 }
 
 bool ImageMetadata::postUpdate() {
-    char buf[1024];
-    snprintf(buf, 1024, imageFormatString, boost::uuids::to_string(identifier),
-             pose.position.x, pose.position.y, pose.position.z, pose.orientation.x,
-             pose.orientation.y, pose.orientation.z, pose.orientation.w);
+    json answerList, answersObject, poseJson, jsonBody, jsonResult;
+    int count = 0;
 
-    json imageData = json::parse(std::string(buf));
+    // Load up the list of answers
+    for(auto it = answers.begin(); it != answers.end(); ++it) {
+        json answerJson;
+        answerJson["q"] = it->questionId;
+        if(it->answered) // Only set the answer object if answered is true
+            answerJson["a"] = it->answer;
+        if(it->next >= 0) // Only set the next object if next is non-negative
+            answerJson["next"] = it->next;
+        answerJson["answered"] = it->answered;
+        answerJson["time"] = it->timestamp;
+        answerJson["location"] = it->location;
 
-    AppendFieldValue appendImageData("imagedata", imageData);
+        answerList.push_back(answerJson);
+        count++;
+    }
+    answersObject["count"] = count;
+    answersObject["list"] = answerList;
+
+    // Loads in the pose
+    poseJson["x"] = pose.position.x;
+    poseJson["y"] = pose.position.y;
+    poseJson["z"] = pose.position.z;
+    poseJson["rx"] = pose.orientation.x;
+    poseJson["ry"] = pose.orientation.y;
+    poseJson["rz"] = pose.orientation.z;
+    poseJson["rw"] = pose.orientation.w;
+
+    // Constructs the final JSON object
+    jsonBody["pose"] = poseJson;
+    jsonBody["answers"] = answersObject;
+    jsonResult[boost::uuids::to_string(identifier)] = jsonBody;
+
+    // Send the data to the server
+    AppendFieldValue appendImageData("imagedata", jsonBody);
     return appendImageData.perform();
 }
 
