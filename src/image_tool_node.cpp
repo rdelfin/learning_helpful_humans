@@ -15,6 +15,7 @@
 #include <cv_bridge/cv_bridge.h>
 
 #include <learning_helpful_humans/request/PostImageRequest.h>
+#include <learning_helpful_humans/request/GetFieldValue.h>
 
 #include <opencv2/opencv.hpp>
 
@@ -56,6 +57,7 @@ bool uploadImageCb(bwi_msgs::UploadImageRequest& req, bwi_msgs::UploadImageRespo
 
 bool nextImageCb(bwi_msgs::GetNextImageRequest& req, bwi_msgs::GetNextImageResponse& res) {
 
+    GetFieldValue imageFieldGetter("imagedata");
 }
 
 bool saveResponseCb(bwi_msgs::SaveImageResponseRequest& req, bwi_msgs::SaveImageResponseResponse& res) {
