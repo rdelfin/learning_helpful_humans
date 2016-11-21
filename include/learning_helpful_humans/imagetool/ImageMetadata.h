@@ -58,12 +58,15 @@ struct Answer {
  */
 class ImageMetadata {
 public:
-    ImageMetadata(const std::string& jsonData);
-    ImageMetadata(const json& jsonData);
-    ImageMetadata(const boost::uuids::uuid& indentifier, const geometry_msgs::Pose& pose, const std::vector<Answer>& answers);
+    ImageMetadata() { }
+    ImageMetadata(const std::string& jsonData, boost::uuids::uuid id);
+    ImageMetadata(const json& jsonData, boost::uuids::uuid id);
+    ImageMetadata(const boost::uuids::uuid& identifier, const geometry_msgs::Pose& pose, const std::vector<Answer>& answers);
+
+    bool postUpdate();
 
     ~ImageMetadata();
-private:
+
     boost::uuids::uuid identifier;
     geometry_msgs::Pose pose;
     std::vector<Answer> answers;
