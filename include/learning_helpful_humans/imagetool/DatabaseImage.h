@@ -14,11 +14,18 @@
 #include <learning_helpful_humans/imagetool/ImageMetadata.h>
 
 
+#include <pcl/conversions.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl/filters/filter.h>
+
+
 class DatabaseImage {
 public:
     DatabaseImage();
     DatabaseImage(boost::uuids::uuid identifier);
-    DatabaseImage(const sensor_msgs::Image& imageData, ImageMetadata metadata, const sensor_msgs::PointCloud2& pointCloud);
+    DatabaseImage(const sensor_msgs::Image& imageData, ImageMetadata metadata, const pcl::PointCloud<pcl::PointXYZRGB>& pointCloud);
 
     bool fetch();
     bool post();
@@ -29,7 +36,7 @@ private:
 
     sensor_msgs::Image imageData;
     ImageMetadata metadata;
-    sensor_msgs::PointCloud2 pointCloud;
+    pcl::PointCloud<pcl::PointXYZRGB> pointCloud;
 };
 
 

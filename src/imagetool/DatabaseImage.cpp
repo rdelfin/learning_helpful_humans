@@ -14,6 +14,14 @@
 #include <learning_helpful_humans/request/GetImage.h>
 #include <tf/transform_datatypes.h>
 
+#include <cstdlib>
+
+#include <pcl/conversions.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl/filters/filter.h>
+
 
 DatabaseImage::DatabaseImage() {
 
@@ -24,7 +32,7 @@ DatabaseImage::DatabaseImage(boost::uuids::uuid identifier)
 
 }
 
-DatabaseImage::DatabaseImage(const sensor_msgs::Image& imageData, ImageMetadata metadata, const sensor_msgs::PointCloud2& pointCloud)
+DatabaseImage::DatabaseImage(const sensor_msgs::Image& imageData, ImageMetadata metadata, const pcl::PointCloud<pcl::PointXYZRGB>& pointCloud)
     : imageData(imageData), metadata(metadata), pointCloud(pointCloud) {
 
 }
@@ -39,11 +47,34 @@ bool DatabaseImage::fetch() {
 
     imageData = *cv_bridge::CvImage(header, "bgr8", img).toImageMsg();
 
-    // Fetch pose
+    // Fetch metadata
     std::stringstream pathString;
-    pathString << boost::uuids::to_string(identifier) << "/pose.json";
+    pathString << boost::uuids::to_string(identifier) << ".json";
     GetFieldValue poseGet(pathString.str());
-    json poseJson = poseGet.performAsJson();
+    json metadataJson = poseGet.performAsJson();
+    metadata = ImageMetadata(metadataJson, identifier);
+
+
+    // Fetch PCL Image
+    // Again, I find myself in contempt of all that is good in programming (see the post() method)
+    GetImage getPcl(identifier, "pcd");
+    std::vector<uint8_t> rawData = getImg.performRaw();
+    std::string stringPclData(rawData.begin(), rawData.end());
+
+    // Write file out to temp, so it can be read in and my every instinct as a programmer can be destroyed
+    std::stringstream fileNameStream;
+    fileNameStream << metadata.identifier << ".pcd";
+    std::string fileName = fileNameStream.str();
+    std::ofstream outPclFile(fileName);
+    outPclFile << stringPclData;
+    outPclFile.close();
+
+    // Read file back into PCL object
+    pcl::io::loadPCDFile(fileName, pointCloud);
+
+    //--------------------------------
+    //</end_atrocity_of_software_engineering>
+    //--------------------------------
 }
 
 
@@ -56,14 +87,45 @@ bool DatabaseImage::post() {
     std::vector<uchar> dataBuffer;
     cv::imencode("jpg", imageBridge->image, dataBuffer); // Stores jpg data in dataBuffer
 
-    PostImageRequest imagePost(&dataBuffer[0], dataBuffer.size(), basename, "image/jpeg"); // Create the HTTP request
+    PostImageRequest imagePost(&dataBuffer[0], dataBuffer.size(), basename + ".jpg", "image/jpeg"); // Create the HTTP request
     success = imagePost.perform();                               // Post request to firebase
 
-    // TODO: Post point cloud image somehow
 
     // Check for failure and abort
     if(!success)
         return false;
+
+
+    /* Write the point cloud. This is done by first writing out to a temporary file, reading in the contents of
+     * said file, and writting them to the online database
+     * I hold myself in personal contempt for this piece of code I wrote. Please find me and throw me into
+     * a volcano. Thank you for your cooperation */
+    std::stringstream fileNameStream;
+    fileNameStream << metadata.identifier << ".pcd";
+    std::string fileName = fileNameStream.str();
+
+    // Write to the file
+    pcl::io::savePCDFileASCII (fileName, pointCloud);
+
+    // Read said file back in (because PCL)
+    std::ifstream pclReader(fileName);
+    std::stringstream pclStream;
+    pclStream << pclReader.rdbuf();
+    pclReader.close();
+    std::string pclData(pclStream.str());
+
+    // Delete aforementioned file so it can return to the fires of hell from which it came
+    unlink(fileName.c_str());
+
+    // Write out to Firebase in a similar fashion to the image
+    PostImageRequest pointCloudPost((uint8_t*)pclData.c_str(), pclData.size(), basename + ".pcd", "text/plain");
+    success = pointCloudPost.perform();
+
+
+    // Check for failure and abort
+    if(!success)
+        return false;
+
 
     success = metadata.postUpdate();
 
