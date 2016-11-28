@@ -30,6 +30,12 @@ public:
     bool fetch();
     bool post();
 
+    const sensor_msgs::Image& getImageData();
+    const ImageMetadata& getMetadata();
+    const pcl::PointCloud<pcl::PointXYZRGB>& getPointCloud();
+
+    void addAnswer(Answer a);
+
     ~DatabaseImage();
 private:
     boost::uuids::uuid identifier;

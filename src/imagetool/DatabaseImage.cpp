@@ -37,6 +37,24 @@ DatabaseImage::DatabaseImage(const sensor_msgs::Image& imageData, ImageMetadata 
 
 }
 
+
+const sensor_msgs::Image& DatabaseImage::getImageData() {
+    return imageData;
+}
+
+const ImageMetadata& DatabaseImage::getMetadata() {
+    return metadata;
+}
+
+const pcl::PointCloud<pcl::PointXYZRGB>& DatabaseImage::getPointCloud() {
+    return pointCloud;
+}
+
+void DatabaseImage::addAnswer(Answer a) {
+    metadata.answers.push_back(a);
+}
+
+
 bool DatabaseImage::fetch() {
     // Fetch image
     GetImage getImg(identifier, "jpg");
