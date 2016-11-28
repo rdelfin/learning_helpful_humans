@@ -14,17 +14,17 @@
 using json = nlohmann::json;
 
 AppendFieldValue::AppendFieldValue(std::string path, json value)
-        : path(path), server("robotimages-dacc9.firebaseio.com"), value(value.dump()) {
+        : path(path), server("https://robotimages-dacc9.firebaseio.com"), value(value.dump()) {
 
 }
 
 AppendFieldValue::AppendFieldValue(std::string path, std::string value)
-        : path(path), server("robotimages-dacc9.firebaseio.com"), value("\"" + value + "\"") {
+        : path(path), server("https://robotimages-dacc9.firebaseio.com"), value("\"" + value + "\"") {
 
 }
 
 AppendFieldValue::AppendFieldValue(std::string path, int value)
-        : path(path), server("robotimages-dacc9.firebaseio.com"), value(std::to_string(value)) {
+        : path(path), server("https://robotimages-dacc9.firebaseio.com"), value(std::to_string(value)) {
 
 }
 

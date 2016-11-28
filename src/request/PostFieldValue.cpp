@@ -15,17 +15,17 @@
 using json = nlohmann::json;
 
 PostFieldValue::PostFieldValue(std::string path, json value)
-    : path(path), server("robotimages-dacc9.firebaseio.com"), value(value.dump()) {
+    : path(path), server("https://robotimages-dacc9.firebaseio.com"), value(value.dump()) {
 
 }
 
 PostFieldValue::PostFieldValue(std::string path, std::string value)
-    : path(path), server("robotimages-dacc9.firebaseio.com"), value("\"" + value + "\"") {
+    : path(path), server("https://robotimages-dacc9.firebaseio.com"), value("\"" + value + "\"") {
 
 }
 
 PostFieldValue::PostFieldValue(std::string path, int value)
-    : path(path), server("robotimages-dacc9.firebaseio.com"), value(std::to_string(value)) {
+    : path(path), server("https://robotimages-dacc9.firebaseio.com"), value(std::to_string(value)) {
 
 }
 

@@ -25,7 +25,15 @@ class DatabaseImage {
 public:
     DatabaseImage();
     DatabaseImage(boost::uuids::uuid identifier);
-    DatabaseImage(const sensor_msgs::Image& imageData, ImageMetadata metadata, const pcl::PointCloud<pcl::PointXYZRGB>& pointCloud);
+
+    /**
+     * Creates an image to be posted from ImageData, metadata and pointcloud. It is recommended you call fetch afterwards
+     * @param imageData The image data, in ROS format
+     * @param metadata The metadata, including identifier. If you want to create a new image, the identifier will be ignored.
+     * @param pointCloud A PCL point cloud of the location the image was taken in (usually recorded from kinect-like device)
+     * @param newImage True if this is a new image and needs an identifier assigned. False otherwise
+     */
+    DatabaseImage(const sensor_msgs::Image& imageData, ImageMetadata metadata, const pcl::PointCloud<pcl::PointXYZRGB>& pointCloud, bool newImage = false);
 
     bool fetch();
     bool post();

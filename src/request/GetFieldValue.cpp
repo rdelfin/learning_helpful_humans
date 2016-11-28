@@ -15,7 +15,7 @@ using json = nlohmann::json;
 
 
 GetFieldValue::GetFieldValue(std::string path)
-        : path(path), server("robotimages-dacc9.firebaseio.com") {
+        : path(path), server("https://robotimages-dacc9.firebaseio.com") {
 
 }
 

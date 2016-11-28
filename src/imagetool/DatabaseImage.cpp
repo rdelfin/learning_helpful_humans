@@ -21,6 +21,7 @@
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/filters/filter.h>
+#include <boost/uuid/random_generator.hpp>
 
 
 DatabaseImage::DatabaseImage() {
@@ -32,9 +33,13 @@ DatabaseImage::DatabaseImage(boost::uuids::uuid identifier)
 
 }
 
-DatabaseImage::DatabaseImage(const sensor_msgs::Image& imageData, ImageMetadata metadata, const pcl::PointCloud<pcl::PointXYZRGB>& pointCloud)
+DatabaseImage::DatabaseImage(const sensor_msgs::Image& imageData, ImageMetadata metadata, const pcl::PointCloud<pcl::PointXYZRGB>& pointCloud, bool newImage)
     : imageData(imageData), metadata(metadata), pointCloud(pointCloud) {
-
+    // Special case: if newImage is true, then generate an ID for the image
+    if(newImage) {
+        boost::uuids::random_generator gen;
+        metadata.identifier = gen();
+    }
 }
 
 
@@ -80,9 +85,7 @@ bool DatabaseImage::fetch() {
     std::string stringPclData(rawData.begin(), rawData.end());
 
     // Write file out to temp, so it can be read in and my every instinct as a programmer can be destroyed
-    std::stringstream fileNameStream;
-    fileNameStream << metadata.identifier << ".pcd";
-    std::string fileName = fileNameStream.str();
+    std::string fileName = metadata.identifier + ".pcd";
     std::ofstream outPclFile(fileName);
     outPclFile << stringPclData;
     outPclFile.close();
@@ -108,19 +111,16 @@ bool DatabaseImage::post() {
     PostImageRequest imagePost(&dataBuffer[0], dataBuffer.size(), basename + ".jpg", "image/jpeg"); // Create the HTTP request
     success = imagePost.perform();                               // Post request to firebase
 
-
     // Check for failure and abort
     if(!success)
         return false;
 
 
     /* Write the point cloud. This is done by first writing out to a temporary file, reading in the contents of
-     * said file, and writting them to the online database
+     * said file, and writing them to the online database
      * I hold myself in personal contempt for this piece of code I wrote. Please find me and throw me into
      * a volcano. Thank you for your cooperation */
-    std::stringstream fileNameStream;
-    fileNameStream << metadata.identifier << ".pcd";
-    std::string fileName = fileNameStream.str();
+    std::string fileName = metadata.identifier + ".pcd";
 
     // Write to the file
     pcl::io::savePCDFileASCII (fileName, pointCloud);
@@ -132,7 +132,7 @@ bool DatabaseImage::post() {
     pclReader.close();
     std::string pclData(pclStream.str());
 
-    // Delete aforementioned file so it can return to the fires of hell from which it came
+    // Delete aforementioned file so it can return to the fires of hell from whence it came
     unlink(fileName.c_str());
 
     // Write out to Firebase in a similar fashion to the image
