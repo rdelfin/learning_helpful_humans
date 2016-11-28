@@ -18,7 +18,7 @@ RandomImagePolicy::RandomImagePolicy()
     rand = std::uniform_int_distribution<size_t>(ids.size());
 }
 
-virtual boost::uuids::uuid RandomImagePolicy::getNextImage() {
+boost::uuids::uuid RandomImagePolicy::getNextImage() {
     // Picks a UUID at random and returns
     return ids[rand(gen)];
 }

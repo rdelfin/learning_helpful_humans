@@ -85,7 +85,7 @@ bool DatabaseImage::fetch() {
     std::string stringPclData(rawData.begin(), rawData.end());
 
     // Write file out to temp, so it can be read in and my every instinct as a programmer can be destroyed
-    std::string fileName = metadata.identifier + ".pcd";
+    std::string fileName = boost::uuids::to_string(metadata.identifier) + ".pcd";
     std::ofstream outPclFile(fileName);
     outPclFile << stringPclData;
     outPclFile.close();
@@ -120,7 +120,7 @@ bool DatabaseImage::post() {
      * said file, and writing them to the online database
      * I hold myself in personal contempt for this piece of code I wrote. Please find me and throw me into
      * a volcano. Thank you for your cooperation */
-    std::string fileName = metadata.identifier + ".pcd";
+    std::string fileName = boost::uuids::to_string(metadata.identifier) + ".pcd";
 
     // Write to the file
     pcl::io::savePCDFileASCII (fileName, pointCloud);
