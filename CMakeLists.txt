@@ -12,6 +12,8 @@ else()
     message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O1")
+
 
 # Boost library (used for UUID generation)
 FIND_PACKAGE(Boost COMPONENTS system REQUIRED)
