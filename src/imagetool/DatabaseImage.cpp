@@ -106,7 +106,7 @@ bool DatabaseImage::post() {
 
     cv_bridge::CvImagePtr imageBridge = cv_bridge::toCvCopy(imageData);
     std::vector<uchar> dataBuffer;
-    cv::imencode("jpg", imageBridge->image, dataBuffer); // Stores jpg data in dataBuffer
+    cv::imencode(".jpg", imageBridge->image, dataBuffer); // Stores jpg data in dataBuffer
 
     PostImageRequest imagePost(&dataBuffer[0], dataBuffer.size(), basename + ".jpg", "image/jpeg"); // Create the HTTP request
     success = imagePost.perform();                               // Post request to firebase

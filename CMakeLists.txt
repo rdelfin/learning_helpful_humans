@@ -76,7 +76,7 @@ target_link_libraries(image_asker_node ${FLTK_LIBRARIES})
 
 
 
-add_executable(image_asker_node_tester src/image_asker_node_tester.cpp)
+add_executable(image_asker_node_tester test/image_asker_node_tester.cpp)
 add_dependencies(image_asker_node_tester ${catkin_EXPORTED_TARGETS})
 target_link_libraries(image_asker_node_tester ${catkin_LIBRARIES})
 
@@ -109,3 +109,8 @@ target_link_libraries(image_tool_node
         ${CURL_LIBRARIES}
         ${Boost_LIBRARIES}
         curlpp)
+
+add_executable(image_uploader_test test/image_uploader_test.cpp)
+add_dependencies(image_uploader_test ${catkin_EXPORTED_TARGETS})
+target_link_libraries(image_uploader_test
+        ${catkin_LIBRARIES})
