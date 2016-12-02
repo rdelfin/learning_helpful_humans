@@ -52,6 +52,9 @@ bool AppendFieldValue::perform() {
         // POST field
         req.setOpt(new curlpp::options::Url(url));
         req.setOpt(new curlpp::options::Post(true));
+        req.setOpt(new curlpp::options::HttpHeader(headers));
+        req.setOpt(new curlpp::options::ReadStream(&dataStream));
+        req.setOpt(new curlpp::options::InfileSize(value.length()));
 
         req.perform();
 

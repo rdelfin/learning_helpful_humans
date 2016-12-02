@@ -93,7 +93,7 @@ bool ImageMetadata::postUpdate() {
     jsonResult[boost::uuids::to_string(identifier)] = jsonBody;
 
     // Send the data to the server
-    AppendFieldValue appendImageData("imagedata", jsonBody);
+    AppendFieldValue appendImageData("imagedata.json", jsonResult);
     return appendImageData.perform();
 }
 
