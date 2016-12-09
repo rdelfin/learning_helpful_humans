@@ -34,13 +34,9 @@ void btnOkCallback(Fl_Widget* widget, void*);
 void textboxCallback(Fl_Widget* widget, void*);
 void windowCallback(Fl_Widget* widget, void*);
 void showQuestion(const std::string&);
-std::string getQuestion();
 
-// Random number generator
-std::default_random_engine generator;
 
 bool askQuestion(bwi_msgs::ImageQuestionRequest&, bwi_msgs::ImageQuestionResponse&);
-void imgThread();
 
 int main(int argc, char* argv[]) {
     g_argc = argc;
@@ -60,7 +56,7 @@ int main(int argc, char* argv[]) {
 bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionResponse& res) {
     ROS_INFO("Question request made");
     img = cv_bridge::toCvCopy(req.image);
-    showQuestion(getQuestion());
+    showQuestion(req.question);
 
     if(textbox != "")
         res.answers.push_back(textbox);
@@ -133,14 +129,4 @@ void showQuestion(const std::string& question) {
 
     delete g_window;
     g_window = 0;
-}
-
-std::string getQuestion() {
-    GetFieldValue getQuestions("questions/list.json");
-
-    json questions = getQuestions.performAsJson();
-
-    std::uniform_int_distribution<size_t> distribution(0, questions.size() - 1);
-
-    return json(questions[distribution(generator)])["q"];
 }

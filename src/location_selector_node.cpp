@@ -109,6 +109,7 @@ bool nextQuestionCallback(bwi_msgs::NextLocationRequest& req, bwi_msgs::NextLoca
               << "\" (" << locations[locIdx]->getAspLocation()
               << ") of type " << locations[locIdx]->getTypeString());
 
+    res.locationName = locations[locIdx]->getName();
     res.success = locations[locIdx]->goToLocation(*planClient, *moveBaseClient);
 
     locIdx++;

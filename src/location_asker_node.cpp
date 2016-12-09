@@ -12,8 +12,15 @@
 #include <cv_bridge/cv_bridge.h>
 
 #include <sensor_msgs/image_encodings.h>
+#include <learning_helpful_humans/imagetool/DatabaseImage.h>
+#include <learning_helpful_humans/Question.h>
+#include <bwi_msgs/GetNextImage.h>
+#include <bwi_msgs/SaveImageResponse.h>
 
-sensor_msgs::Image getQuestionImg();
+bwi_msgs::GetNextImageResponse getQuestionImg();
+
+ros::ServiceClient nextImageClient;
+ros::ServiceClient saveResponseClient;
 
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "location_asker_node");
@@ -22,6 +29,8 @@ int main(int argc, char* argv[]) {
 
     ros::ServiceClient askerClient = nh.serviceClient<bwi_msgs::ImageQuestion>("ask_location");
     ros::ServiceClient locationClient = nh.serviceClient<bwi_msgs::NextLocation>("next_question_location");
+    nextImageClient = nh.serviceClient<bwi_msgs::GetNextImage>("image_tool/next");
+    saveResponseClient = nh.serviceClient<bwi_msgs::SaveImageResponse>("image_tool/save_response");
 
     ros::Publisher pub = nh.advertise<sound_play::SoundRequest>("robotsound", 10);
 
@@ -50,25 +59,40 @@ int main(int argc, char* argv[]) {
 
         pub.publish(helpSound);
 
-        qReq.image = getQuestionImg();
+        // Fetch a question
+        Question question(true);
+
+        bwi_msgs::GetNextImageResponse nextImage = getQuestionImg();
+        qReq.image = nextImage.img;
+        qReq.point_cloud = nextImage.pc;
+        qReq.pose = nextImage.pose;
+        qReq.timeout = 120;
+        qReq.question = question.question;
+
         askerClient.call(qReq, qRes);
 
         pub.publish(thanksSound);
 
-        if(qRes.answers.size() > 0)
-          ROS_INFO_STREAM("Answer: \"" << qRes.answers[0] << '"');
+        if(qRes.answers.size() > 0) {
+            ROS_INFO_STREAM("Answer: \"" << qRes.answers[0] << '"');
+
+            bwi_msgs::SaveImageResponseResponse saveRes;
+            bwi_msgs::SaveImageResponseRequest saveReq;
+
+            saveReq.base_name = nextImage.base_name;
+            saveReq.location = locRes.locationName;
+            saveReq.question_id = question.id;
+        }
         else
           ROS_INFO("No answer provided!");
     }
 }
 
-sensor_msgs::Image getQuestionImg() {
-    // We'll be returning a fixed image bc why not
-    cv::Mat image = cv::imread("/home/users/rdelfin/Downloads/img_1474998260668572241.png", CV_LOAD_IMAGE_COLOR);
-    //cv::Mat image = cv::imread("/home/users/rdelfin/Downloads/12637-hallway-corridor-transition-doors.1200w.tn.jpg", CV_LOAD_IMAGE_COLOR);
+bwi_msgs::GetNextImageResponse getQuestionImg() {
+    bwi_msgs::GetNextImageRequest req;
+    bwi_msgs::GetNextImageResponse res;
 
-    std_msgs::Header header;
-    header.stamp = header.stamp.now();
-    cv_bridge::CvImage bridgeImg(header, sensor_msgs::image_encodings::RGB8, image);
-    return *bridgeImg.toImageMsg();
+    nextImageClient.call(req, res);
+
+    return res;
 }
