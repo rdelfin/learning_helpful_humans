@@ -14,8 +14,9 @@
 
 #include <learning_helpful_humans/Fl_ViewerCV.h>
 
+#include <learning_helpful_humans/request/GetFieldValue.h>
+
 ros::ServiceServer server;
-std::string question = "How would you describe the image above?";
 
 cv_bridge::CvImagePtr img = nullptr;
 std::mutex m;
@@ -32,7 +33,11 @@ void btnGoAwayCallback(Fl_Widget* widget, void*);
 void btnOkCallback(Fl_Widget* widget, void*);
 void textboxCallback(Fl_Widget* widget, void*);
 void windowCallback(Fl_Widget* widget, void*);
-void showQuestion();
+void showQuestion(const std::string&);
+std::string getQuestion();
+
+// Random number generator
+std::default_random_engine generator;
 
 bool askQuestion(bwi_msgs::ImageQuestionRequest&, bwi_msgs::ImageQuestionResponse&);
 void imgThread();
@@ -44,7 +49,6 @@ int main(int argc, char* argv[]) {
     ros::NodeHandle nh;
 
     server = nh.advertiseService("ask_location", askQuestion);
-    //questionClient = nh.serviceClient<bwi_msgs::QuestionDialog>("/question_dialog");
 
     ros::spin();
 
@@ -56,7 +60,7 @@ int main(int argc, char* argv[]) {
 bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionResponse& res) {
     ROS_INFO("Question request made");
     img = cv_bridge::toCvCopy(req.image);
-    showQuestion();
+    showQuestion(getQuestion());
 
     if(textbox != "")
         res.answers.push_back(textbox);
@@ -89,7 +93,7 @@ void windowCallback(Fl_Widget* widget, void*) {
     ((Fl_Window*)widget)->hide();
 }
 
-void showQuestion() {
+void showQuestion(const std::string& question) {
     // Clear out textbox
     textbox = "";
 
@@ -129,4 +133,14 @@ void showQuestion() {
 
     delete g_window;
     g_window = 0;
+}
+
+std::string getQuestion() {
+    GetFieldValue getQuestions("questions/list.json");
+
+    json questions = getQuestions.performAsJson();
+
+    std::uniform_int_distribution<size_t> distribution(0, questions.size() - 1);
+
+    return json(questions[distribution(generator)])["q"];
 }

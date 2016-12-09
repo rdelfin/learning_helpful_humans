@@ -73,7 +73,7 @@ bool DatabaseImage::fetch() {
 
     // Fetch metadata
     std::stringstream pathString;
-    pathString << boost::uuids::to_string(identifier) << ".json";
+    pathString << "imagedata/" << boost::uuids::to_string(identifier) << ".json";
     GetFieldValue poseGet(pathString.str());
     json metadataJson = poseGet.performAsJson();
     metadata = ImageMetadata(metadataJson, identifier);
