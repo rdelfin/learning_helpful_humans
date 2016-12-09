@@ -40,6 +40,7 @@ bool PostFieldValue::perform() {
         curlpp::Cleanup myCleanup;
         curlpp::Easy req;
 
+        std::stringstream result;
         imemstream dataStream((uint8_t*) value.c_str(), value.length());
 
 
@@ -55,11 +56,9 @@ bool PostFieldValue::perform() {
         req.setOpt(new curlpp::options::HttpHeader(headers));
         req.setOpt(new curlpp::options::ReadStream(&dataStream));
         req.setOpt(new curlpp::options::InfileSize(value.length()));
+        req.setOpt(new curlpp::options::WriteStream(&result));
 
         req.perform();
-
-        std::stringstream result;
-        result << req;
 
         return json::parse(result.str());
 

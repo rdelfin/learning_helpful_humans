@@ -39,6 +39,8 @@ bool AppendFieldValue::perform() {
         curlpp::Cleanup myCleanup;
         curlpp::Easy req;
 
+
+        std::stringstream result;
         imemstream dataStream((uint8_t*) value.c_str(), value.length());
 
 
@@ -55,13 +57,14 @@ bool AppendFieldValue::perform() {
         req.setOpt(new curlpp::options::HttpHeader(headers));
         req.setOpt(new curlpp::options::ReadStream(&dataStream));
         req.setOpt(new curlpp::options::InfileSize(value.length()));
+        req.setOpt(new curlpp::options::WriteStream(&result));
 
         req.perform();
 
-        std::stringstream result;
-        result << req;
-
-        return json::parse(result.str());
+        std::string resultString = result.str();
+        std::cout << "Result: " << resultString << std::endl;
+        json resultJson = json::parse(resultString);
+        return true;
 
     } catch(curlpp::RuntimeError & e) {
         std::cerr << e.what() << std::endl;

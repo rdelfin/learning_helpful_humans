@@ -23,6 +23,7 @@
 #include <pcl/filters/filter.h>
 #include <boost/uuid/random_generator.hpp>
 
+static boost::uuids::random_generator gen;
 
 DatabaseImage::DatabaseImage() {
 
@@ -37,8 +38,8 @@ DatabaseImage::DatabaseImage(const sensor_msgs::Image& imageData, ImageMetadata 
     : imageData(imageData), metadata(metadata), pointCloud(pointCloud) {
     // Special case: if newImage is true, then generate an ID for the image
     if(newImage) {
-        boost::uuids::random_generator gen;
-        metadata.identifier = gen();
+        this->metadata.identifier = gen();
+        this->identifier = this->metadata.identifier;
     }
 }
 
@@ -102,13 +103,13 @@ bool DatabaseImage::fetch() {
 bool DatabaseImage::post() {
     bool success;
 
-    std::string basename = boost::uuids::to_string(identifier);
+    std::string basename = boost::uuids::to_string(this->metadata.identifier);
 
     cv_bridge::CvImagePtr imageBridge = cv_bridge::toCvCopy(imageData);
     std::vector<uchar> dataBuffer;
     cv::imencode(".jpg", imageBridge->image, dataBuffer); // Stores jpg data in dataBuffer
 
-    PostImageRequest imagePost(&dataBuffer[0], dataBuffer.size(), basename + ".jpg", "image/jpeg"); // Create the HTTP request
+    PostImageRequest imagePost(&dataBuffer[0], dataBuffer.size(), basename + ".jpg", "image/jpeg", false); // Create the HTTP request
     success = imagePost.perform();                               // Post request to firebase
 
     // Check for failure and abort
