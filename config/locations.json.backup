@@ -32,6 +32,17 @@
     },
 
     {
+      "name": "3rd Floor Bridge",
+      "type": "corridor",
+      "location": "l3_100",
+      "pose": {
+        "x": 8.678,
+        "y": 3.843,
+        "theta": -2.457
+      }
+    },
+
+    {
       "name": "Main Lab",
       "type": "lab",
       "door": "d3_414b1",
