@@ -18,7 +18,7 @@ Question::Question(bool random) {
         json question = questions[this->id];
 
         this->question = question["q"];
-        this->prereq = (question["has_prereq"] == true ? question["prereq"] : -1);
+        this->prereq = (question["has_prereq"].get<bool>() ? question["prereq"].get<int>() : -1);
     }
 }
 

@@ -5,6 +5,7 @@
 #ifndef PROJECT_QUESTION_HPP
 #define PROJECT_QUESTION_HPP
 
+#include <string>
 
 struct Question {
 public:

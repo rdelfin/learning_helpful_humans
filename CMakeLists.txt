@@ -92,7 +92,11 @@ add_executable(location_asker_node src/location_asker_node.cpp
                                    src/request/GetFieldValue.cpp
                                    src/Question.cpp)
 add_dependencies(location_asker_node ${catkin_EXPORTED_TARGETS})
-target_link_libraries(location_asker_node ${catkin_LIBRARIES})
+target_link_libraries(location_asker_node ${catkin_LIBRARIES}
+        ${catkin_LIBRARIES}
+        ${CURL_LIBRARIES}
+        ${Boost_LIBRARIES}
+        curlpp)
 
 
 add_executable(image_tool_node src/image_tool_node.cpp
