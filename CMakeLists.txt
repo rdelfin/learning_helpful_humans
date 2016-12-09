@@ -120,3 +120,19 @@ add_executable(image_uploader_test test/image_uploader_test.cpp)
 add_dependencies(image_uploader_test ${catkin_EXPORTED_TARGETS})
 target_link_libraries(image_uploader_test
         ${catkin_LIBRARIES})
+
+add_executable(image_fetch_tester test/image_fetch_tester.cpp
+                                  src/imagetool/DatabaseImage.cpp
+                                  src/imagetool/ImageMetadata.cpp
+                                  src/imagetool/ImagePickerPolicy.cpp
+                                  src/imagetool/RandomImagePolicy.cpp
+                                  src/request/GetFieldValue.cpp
+                                  src/request/AppendFieldValue.cpp
+                                  src/request/GetImage.cpp
+                                  src/request/PostImageRequest.cpp)
+add_dependencies(image_fetch_tester ${catkin_EXPORTED_TARGETS})
+target_link_libraries(image_fetch_tester
+        ${catkin_LIBRARIES}
+        ${CURL_LIBRARIES}
+        ${Boost_LIBRARIES}
+        curlpp)
