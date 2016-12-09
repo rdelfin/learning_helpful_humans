@@ -24,19 +24,22 @@ json GetFieldValue::performAsJson() {
     urlStream << server << "/" << path;
     std::string url = urlStream.str();
 
+
     try {
         curlpp::Cleanup myCleanup;
         curlpp::Easy req;
 
+        std::stringstream resultStream;
+
         // POST field
+        req.setOpt(new curlpp::options::WriteStream(&resultStream));
         req.setOpt(new curlpp::options::Url(url));
 
         req.perform();
 
-        std::stringstream result;
-        result << req;
+        std::string result = resultStream.str();
 
-        return json::parse(result.str());
+        return json::parse(result);
 
     } catch(curlpp::RuntimeError & e) {
         std::cerr << e.what() << std::endl;

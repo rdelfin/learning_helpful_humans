@@ -12,7 +12,8 @@
 
 GetImage::GetImage()
         : server("https://firebasestorage.googleapis.com"),
-         imageRoot("v0/b/robotimages-dacc9.appspot.com/o") {
+         imageRoot("v0/b/robotimages-dacc9.appspot.com/o"),
+          postFields("alt=media") {
 
 }
 
@@ -20,7 +21,7 @@ GetImage::GetImage(boost::uuids::uuid identifier, std::string extension)
     : identifier(identifier), extension(extension),
       server("https://firebasestorage.googleapis.com"),
       imageRoot("v0/b/robotimages-dacc9.appspot.com/o"),
-      postFields("alt=media"){
+      postFields("alt=media") {
 
 }
 
@@ -32,15 +33,15 @@ std::vector<uint8_t> GetImage::performRaw() {
     std::string url = urlStream.str();
 
     try {
+        std::stringstream resultStream;
         curlpp::Cleanup myCleanup;
         curlpp::Easy req;
 
+        req.setOpt(new curlpp::options::WriteStream(&resultStream));
         req.setOpt(new curlpp::options::Url(url));
 
         req.perform();
 
-        std::stringstream resultStream;
-        resultStream << req;
         std::string resultString = resultStream.str();
 
         return std::vector<uint8_t>(resultString.begin(), resultString.end());
