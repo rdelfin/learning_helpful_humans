@@ -37,6 +37,12 @@ void showQuestion(const std::string&);
 
 
 bool askQuestion(bwi_msgs::ImageQuestionRequest&, bwi_msgs::ImageQuestionResponse&);
+void imgThread();
+void endQuestion(const std::string& answer);
+
+bool asking;
+bwi_msgs::ImageQuestionRequest g_req;
+ros::Time questionStart;
 
 int main(int argc, char* argv[]) {
     g_argc = argc;
@@ -46,15 +52,26 @@ int main(int argc, char* argv[]) {
 
     server = nh.advertiseService("ask_location", askQuestion);
 
-    ros::spin();
+    ros::Rate r(10);
+    while(ros::ok()) {
+        if(asking) {
+            ros::Duration timeDiff = ros::Time::now() - questionStart;
+
+            if(timeDiff.toSec() > g_req.timeout) {
+                endQuestion("");
+            }
+        }
+
+        ros::spinOnce();
+        r.sleep();
+    }
 
     return 0;
 }
 
-// TODO: Add go away nicely and not nicely, and answer
-
 bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionResponse& res) {
     ROS_INFO("Question request made");
+    g_req = req;
     img = cv_bridge::toCvCopy(req.image);
     showQuestion(req.question);
 
@@ -64,29 +81,30 @@ bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionRes
     return true;
 }
 
+void endQuestion(const std::string& answer) {
+    textbox = answer;
+    g_window->hide();
+}
+
 void btnOkCallback(Fl_Widget* widget, void*) {
     std::cout << "Ok pressed" << std::endl;
-    textbox = std::string(g_ansBox->value());
-    g_window->hide();
+    endQuestion(std::string(g_ansBox->value()));
 }
 
 void btnGoAwayCallback(Fl_Widget* widget, void*) {
     std::cout << "Go away pressed" << std::endl;
-    textbox = "";
-    g_window->hide();
+    endQuestion("");
 }
 
 
 void textboxCallback(Fl_Widget* widget, void*) {
     std::cout << "Enter pressed" << std::endl;
-    textbox = std::string(g_ansBox->value());
-    g_window->hide();
+    endQuestion(std::string(g_ansBox->value()));
 }
 
 void windowCallback(Fl_Widget* widget, void*) {
     std::cout << "Close pressed" << std::endl;
-    textbox = "";
-    ((Fl_Window*)widget)->hide();
+    endQuestion("");
 }
 
 void showQuestion(const std::string& question) {
@@ -124,7 +142,10 @@ void showQuestion(const std::string& question) {
     leaveBtn->callback(btnGoAwayCallback);
 
     g_window->end();
+
     g_window->show(g_argc, g_argv);
+    questionStart = ros::Time::now();
+    asking = true;
     Fl::run();
 
     delete g_window;
