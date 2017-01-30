@@ -12,6 +12,8 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include <cv_bridge/cv_bridge.h>
+#include <FL/Fl_Window.H>
+#include <learning_helpful_humans/Fl_ViewerCV.h>
 
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "image_fetch_tester");
@@ -23,8 +25,17 @@ int main(int argc, char* argv[]) {
 
     cv_bridge::CvImagePtr cvBridgeImage = cv_bridge::toCvCopy(image.getImageData());
 
-    cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE);
-    cv::imshow( "Display window", cvBridgeImage->image);
+    Fl_Window g_window(700,700);
+    Fl_ViewerCV viewer(50, 10, 500, 500);
+    viewer.SetImage(&cvBridgeImage->image);
 
-    cv::waitKey(0);
+    g_window.end();
+
+    g_window.show(argc, argv);
+    Fl::run();
+
+//    cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE);
+//    cv::imshow( "Display window", cvBridgeImage->image);
+//
+//    cv::waitKey(0);
 }

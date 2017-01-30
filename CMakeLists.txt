@@ -129,10 +129,12 @@ add_executable(image_fetch_tester test/image_fetch_tester.cpp
                                   src/request/GetFieldValue.cpp
                                   src/request/AppendFieldValue.cpp
                                   src/request/GetImage.cpp
-                                  src/request/PostImageRequest.cpp)
+                                  src/request/PostImageRequest.cpp
+                                  src/Fl_ViewerCV.cxx)
 add_dependencies(image_fetch_tester ${catkin_EXPORTED_TARGETS})
 target_link_libraries(image_fetch_tester
         ${catkin_LIBRARIES}
         ${CURL_LIBRARIES}
         ${Boost_LIBRARIES}
+        ${FLTK_LIBRARIES}
         curlpp)

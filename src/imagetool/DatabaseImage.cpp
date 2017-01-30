@@ -82,7 +82,7 @@ bool DatabaseImage::fetch() {
     // Fetch PCL Image
     // Again, I find myself in contempt of all that is good in programming (see the post() method)
     GetImage getPcl(identifier, "pcd");
-    std::vector<uint8_t> rawData = getImg.performRaw();
+    std::vector<uint8_t> rawData = getPcl.performRaw();
     std::string stringPclData(rawData.begin(), rawData.end());
 
     // Write file out to temp, so it can be read in and my every instinct as a programmer can be destroyed
