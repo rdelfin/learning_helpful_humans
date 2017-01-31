@@ -23,6 +23,9 @@ std::mutex m;
 
 Fl_Window* g_window;
 Fl_Input* g_ansBox;
+Fl_Button *okBtn, *leaveBtn;
+Fl_Box *questionBox;
+Fl_ViewerCV* viewer;
 
 std::string textbox;
 
@@ -45,6 +48,13 @@ bwi_msgs::ImageQuestionRequest g_req;
 ros::Time questionStart;
 
 int main(int argc, char* argv[]) {
+    g_window = nullptr;
+    g_ansBox = nullptr;
+    okBtn = nullptr;
+    leaveBtn = nullptr;
+    questionBox = nullptr;
+    viewer = nullptr;
+
     g_argc = argc;
     g_argv = argv;
     ros::init(argc, argv, "image_asker_node");
@@ -83,6 +93,10 @@ bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionRes
 
 void endQuestion(const std::string& answer) {
     textbox = answer;
+    okBtn->deactivate();
+    leaveBtn->deactivate();
+    g_ansBox->deactivate();
+
     g_window->hide();
 }
 
@@ -111,32 +125,45 @@ void showQuestion(const std::string& question) {
     // Clear out textbox
     textbox = "";
 
+    if(g_window != nullptr)
+        delete g_window;
+
     g_window = new Fl_Window(700,700);
     g_window->callback(windowCallback);
 
     // Question Label
-    Fl_Box* questionBox = new Fl_Box(20, 525, 660, 20);
+    if(questionBox != nullptr)
+        delete questionBox;
+    questionBox = new Fl_Box(20, 525, 660, 20);
     questionBox->label(question.c_str());
     questionBox->labelsize(20);
 
     // Input Text Box
+    if(g_ansBox != nullptr)
+        delete g_ansBox;
     g_ansBox = new Fl_Input(50, 560, 600, 30);
     g_ansBox->textsize(20);
     g_ansBox->when(FL_WHEN_ENTER_KEY);
     g_ansBox->callback(textboxCallback);
 
     // Image
-    Fl_ViewerCV* viewer = new Fl_ViewerCV(50, 10, 500, 500);
+    if(viewer != nullptr)
+        delete viewer;
+    viewer = new Fl_ViewerCV(50, 10, 500, 500);
     viewer->SetImage(&img->image);
 
     // Ok Button
-    Fl_Button* okBtn = new Fl_Button(20, 620, 100, 50, "Ok");
+    if(okBtn != nullptr)
+        delete okBtn;
+    okBtn = new Fl_Button(20, 620, 100, 50, "Ok");
     okBtn->labelsize(20);
     okBtn->when(FL_WHEN_RELEASE);
     okBtn->callback(btnOkCallback);
 
     // Leave Button
-    Fl_Button* leaveBtn = new Fl_Button(150, 620, 150, 50, "Please Leave");
+    if(leaveBtn != nullptr)
+        delete leaveBtn;
+    leaveBtn = new Fl_Button(150, 620, 150, 50, "Please Leave");
     leaveBtn->labelsize(20);
     leaveBtn->when(FL_WHEN_RELEASE);
     leaveBtn->callback(btnGoAwayCallback);
@@ -147,7 +174,4 @@ void showQuestion(const std::string& question) {
     questionStart = ros::Time::now();
     asking = true;
     Fl::run();
-
-    delete g_window;
-    g_window = 0;
 }
