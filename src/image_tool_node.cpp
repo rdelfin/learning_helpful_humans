@@ -1,6 +1,12 @@
-//
-// Created by rdelfin on 10/26/16.
-//
+/**
+  * Created by rdelfin on 10/26/16.
+  *
+  * This node provides a set of services used to interact with the images on the firebase (online) database.
+  * It provides `image_tool/upload` to upload new images and update old ones on firebase. It also provides
+  * `image_tool/next` to fetch a random image using some internal heuristic. In the case that a UUID is
+  * provided, it will fetch the image with said UUID. Finally, it provides  `image_tool/save_response` to
+  * save an answer given by a user to an image.
+  */
 
 #include <ros/ros.h>
 

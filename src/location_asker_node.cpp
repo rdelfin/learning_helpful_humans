@@ -1,6 +1,10 @@
-//
-// Created by rdelfin on 10/18/16.
-//
+/**
+  * Created by rdelfin on 10/18/16.
+  *
+  * This drives the entire asking mechanism. Contains the overall logic: grab a location, go to it,
+  * trigger the question asking, and save it onto the database. Uses all other nodes for all this
+  * task, so it does very little work by itself.
+  */
 
 #include <ros/ros.h>
 
@@ -34,6 +38,12 @@ int main(int argc, char* argv[]) {
 
     ros::Publisher pub = nh.advertise<sound_play::SoundRequest>("robotsound", 10);
 
+    // Ensure the node does not start until all other node dependencies are up.
+    askerClient.waitForExistence();
+    locationClient.waitForExistence();
+    nextImageClient.waitForExistence();
+    saveResponseClient.waitForExistence();
+
     ros::Rate r(10);
 
     bwi_msgs::NextLocationRequest locReq;
@@ -62,6 +72,7 @@ int main(int argc, char* argv[]) {
         // Fetch a question
         Question question(true);
 
+        // Generate image message
         bwi_msgs::GetNextImageResponse nextImage = getQuestionImg();
         qReq.image = nextImage.img;
         qReq.point_cloud = nextImage.pc;
@@ -69,9 +80,12 @@ int main(int argc, char* argv[]) {
         qReq.timeout = 120;
         qReq.question = question.question;
 
+        // Send image message to `ask_location`
         askerClient.call(qReq, qRes);
 
-        pub.publish(thanksSound);
+        // Say `thank you!` after getting an answer, only if someone actually answered.
+        if(qRes.answers.size() != 0)
+            pub.publish(thanksSound);
 
         if(qRes.answers.size() > 0) {
             ROS_INFO_STREAM("Answer: \"" << qRes.answers[0] << '"');

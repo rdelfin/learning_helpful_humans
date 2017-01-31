@@ -1,3 +1,9 @@
+/**
+ * This node provides the GUI window used for asking the questions to the user. When a message is sent to
+ * the `ask_location` service, the window pops up witht the appropriate image and question. The response is
+ * sent back through the service.
+ */
+
 #include <ros/ros.h>
 #include <bwi_msgs/ImageQuestion.h>
 
