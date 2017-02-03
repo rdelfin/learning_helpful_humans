@@ -17,7 +17,7 @@ public:
 private:
     std::vector<boost::uuids::uuid> ids;
     std::default_random_engine gen;
-    std::uniform_int_distribution<size_t> rand;
+    std::uniform_int_distribution<size_t> indexRand;
 };
 
 

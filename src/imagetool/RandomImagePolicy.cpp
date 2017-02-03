@@ -7,6 +7,8 @@
 #include <boost/lexical_cast.hpp>
 #include "learning_helpful_humans/imagetool/RandomImagePolicy.h"
 
+#include <ros/ros.h>
+
 RandomImagePolicy::RandomImagePolicy()
     : gen() {
     GetFieldValue getAllImages("imagedata.json");
@@ -15,12 +17,12 @@ RandomImagePolicy::RandomImagePolicy()
     for(auto it = data.begin(); it != data.end(); ++it)
         ids.push_back(boost::lexical_cast<boost::uuids::uuid>(it.key()));
 
-    rand = std::uniform_int_distribution<size_t>(ids.size());
+    indexRand = std::uniform_int_distribution<size_t>(0, ids.size());
 }
 
 boost::uuids::uuid RandomImagePolicy::getNextImage() {
     // Picks a UUID at random and returns
-    return ids[rand(gen)];
+    return ids[indexRand(gen)];
 }
 
 RandomImagePolicy::~RandomImagePolicy() {
