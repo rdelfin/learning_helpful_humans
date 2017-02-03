@@ -38,6 +38,8 @@ std::string textbox;
 int g_argc;
 char** g_argv;
 
+void timeoutCallback(void*);
+
 void btnGoAwayCallback(Fl_Widget* widget, void*);
 void btnOkCallback(Fl_Widget* widget, void*);
 void textboxCallback(Fl_Widget* widget, void*);
@@ -49,9 +51,7 @@ bool askQuestion(bwi_msgs::ImageQuestionRequest&, bwi_msgs::ImageQuestionRespons
 void imgThread();
 void endQuestion(const std::string& answer);
 
-bool asking;
 bwi_msgs::ImageQuestionRequest g_req;
-ros::Time questionStart;
 
 int main(int argc, char* argv[]) {
     g_window = nullptr;
@@ -70,14 +70,6 @@ int main(int argc, char* argv[]) {
 
     ros::Rate r(10);
     while(ros::ok()) {
-        if(asking) {
-            ros::Duration timeDiff = ros::Time::now() - questionStart;
-
-            if(timeDiff.toSec() > g_req.timeout) {
-                endQuestion("");
-            }
-        }
-
         ros::spinOnce();
         r.sleep();
     }
@@ -86,7 +78,7 @@ int main(int argc, char* argv[]) {
 }
 
 bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionResponse& res) {
-    ROS_INFO("Question request made");
+    ROS_INFO("Question request made. Timeout: %d", req.timeout);
     g_req = req;
     img = cv_bridge::toCvCopy(req.image);
     showQuestion(req.question);
@@ -103,7 +95,15 @@ void endQuestion(const std::string& answer) {
     leaveBtn->deactivate();
     g_ansBox->deactivate();
 
+    if(Fl::has_timeout(timeoutCallback))
+        Fl::remove_timeout(timeoutCallback);
+
     g_window->hide();
+}
+
+void timeoutCallback(void*) {
+    ROS_INFO("Question timed out!");
+    endQuestion("");
 }
 
 void btnOkCallback(Fl_Widget* widget, void*) {
@@ -176,8 +176,7 @@ void showQuestion(const std::string& question) {
 
     g_window->end();
 
+    Fl::add_timeout(g_req.timeout, timeoutCallback);
     g_window->show(g_argc, g_argv);
-    questionStart = ros::Time::now();
-    asking = true;
     Fl::run();
 }
