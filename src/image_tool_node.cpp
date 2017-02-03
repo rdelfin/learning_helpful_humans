@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
     ros::init(argc, argv, "image_tool_node");
     ros::NodeHandle nh;
 
-    policy = new RandomImagePolicy();
+        policy = new RandomImagePolicy();
 
     ros::ServiceServer uploadImageServer = nh.advertiseService("image_tool/upload", uploadImageCb);
     ros::ServiceServer getNextImageServer = nh.advertiseService("image_tool/next", nextImageCb);
@@ -72,8 +72,18 @@ bool uploadImageCb(bwi_msgs::UploadImageRequest& req, bwi_msgs::UploadImageRespo
 
 bool nextImageCb(bwi_msgs::GetNextImageRequest& req, bwi_msgs::GetNextImageResponse& res) {
     boost::uuids::uuid image_id = policy->getNextImage();
+    ROS_DEBUG_STREAM("Image ID: " << boost::uuids::to_string(image_id));
     DatabaseImage dbImage(image_id);
     dbImage.fetch();
+
+    ImageMetadata metadata = dbImage.getMetadata();
+    ROS_DEBUG_STREAM("Image metadata:");
+    ROS_DEBUG_STREAM("\tPose: [x:" << metadata.pose.position.x << ", y:" << metadata.pose.position.y << ", z:" << metadata.pose.position.z << "]");
+    ROS_DEBUG_STREAM("\tAnswers:");
+    for(size_t i = 0; i < metadata.answers.size(); i++) {
+        ROS_DEBUG_STREAM("\t\t[" << i << "]: " << metadata.answers[i].answer);
+    }
+    ROS_DEBUG_STREAM("Image dimensions: [" << dbImage.getImageData().width << "x" << dbImage.getImageData().height << "]");
 
     sensor_msgs::Image sensorImg = dbImage.getImageData();
 
@@ -84,12 +94,12 @@ bool nextImageCb(bwi_msgs::GetNextImageRequest& req, bwi_msgs::GetNextImageRespo
     pcl::toPCLPointCloud2(pointCloud, pointCloud2);
     pcl_conversions::fromPCL(pointCloud2, pointCloudRos);
 
-
+    res.pose = dbImage.getMetadata().pose;
     res.base_name = boost::uuids::to_string(image_id);
     res.img = sensorImg;
     res.pc = pointCloudRos;
 
-    return false;
+    return true;
 }
 
 bool saveResponseCb(bwi_msgs::SaveImageResponseRequest& req, bwi_msgs::SaveImageResponseResponse& res) {

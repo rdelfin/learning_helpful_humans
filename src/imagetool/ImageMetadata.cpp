@@ -18,8 +18,8 @@ ImageMetadata::ImageMetadata(const json& jsonData, boost::uuids::uuid id) {
     // Load in the pose (fastest part)
     json poseJson = jsonData["pose"];
     pose.position.x = poseJson["x"];
-    pose.position.x = poseJson["y"];
-    pose.position.x = poseJson["z"];
+    pose.position.y = poseJson["y"];
+    pose.position.z = poseJson["z"];
     pose.orientation.x = poseJson["rx"];
     pose.orientation.y = poseJson["ry"];
     pose.orientation.z = poseJson["rz"];
