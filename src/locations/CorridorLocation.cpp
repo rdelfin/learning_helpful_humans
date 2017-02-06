@@ -77,6 +77,7 @@ bool CorridorLocation::goToCorridor(actionlib::SimpleActionClient<bwi_kr_executi
 
     // If goal is not done in the timeout limit, cancel goal and return failed
     if (timed_out) {
+        // TODO: Send stop command
         ROS_WARN_STREAM("Canceling goal to location: " << aspLocation);
         return false;
     }

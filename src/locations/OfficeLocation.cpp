@@ -69,10 +69,11 @@ bool OfficeLocation::goToCorridor(actionlib::SimpleActionClient<bwi_kr_execution
 
     client.sendGoal(goal);
 
-    client.waitForResult(ros::Duration(300, 0));
+    bool timed_out = client.waitForResult(ros::Duration(200, 0));
 
-    // If goal is not done in the timeout limit (5s), cancel goal and return failed
-    if (!client.getState().isDone()) {
+    // If goal is not done in the timeout limit, cancel goal and return failed
+    if (timed_out) {
+        // TODO: Send stop command
         ROS_WARN_STREAM("Canceling goal to face door: " << door);
         client.cancelGoal();
         client.waitForResult(ros::Duration(1, 0));
