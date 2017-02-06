@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
 }
 
 bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionResponse& res) {
-    ROS_INFO("Question request made. Timeout: %d", req.timeout);
+    ROS_INFO("Question request made. Timeout: %ld", req.timeout);
     g_req = req;
     img = cv_bridge::toCvCopy(req.image);
     showQuestion(req.question);
