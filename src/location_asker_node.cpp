@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
         qReq.image = nextImage.img;
         qReq.point_cloud = nextImage.pc;
         qReq.pose = nextImage.pose;
-        qReq.timeout = 120;
+        qReq.timeout = 300;
         qReq.question = question.question;
 
         // Send image message to `ask_location`
