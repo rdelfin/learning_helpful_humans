@@ -138,3 +138,6 @@ target_link_libraries(image_fetch_tester
         ${Boost_LIBRARIES}
         ${FLTK_LIBRARIES}
         curlpp)
+
+catkin_install_python(PROGRAMS scripts/stop_here
+                      DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
