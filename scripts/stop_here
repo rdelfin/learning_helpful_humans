@@ -1,0 +1,32 @@
+#! /usr/bin/env python
+import rospy
+from std_srvs import Trigger
+import actionlib
+from move_base_msgs import MoveBaseAction, MoveBaseGoal
+from tf import TransformListener
+from std_msgs import Header
+from geometry_msgs import Pose
+
+def stop_base(req):
+    rospy.loginfo("Stop service has been called")
+
+    if tflist.frameExists("/base_link") and tflist.frameExists("/map"):
+        t = tflist.getLatestCommonTime("/base_link", "/map")
+        position, quaternion = tflist.lookupTransform("/base_link", "/map", t)
+
+        goal = MoveBaseGoal(header = Header(0, t, 0), pose = Pose(position = position, orientation = quaternion))
+        movebaseClient.send_goal(goal)
+        movebaseClient.wait_for_result()
+        return Trigger(success = True, message = "")
+
+    return Trigger(success = False, message = "tf frame does not exist")
+
+if __name__ == "__main__":
+    rospy.init_node('stop_here')
+    global movebaseClient
+    global tflist
+    tflist = TransformListener()
+    movebaseClient = actionlib.SimpleActionClient('move_base', MoveBaseAction)
+    movebaseClient.wait_for_server()
+    s = rospy.Service('stop_base', Trigger, stop_base)
+    rospy.spin()
