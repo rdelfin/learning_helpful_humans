@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 import rospy
-from std_srvs import Trigger
+from bwi_msgs.srv import Trigger
 import actionlib
-from move_base_msgs import MoveBaseAction, MoveBaseGoal
+from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from tf import TransformListener
-from std_msgs import Header
-from geometry_msgs import Pose
+from std_msgs.msg import Header
+from geometry_msgs.msg import PoseStamped, Pose
 
 def stop_base(req):
     rospy.loginfo("Stop service has been called")
@@ -14,7 +14,8 @@ def stop_base(req):
         t = tflist.getLatestCommonTime("/base_link", "/map")
         position, quaternion = tflist.lookupTransform("/base_link", "/map", t)
 
-        goal = MoveBaseGoal(header = Header(0, t, 0), pose = Pose(position = position, orientation = quaternion))
+	currPose = Pose(position = Point(position[0], position[1], position[3]), orientation = Quaternion(quaternion[0], quaternion[1], quaternion[2], quaternion[3])
+        goal = MoveBaseGoal(target_pose = PoseStamped(pose = currPose))
         movebaseClient.send_goal(goal)
         movebaseClient.wait_for_result()
         return Trigger(success = True, message = "")
