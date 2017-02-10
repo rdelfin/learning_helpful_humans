@@ -43,8 +43,8 @@ int main(int argc, char* argv[]) {
     loadLocations();
 
     ros::ServiceServer server = nh.advertiseService("next_question_location", nextQuestionCallback);
-    planClient = new actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>("action_executor/execute_plan", true);
-    moveBaseClient = new actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>("move_base", true);
+    planClient = new actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>("/action_executor/execute_plan", true);
+    moveBaseClient = new actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>("/move_base", true);
     planClient->waitForServer();
     moveBaseClient->waitForServer();
 

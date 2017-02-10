@@ -69,7 +69,7 @@ bool OfficeLocation::goToCorridor(actionlib::SimpleActionClient<bwi_kr_execution
 
     client.sendGoal(goal);
 
-    bool timed_out = client.waitForResult(ros::Duration(200, 0));
+    bool timed_out = !client.waitForResult(ros::Duration(200, 0));
 
     // If goal is not done in the timeout limit, cancel goal and return failed
     if (timed_out) {
