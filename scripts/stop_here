@@ -1,33 +1,33 @@
 #! /usr/bin/env python
 import rospy
-from bwi_msgs.srv import Trigger
+from bwi_msgs.srv import Trigger, TriggerResponse
 import actionlib
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from tf import TransformListener
 from std_msgs.msg import Header
-from geometry_msgs.msg import PoseStamped, Pose
+from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 
 def stop_base(req):
     rospy.loginfo("Stop service has been called")
 
-    if tflist.frameExists("/base_link") and tflist.frameExists("/map"):
-        t = tflist.getLatestCommonTime("/base_link", "/map")
-        position, quaternion = tflist.lookupTransform("/base_link", "/map", t)
+    if tflist.frameExists("/base_link") and tflist.frameExists("/level_mux/map"):
+        t = tflist.getLatestCommonTime("/level_mux/map", "/base_link")
+        position, quaternion = tflist.lookupTransform("/level_mux/map", "/base_link", t)
 
-	currPose = Pose(position = Point(position[0], position[1], position[3]), orientation = Quaternion(quaternion[0], quaternion[1], quaternion[2], quaternion[3])
-        goal = MoveBaseGoal(target_pose = PoseStamped(pose = currPose))
+	currPose = Pose(position = Point(position[0], position[1], 0.0), orientation = Quaternion(quaternion[0], quaternion[1], quaternion[2], quaternion[3]))
+        goal = MoveBaseGoal(target_pose = PoseStamped(header=Header(frame_id="/level_mux/map"), pose = currPose))
         movebaseClient.send_goal(goal)
         movebaseClient.wait_for_result()
-        return Trigger(success = True, message = "")
+        return TriggerResponse(success = True, message = "")
 
-    return Trigger(success = False, message = "tf frame does not exist")
+    return TriggerResponse(success = False, message = "tf frame does not exist")
 
 if __name__ == "__main__":
     rospy.init_node('stop_here')
     global movebaseClient
     global tflist
     tflist = TransformListener()
-    movebaseClient = actionlib.SimpleActionClient('move_base', MoveBaseAction)
+    movebaseClient = actionlib.SimpleActionClient('/move_base', MoveBaseAction)
     movebaseClient.wait_for_server()
     s = rospy.Service('stop_base', Trigger, stop_base)
     rospy.spin()
