@@ -41,7 +41,8 @@ void LabLocation::load(json& val) {
 }
 
 bool LabLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client,
-                               actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&) {
+                               actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&,
+                               ros::ServiceClient& stopClient) {
     bwi_kr_execution::ExecutePlanGoal goal;
 
     bwi_kr_execution::AspRule rule;
@@ -59,10 +60,13 @@ bool LabLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::E
 
     // If goal is not done in the timeout limit, cancel goal and return failed
     if (timed_out) {
-        // TODO: Send stop command
+        bwi_msgs::TriggerRequest req;
+        bwi_msgs::TriggerResponse res;
+
         ROS_WARN_STREAM("Canceling goal to location: " << aspLocation);
         client.cancelGoal();
         client.waitForResult(ros::Duration(1, 0));
+        stopClient.call(req, res);
         return false;
     }
     if (client.getState() == actionlib::SimpleClientGoalState::ABORTED) {

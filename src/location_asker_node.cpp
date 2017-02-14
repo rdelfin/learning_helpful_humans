@@ -20,6 +20,7 @@
 #include <learning_helpful_humans/Question.h>
 #include <bwi_msgs/GetNextImage.h>
 #include <bwi_msgs/SaveImageResponse.h>
+#include <bwi_msgs/Trigger.h>
 
 bwi_msgs::GetNextImageResponse getQuestionImg();
 

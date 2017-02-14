@@ -16,7 +16,8 @@ public:
     virtual void load(XmlRpc::XmlRpcValue&);
     virtual void load(nlohmann::json&);
     virtual bool goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&,
-                              actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&);
+                              actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&,
+                              ros::ServiceClient&);
 private:
     std::string door;
 };

@@ -30,7 +30,8 @@ public:
     virtual void load(XmlRpc::XmlRpcValue&) = 0;
     virtual void load(nlohmann::json&) = 0;
     virtual bool goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&,
-                              actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&) = 0;
+                              actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&,
+                              ros::ServiceClient&) = 0;
 
     const std::string& getName();
     const std::string& getAspLocation();

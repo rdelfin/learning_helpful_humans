@@ -22,12 +22,14 @@
 #include <json/json.hpp>
 #include <bwi_msgs/ImageQuestion.h>
 #include <bwi_msgs/NextLocation.h>
+#include <bwi_msgs/Trigger.h>
 
 using json = nlohmann::json;
 
 std::vector<AskLocation*> locations;
 actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>* planClient;
 actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>* moveBaseClient;
+ros::ServiceClient stopClient;
 
 
 int locIdx = 0;
@@ -45,8 +47,11 @@ int main(int argc, char* argv[]) {
     ros::ServiceServer server = nh.advertiseService("next_question_location", nextQuestionCallback);
     planClient = new actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>("/action_executor/execute_plan", true);
     moveBaseClient = new actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>("/move_base", true);
+    stopClient = nh.serviceClient<bwi_msgs::Trigger>("stop_base");
+
     planClient->waitForServer();
     moveBaseClient->waitForServer();
+    stopClient.waitForExistence();
 
     ros::Rate r(10);
     while(ros::ok()) {
@@ -113,7 +118,7 @@ bool nextQuestionCallback(bwi_msgs::NextLocationRequest& req, bwi_msgs::NextLoca
               << ") of type " << locations[locIdx]->getTypeString());
 
     res.locationName = locations[locIdx]->getName();
-    res.success = locations[locIdx]->goToLocation(*planClient, *moveBaseClient);
+    res.success = locations[locIdx]->goToLocation(*planClient, *moveBaseClient, stopClient);
 
     locIdx++;
     if(locIdx >= locations.size())
