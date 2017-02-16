@@ -15,6 +15,8 @@
 #include <tf/transform_datatypes.h>
 #include <json/json.hpp>
 
+#include <bwi_msgs/Trigger.h>
+
 using json = nlohmann::json;
 
 CorridorLocation::CorridorLocation(std::string name, std::string aspLocation)

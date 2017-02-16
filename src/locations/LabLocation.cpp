@@ -8,6 +8,8 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include <json/json.hpp>
 
+#include <bwi_msgs/Trigger.h>
+
 using json = nlohmann::json;
 
 LabLocation::LabLocation(std::string name, std::string aspLocation, std::string aspDoor)

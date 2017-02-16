@@ -7,6 +7,7 @@
 #include <string>
 #include <bwi_kr_execution/CurrentStateQuery.h>
 #include <move_base_msgs/MoveBaseAction.h>
+#include <bwi_msgs/Trigger.h>
 
 #include <ros/ros.h>
 #include <json/json.hpp>
