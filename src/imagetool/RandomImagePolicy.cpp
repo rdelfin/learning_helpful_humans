@@ -9,8 +9,10 @@
 
 #include <ros/ros.h>
 
+#include <chrono>
+
 RandomImagePolicy::RandomImagePolicy()
-    : gen() {
+    : gen((unsigned long) std::chrono::system_clock::now().time_since_epoch().count()) {
     GetFieldValue getAllImages("imagedata.json");
     json data = getAllImages.performAsJson();
 
