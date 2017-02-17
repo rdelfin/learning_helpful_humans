@@ -6,7 +6,6 @@
 
 #include <string>
 #include <move_base_msgs/MoveBaseAction.h>
-#include <bwi_msgs/Trigger.h>
 #include <json/json.hpp>
 
 #include <bwi_msgs/Trigger.h>
