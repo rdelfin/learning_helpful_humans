@@ -97,6 +97,8 @@ bool DatabaseImage::fetch() {
     //--------------------------------
     //</end_atrocity_of_software_engineering>
     //--------------------------------
+
+    return true;
 }
 
 
