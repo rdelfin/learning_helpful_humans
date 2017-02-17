@@ -12,158 +12,91 @@
 #include <thread>
 #include <mutex>
 
-#include <FL/Fl.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Button.H>
-#include <FL/Fl_Box.H>
-#include <FL/Fl_Input.H>
-
-#include <learning_helpful_humans/Fl_ViewerCV.h>
-
 #include <learning_helpful_humans/request/GetFieldValue.h>
+#include <bwi_msgs/QuestionDialog.h>
+#include <ros/callback_queue.h>
+
+#define WINDOW "IMG_WINDOW"
 
 ros::ServiceServer server;
+ros::ServiceClient questionClient;
 
 cv_bridge::CvImagePtr img = nullptr;
-std::mutex m;
 
-Fl_Window* g_window;
-Fl_Input* g_ansBox;
-Fl_Button *okBtn, *leaveBtn;
-Fl_Box *questionBox;
-Fl_ViewerCV* viewer;
-
-std::string textbox;
-
-int g_argc;
-char** g_argv;
-
-void timeoutCallback(void*);
-
-void btnGoAwayCallback(Fl_Widget* widget, void*);
-void btnOkCallback(Fl_Widget* widget, void*);
-void textboxCallback(Fl_Widget* widget, void*);
-void windowCallback(Fl_Widget* widget, void*);
-void showQuestion(const std::string&);
-
+std::mutex imgMutex;
 
 bool askQuestion(bwi_msgs::ImageQuestionRequest&, bwi_msgs::ImageQuestionResponse&);
-void imgThread();
-void endQuestion(const std::string& answer);
 
-bwi_msgs::ImageQuestionRequest g_req;
+void imageUpdate(const ros::TimerEvent&);
+std::string showQuestion(const std::string& question);
 
 int main(int argc, char* argv[]) {
-    g_window = nullptr;
-    g_ansBox = nullptr;
-    okBtn = nullptr;
-    leaveBtn = nullptr;
-    questionBox = nullptr;
-    viewer = nullptr;
-
-    g_argc = argc;
-    g_argv = argv;
     ros::init(argc, argv, "image_asker_node");
+
+    ros::CallbackQueue cbqueue;
     ros::NodeHandle nh;
+    nh.setCallbackQueue(&cbqueue);
+
+    cv::namedWindow(WINDOW, CV_WINDOW_AUTOSIZE);
+    questionClient = nh.serviceClient<bwi_msgs::QuestionDialog>("/question_dialog");
+    questionClient.waitForExistence();
 
     server = nh.advertiseService("ask_location", askQuestion);
+    ros::Timer imageTimer = nh.createTimer(ros::Duration(0.1), imageUpdate);
 
     ros::MultiThreadedSpinner spinner(4);
-    spinner.spin();
+    spinner.spin(&cbqueue);
+
+    cv::destroyWindow(WINDOW);
 
     return 0;
 }
 
 bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionResponse& res) {
     ROS_INFO("Question request made. Timeout: %ld", req.timeout);
-    g_req = req;
     img = cv_bridge::toCvCopy(req.image);
-    showQuestion(req.question);
+    std::string answer = showQuestion(req.question);
 
-    if(textbox != "")
-        res.answers.push_back(textbox);
+    if(answer != "")
+        res.answers.push_back(answer);
 
     return true;
 }
 
-void endQuestion(const std::string& answer) {
-    textbox = answer;
-    okBtn->deactivate();
-    leaveBtn->deactivate();
-    g_ansBox->deactivate();
-
-    if(Fl::has_timeout(timeoutCallback))
-        Fl::remove_timeout(timeoutCallback);
-
-    g_window->hide();
+void imageUpdate(const ros::TimerEvent& timer) {
+    if(img != nullptr) {
+        ROS_INFO("IMAGE UPDATE");
+        cv::imshow(WINDOW, img->image);
+        cv::waitKey(3);
+    }
 }
 
-void timeoutCallback(void*) {
-    ROS_INFO("Question timed out!");
-    endQuestion("");
-}
+std::string showQuestion(const std::string& question) {
+    std::string answer;
+    bwi_msgs::QuestionDialogRequest questionReq;
+    bwi_msgs::QuestionDialogResponse questionRes;
 
-void btnOkCallback(Fl_Widget* widget, void*) {
-    std::cout << "Ok pressed" << std::endl;
-    endQuestion(std::string(g_ansBox->value()));
-}
+    questionReq.message = "Could you help me answer a quick question?";
+    questionReq.timeout = 100.0;
+    questionReq.type = bwi_msgs::QuestionDialogRequest::CHOICE_QUESTION;
+    questionReq.options = {"Yes, what question?", "No, please leave"};
+    questionClient.call(questionReq, questionRes);
 
-void btnGoAwayCallback(Fl_Widget* widget, void*) {
-    std::cout << "Go away pressed" << std::endl;
-    endQuestion("");
-}
+    if(questionRes.index < 0 || questionRes.index == 1)
+        return "";
 
+    questionRes.index = 0;
+    questionRes.text = "";
+    questionReq.message = question;
+    questionReq.timeout = 60.0;
+    questionReq.type = bwi_msgs::QuestionDialogRequest::TEXT_QUESTION;
+    questionClient.call(questionReq, questionRes);
+    answer = questionRes.index < 0 ? "" : questionRes.text;
 
-void textboxCallback(Fl_Widget* widget, void*) {
-    std::cout << "Enter pressed" << std::endl;
-    endQuestion(std::string(g_ansBox->value()));
-}
+    questionReq.message = "Thank you!";
+    questionReq.type = bwi_msgs::QuestionDialogRequest::DISPLAY;
+    questionReq.timeout = 0.1;                                  // (almost) immediate timeout
+    questionClient.call(questionReq, questionRes);
 
-void windowCallback(Fl_Widget* widget, void*) {
-    std::cout << "Close pressed" << std::endl;
-    endQuestion("");
-}
-
-void showQuestion(const std::string& question) {
-    // Clear out textbox
-    textbox = "";
-
-    if(g_window != nullptr)
-        delete g_window;
-
-    g_window = new Fl_Window(700,700);
-    g_window->callback(windowCallback);
-
-    // Question Label
-    questionBox = new Fl_Box(20, 525, 660, 20);
-    questionBox->label(question.c_str());
-    questionBox->labelsize(20);
-
-    // Input Text Box
-    g_ansBox = new Fl_Input(50, 560, 600, 30);
-    g_ansBox->textsize(20);
-    g_ansBox->when(FL_WHEN_ENTER_KEY);
-    g_ansBox->callback(textboxCallback);
-
-    // Image
-    viewer = new Fl_ViewerCV(50, 10, 500, 500);
-    viewer->SetImage(&img->image);
-
-    // Ok Button
-    okBtn = new Fl_Button(20, 620, 100, 50, "Ok");
-    okBtn->labelsize(20);
-    okBtn->when(FL_WHEN_RELEASE);
-    okBtn->callback(btnOkCallback);
-
-    // Leave Button
-    leaveBtn = new Fl_Button(150, 620, 150, 50, "Please Leave");
-    leaveBtn->labelsize(20);
-    leaveBtn->when(FL_WHEN_RELEASE);
-    leaveBtn->callback(btnGoAwayCallback);
-
-    g_window->end();
-
-    Fl::add_timeout(g_req.timeout, timeoutCallback);
-    g_window->show(g_argc, g_argv);
-    Fl::run();
+    return answer;
 }
