@@ -23,6 +23,7 @@ int main(int argc, char* argv[]) {
     header.stamp = header.stamp.now();
     cv_bridge::CvImage bridgeImg(header, sensor_msgs::image_encodings::RGB8, image);
     req.image = *bridgeImg.toImageMsg();
+    req.question = "Test question";
     
     client.call(req, res);
     ROS_INFO("Client called");

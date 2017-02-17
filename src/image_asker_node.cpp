@@ -14,6 +14,7 @@
 
 #include <learning_helpful_humans/request/GetFieldValue.h>
 #include <bwi_msgs/QuestionDialog.h>
+#include <ros/callback_queue.h>
 
 #define WINDOW "IMG_WINDOW"
 
@@ -31,17 +32,20 @@ std::string showQuestion(const std::string& question);
 
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "image_asker_node");
+
+    ros::CallbackQueue cbqueue;
     ros::NodeHandle nh;
+    nh.setCallbackQueue(&cbqueue);
 
     cv::namedWindow(WINDOW, CV_WINDOW_AUTOSIZE);
     questionClient = nh.serviceClient<bwi_msgs::QuestionDialog>("/question_dialog");
     questionClient.waitForExistence();
 
     server = nh.advertiseService("ask_location", askQuestion);
-    nh.createTimer(ros::Duration(0.1), imageUpdate);
+    ros::Timer imageTimer = nh.createTimer(ros::Duration(0.1), imageUpdate);
 
     ros::MultiThreadedSpinner spinner(4);
-    spinner.spin();
+    spinner.spin(&cbqueue);
 
     cv::destroyWindow(WINDOW);
 
@@ -60,9 +64,10 @@ bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionRes
 }
 
 void imageUpdate(const ros::TimerEvent& timer) {
-    ROS_INFO("IMAGE UPDATE");
     if(img != nullptr) {
+        ROS_INFO("IMAGE UPDATE");
         cv::imshow(WINDOW, img->image);
+        cv::waitKey(3);
     }
 }
 
