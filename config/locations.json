@@ -1,0 +1,98 @@
+{
+  "locations": [
+    {
+      "name": "MAD office",
+      "type": "office",
+      "door": "d3_314",
+      "location": "l3_314",
+      "corridor": "l3_300"
+    },
+
+
+    {
+      "name": "Undergrad Lab Couches",
+      "type": "corridor",
+      "location": "l3_300",
+      "pose": {
+        "x": 14.533,
+        "y": -11.723,
+        "theta": 1.745
+      }
+    },
+
+    {
+      "name": "Undergrad Lab Entrance",
+      "type": "corridor",
+      "location": "l3_300",
+      "pose": {
+        "x": 4.334,
+        "y": -3.101,
+        "theta": 3.011
+      }
+    },
+
+    {
+      "name": "Main Lab",
+      "type": "lab",
+      "door": "d3_414b1",
+      "location": "l3_414b"
+    },
+
+    {
+      "name": "Corridor 500",
+      "type": "corridor",
+      "location": "l3_500",
+      "pose": {
+        "x": -31.335,
+        "y": -4.153,
+        "theta": 1.780
+      }
+    },
+
+    {
+      "name": "Corridor 400",
+      "type": "corridor",
+      "location": "l3_400",
+      "pose": {
+        "x": -36.993,
+        "y": -11.574,
+        "theta": 1.745
+      }
+    },
+
+    {
+      "name": "Grad Student Area 410",
+      "type": "corridor",
+      "location": "l3_410",
+      "pose": {
+        "x": -13.455,
+        "y": -7.998,
+        "theta": 2.852
+      }
+    },
+
+    {
+      "name": "Jivko's Office",
+      "type": "office",
+      "door": "d3_432",
+      "location": "l3_432",
+      "corridor": "l3_400"
+    },
+
+    {
+      "name": "Peter's Office",
+      "type": "office",
+      "door": "d3_508",
+      "location": "l3_508",
+      "corridor": "l3_500"
+    },
+
+    {
+      "name": "Ray's Office",
+      "type": "office",
+      "door": "d3_512",
+      "location": "l3_512",
+      "corridor": "l3_500"
+    }
+  ]
+}

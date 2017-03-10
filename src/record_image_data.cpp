@@ -106,7 +106,7 @@ int main(int argc, char**argv) {
   ros::Rate r(rate_hz);
 
   double elapsed_time = 0;
-  double save_every_k = 10; //save every k seconds
+  double save_every_k = 30; //save every k seconds
  
   double secs_prev =ros::Time::now().toSec();
 
