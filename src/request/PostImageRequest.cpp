@@ -61,16 +61,23 @@ bool PostImageRequest::perform() {
         req.setOpt(new curlpp::options::Post(true));
         req.setOpt(new curlpp::options::HttpHeader(headers));
         req.setOpt(new curlpp::options::Url(url));
+        req.setOpt(new curlpp::options::NoSignal(true));
+        req.setOpt(new curlpp::options::Timeout(2));
 
         req.perform();
 
         return true;
 
     } catch(curlpp::RuntimeError & e) {
+        std::cerr << "Runtime error posting image request to id " << name << std::endl;
         std::cerr << e.what() << std::endl;
         return false;
     } catch(curlpp::LogicError & e) {
+        std::cerr << "Logic error posting image request to id " << name << std::endl;
         std::cerr << e.what() << std::endl;
+        return false;
+    } catch(...) {
+        std::cerr << "Unknown error posting image request to id " << name << std::endl;
         return false;
     }
 }

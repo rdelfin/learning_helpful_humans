@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
     ros::init(argc, argv, "image_tool_node");
     ros::NodeHandle nh;
 
-        policy = new RandomImagePolicy();
+    policy = new RandomImagePolicy();
 
     ros::ServiceServer uploadImageServer = nh.advertiseService("image_tool/upload", uploadImageCb);
     ros::ServiceServer getNextImageServer = nh.advertiseService("image_tool/next", nextImageCb);

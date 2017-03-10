@@ -57,6 +57,8 @@ bool PostFieldValue::perform() {
         req.setOpt(new curlpp::options::ReadStream(&dataStream));
         req.setOpt(new curlpp::options::InfileSize(value.length()));
         req.setOpt(new curlpp::options::WriteStream(&result));
+        req.setOpt(new curlpp::options::NoSignal(true));
+        req.setOpt(new curlpp::options::Timeout(2));
 
         req.perform();
 

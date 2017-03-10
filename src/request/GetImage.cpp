@@ -39,6 +39,8 @@ std::vector<uint8_t> GetImage::performRaw() {
 
         req.setOpt(new curlpp::options::WriteStream(&resultStream));
         req.setOpt(new curlpp::options::Url(url));
+        req.setOpt(new curlpp::options::NoSignal(true));
+        req.setOpt(new curlpp::options::Timeout(2));
 
         req.perform();
 
