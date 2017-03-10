@@ -1,6 +1,10 @@
-//
-// Created by rdelfin on 10/18/16.
-//
+/**
+  * Created by rdelfin on 10/18/16.
+  *
+  * This drives the entire asking mechanism. Contains the overall logic: grab a location, go to it,
+  * trigger the question asking, and save it onto the database. Uses all other nodes for all this
+  * task, so it does very little work by itself.
+  */
 
 #include <ros/ros.h>
 
@@ -12,8 +16,16 @@
 #include <cv_bridge/cv_bridge.h>
 
 #include <sensor_msgs/image_encodings.h>
+#include <learning_helpful_humans/imagetool/DatabaseImage.h>
+#include <learning_helpful_humans/Question.h>
+#include <bwi_msgs/GetNextImage.h>
+#include <bwi_msgs/SaveImageResponse.h>
+#include <bwi_msgs/Trigger.h>
 
-sensor_msgs::Image getQuestionImg();
+bwi_msgs::GetNextImageResponse getQuestionImg();
+
+ros::ServiceClient nextImageClient;
+ros::ServiceClient saveResponseClient;
 
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "location_asker_node");
@@ -22,8 +34,16 @@ int main(int argc, char* argv[]) {
 
     ros::ServiceClient askerClient = nh.serviceClient<bwi_msgs::ImageQuestion>("ask_location");
     ros::ServiceClient locationClient = nh.serviceClient<bwi_msgs::NextLocation>("next_question_location");
+    nextImageClient = nh.serviceClient<bwi_msgs::GetNextImage>("image_tool/next");
+    saveResponseClient = nh.serviceClient<bwi_msgs::SaveImageResponse>("image_tool/save_response");
 
     ros::Publisher pub = nh.advertise<sound_play::SoundRequest>("robotsound", 10);
+
+    // Ensure the node does not start until all other node dependencies are up.
+    askerClient.waitForExistence();
+    locationClient.waitForExistence();
+    nextImageClient.waitForExistence();
+    saveResponseClient.waitForExistence();
 
     ros::Rate r(10);
 
@@ -50,25 +70,44 @@ int main(int argc, char* argv[]) {
 
         pub.publish(helpSound);
 
-        qReq.image = getQuestionImg();
+        // Fetch a question
+        Question question(true);
+
+        // Generate image message
+        bwi_msgs::GetNextImageResponse nextImage = getQuestionImg();
+        qReq.image = nextImage.img;
+        qReq.point_cloud = nextImage.pc;
+        qReq.pose = nextImage.pose;
+        qReq.timeout = 100;
+        qReq.question = question.question;
+
+        // Send image message to `ask_location`
         askerClient.call(qReq, qRes);
 
-        pub.publish(thanksSound);
+        // Say `thank you!` after getting an answer, only if someone actually answered.
+        if(qRes.answers.size() != 0)
+            pub.publish(thanksSound);
 
-        if(qRes.answers.size() > 0)
-          ROS_INFO_STREAM("Answer: \"" << qRes.answers[0] << '"');
+        if(qRes.answers.size() > 0) {
+            ROS_INFO_STREAM("Answer: \"" << qRes.answers[0] << '"');
+
+            bwi_msgs::SaveImageResponseResponse saveRes;
+            bwi_msgs::SaveImageResponseRequest saveReq;
+
+            saveReq.base_name = nextImage.base_name;
+            saveReq.location = locRes.locationName;
+            saveReq.question_id = question.id;
+        }
         else
           ROS_INFO("No answer provided!");
     }
 }
 
-sensor_msgs::Image getQuestionImg() {
-    // We'll be returning a fixed image bc why not
-    cv::Mat image = cv::imread("/home/users/rdelfin/Downloads/img_1474998260668572241.png", CV_LOAD_IMAGE_COLOR);
-    //cv::Mat image = cv::imread("/home/users/rdelfin/Downloads/12637-hallway-corridor-transition-doors.1200w.tn.jpg", CV_LOAD_IMAGE_COLOR);
+bwi_msgs::GetNextImageResponse getQuestionImg() {
+    bwi_msgs::GetNextImageRequest req;
+    bwi_msgs::GetNextImageResponse res;
 
-    std_msgs::Header header;
-    header.stamp = header.stamp.now();
-    cv_bridge::CvImage bridgeImg(header, sensor_msgs::image_encodings::RGB8, image);
-    return *bridgeImg.toImageMsg();
+    nextImageClient.call(req, res);
+
+    return res;
 }

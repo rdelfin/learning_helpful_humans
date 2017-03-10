@@ -16,18 +16,22 @@ public:
     virtual void load(XmlRpc::XmlRpcValue&);
     virtual void load(nlohmann::json&);
     virtual bool goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&,
-                              actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&);
+                              actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&,
+                              ros::ServiceClient&);
 private:
     std::string door;
     std::string corridor;
 
-    bool faceDoor(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client);
+    bool faceDoor(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client,
+                  ros::ServiceClient&);
     // Necessary because asp goToDoor action fails when it has to cross another door to get to said door
-    bool goToCorridor(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client);
+    bool goToCorridor(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client,
+                      ros::ServiceClient&);
 
     bool isDoorOpen(ros::ServiceClient& client);
 
-    bool enterRoom(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client);
+    bool enterRoom(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client,
+                   ros::ServiceClient&);
 };
 
 #endif //PROJECT_OFFICELOCATION_HPP

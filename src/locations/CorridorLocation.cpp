@@ -14,6 +14,7 @@
 #include <geometry_msgs/Pose.h>
 #include <tf/transform_datatypes.h>
 #include <json/json.hpp>
+#include <bwi_msgs/Trigger.h>
 
 using json = nlohmann::json;
 
@@ -56,11 +57,13 @@ void CorridorLocation::load(json& val) {
 }
 
 bool CorridorLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& planClient,
-                                    actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>& poseClient) {
-    return goToCorridor(planClient) && goToPose(poseClient);
+                                    actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>& poseClient,
+                                    ros::ServiceClient& stopClient) {
+    return goToCorridor(planClient, stopClient) && goToPose(poseClient, stopClient);
 }
 
-bool CorridorLocation::goToCorridor(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client) {
+bool CorridorLocation::goToCorridor(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client,
+                                    ros::ServiceClient& stopClient) {
     bwi_kr_execution::ExecutePlanGoal goal;
 
     bwi_kr_execution::AspRule rule;
@@ -73,13 +76,17 @@ bool CorridorLocation::goToCorridor(actionlib::SimpleActionClient<bwi_kr_executi
     ROS_INFO_STREAM("Going to " << aspLocation);
     client.sendGoal(goal);
 
-    client.waitForResult(ros::Duration(300, 0));
+    bool timed_out = !client.waitForResult(ros::Duration(200, 0));
 
-    // If goal is not done in the timeout limit (5s), cancel goal and return failed
-    if (!client.getState().isDone()) {
+    // If goal is not done in the timeout limit, cancel goal and return failed
+    if (timed_out) {
+        bwi_msgs::TriggerRequest req;
+        bwi_msgs::TriggerResponse res;
+
         ROS_WARN_STREAM("Canceling goal to location: " << aspLocation);
         client.cancelGoal();
         client.waitForResult(ros::Duration(1, 0));
+        stopClient.call(req, res);
         return false;
     }
     if (client.getState() == actionlib::SimpleClientGoalState::ABORTED) {
@@ -101,7 +108,8 @@ bool CorridorLocation::goToCorridor(actionlib::SimpleActionClient<bwi_kr_executi
     }
 }
 
-bool CorridorLocation::goToPose(actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>& client) {
+bool CorridorLocation::goToPose(actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>& client,
+                                ros::ServiceClient& stopClient) {
     ROS_INFO_STREAM("Going to pose (" << pose.position.x << ", " << pose.position.y << ", "
               << tf::Quaternion(pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w).getAngle() << ")");
 
@@ -117,9 +125,13 @@ bool CorridorLocation::goToPose(actionlib::SimpleActionClient<move_base_msgs::Mo
 
     // If goal is not done in the timeout limit (5s), cancel goal and return failed
     if (!client.getState().isDone()) {
+        bwi_msgs::TriggerRequest req;
+        bwi_msgs::TriggerResponse res;
+
         ROS_WARN_STREAM("Canceling goal to pose");
         client.cancelGoal();
         client.waitForResult(ros::Duration(1, 0));
+        stopClient.call(req, res);
         return false;
     }
     if (client.getState() == actionlib::SimpleClientGoalState::ABORTED) {

@@ -7,6 +7,7 @@
 #include <string>
 #include <bwi_kr_execution/CurrentStateQuery.h>
 #include <move_base_msgs/MoveBaseAction.h>
+#include <bwi_msgs/Trigger.h>
 
 #include <ros/ros.h>
 #include <json/json.hpp>
@@ -48,13 +49,14 @@ void OfficeLocation::load(json& val) {
 }
 
 bool OfficeLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client,
-                                  actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&) {
-    bool success = goToCorridor(client) && faceDoor(client) && enterRoom(client) && faceDoor(client);
+                                  actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&,
+                                  ros::ServiceClient& stopClient) {
+    bool success = goToCorridor(client, stopClient) && faceDoor(client, stopClient) && enterRoom(client, stopClient) && faceDoor(client, stopClient);
 
     return success;
 }
 
-bool OfficeLocation::goToCorridor(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client) {
+bool OfficeLocation::goToCorridor(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client, ros::ServiceClient& stopClient) {
     // Go to corridor
     bwi_kr_execution::ExecutePlanGoal goal;
 
@@ -69,13 +71,17 @@ bool OfficeLocation::goToCorridor(actionlib::SimpleActionClient<bwi_kr_execution
 
     client.sendGoal(goal);
 
-    client.waitForResult(ros::Duration(300, 0));
+    bool timed_out = !client.waitForResult(ros::Duration(200, 0));
 
-    // If goal is not done in the timeout limit (5s), cancel goal and return failed
-    if (!client.getState().isDone()) {
+    // If goal is not done in the timeout limit, cancel goal and return failed
+    if (timed_out) {
+        bwi_msgs::TriggerRequest req;
+        bwi_msgs::TriggerResponse res;
+
         ROS_WARN_STREAM("Canceling goal to face door: " << door);
         client.cancelGoal();
         client.waitForResult(ros::Duration(1, 0));
+        stopClient.call(req, res);
         return false;
     }
     if (client.getState() == actionlib::SimpleClientGoalState::ABORTED) {
@@ -97,7 +103,7 @@ bool OfficeLocation::goToCorridor(actionlib::SimpleActionClient<bwi_kr_execution
     }
 }
 
-bool OfficeLocation::faceDoor(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client) {
+bool OfficeLocation::faceDoor(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client, ros::ServiceClient& stopClient) {
     // Go to door
     bwi_kr_execution::ExecutePlanGoal goal;
 
@@ -116,9 +122,13 @@ bool OfficeLocation::faceDoor(actionlib::SimpleActionClient<bwi_kr_execution::Ex
 
     // If goal is not done in the timeout limit (5s), cancel goal and return failed
     if (!client.getState().isDone()) {
+        bwi_msgs::TriggerRequest req;
+        bwi_msgs::TriggerResponse res;
+
         ROS_WARN_STREAM("Canceling goal to face door: " << door);
         client.cancelGoal();
         client.waitForResult(ros::Duration(1, 0));
+        stopClient.call(req, res);
         return false;
     }
     if (client.getState() == actionlib::SimpleClientGoalState::ABORTED) {
@@ -159,7 +169,7 @@ bool OfficeLocation::isDoorOpen(ros::ServiceClient& client) {
     return csq.response.answer.satisfied;
 }
 
-bool OfficeLocation::enterRoom(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client) {
+bool OfficeLocation::enterRoom(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client, ros::ServiceClient& stopClient) {
     // Goal to enter room
     bwi_kr_execution::ExecutePlanGoal goal;
 
@@ -178,9 +188,13 @@ bool OfficeLocation::enterRoom(actionlib::SimpleActionClient<bwi_kr_execution::E
 
     // If goal is not done in the timeout limit (5s), cancel goal and return failed
     if (!client.getState().isDone()) {
+        bwi_msgs::TriggerRequest req;
+        bwi_msgs::TriggerResponse res;
+
         ROS_WARN_STREAM("Canceling goal to location: " << aspLocation);
         client.cancelGoal();
         client.waitForResult(ros::Duration(1, 0));
+        stopClient.call(req, res);
         return false;
     }
     if (client.getState() == actionlib::SimpleClientGoalState::ABORTED) {
