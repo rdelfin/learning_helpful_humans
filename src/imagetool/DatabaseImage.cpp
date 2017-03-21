@@ -43,6 +43,10 @@ DatabaseImage::DatabaseImage(const sensor_msgs::Image& imageData, ImageMetadata 
     }
 }
 
+const boost::uuids::uuid& DatabaseImage::getIdentifier() {
+    return identifier;
+}
+
 
 const sensor_msgs::Image& DatabaseImage::getImageData() {
     return imageData;

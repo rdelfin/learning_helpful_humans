@@ -24,12 +24,16 @@
 #include <learning_helpful_humans/imagetool/RandomImagePolicy.h>
 #include <learning_helpful_humans/request/PostImageRequest.h>
 #include <learning_helpful_humans/request/GetFieldValue.h>
+#include <learning_helpful_humans/offline/ImageCache.h>
 
 #include <opencv2/opencv.hpp>
 
 #include <vector>
 #include <learning_helpful_humans/imagetool/DatabaseImage.h>
 #include <sensor_msgs/PointCloud.h>
+
+#define CACHED_IMAGES (10)
+
 
 bool uploadImageCb(bwi_msgs::UploadImageRequest& req, bwi_msgs::UploadImageResponse& res);
 bool nextImageCb(bwi_msgs::GetNextImageRequest& req, bwi_msgs::GetNextImageResponse& res);
@@ -38,18 +42,28 @@ bool saveResponseCb(bwi_msgs::SaveImageResponseRequest& req, bwi_msgs::SaveImage
 bool uploadImage(std::string base_name, sensor_msgs::Image& img);
 
 ImagePickerPolicy* policy;
+ImageCache* cache;
 
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "image_tool_node");
     ros::NodeHandle nh;
+    ros::AsyncSpinner spinner(8);
+    ros::Rate r(10);
 
     policy = new RandomImagePolicy();
+    cache = new ImageCache(policy, CACHED_IMAGES);
 
     ros::ServiceServer uploadImageServer = nh.advertiseService("image_tool/upload", uploadImageCb);
     ros::ServiceServer getNextImageServer = nh.advertiseService("image_tool/next", nextImageCb);
     ros::ServiceServer saveResponseServer = nh.advertiseService("image_tool/save_response", saveResponseCb);
 
-    ros::spin();
+    spinner.start();    
+    
+    while(ros::ok()) {
+        cache->update();
+        r.sleep();
+    }
+    
 
     delete policy;
     return 0;
@@ -62,19 +76,13 @@ bool uploadImageCb(bwi_msgs::UploadImageRequest& req, bwi_msgs::UploadImageRespo
     pcl::PointCloud<pcl::PointXYZRGB> pointCloud;
     pcl::fromROSMsg(req.pc, pointCloud);
 
-    DatabaseImage image(req.img, metadata, pointCloud, true);
-
-    res.success = (unsigned char)image.post();   // Upload image and point cloud
-
-    return true;
+    return cache->addNewImage(req.img, metadata, pointCloud);
 }
 
 
 bool nextImageCb(bwi_msgs::GetNextImageRequest& req, bwi_msgs::GetNextImageResponse& res) {
-    boost::uuids::uuid image_id = policy->getNextImage();
-    ROS_DEBUG_STREAM("Image ID: " << boost::uuids::to_string(image_id));
-    DatabaseImage dbImage(image_id);
-    dbImage.fetch();
+    DatabaseImage dbImage = cache->getNextImage();
+    ROS_DEBUG_STREAM("Image ID: " << boost::uuids::to_string(dbImage.getIdentifier()));
 
     ImageMetadata metadata = dbImage.getMetadata();
     ROS_DEBUG_STREAM("Image metadata:");
@@ -95,7 +103,7 @@ bool nextImageCb(bwi_msgs::GetNextImageRequest& req, bwi_msgs::GetNextImageRespo
     pcl_conversions::fromPCL(pointCloud2, pointCloudRos);
 
     res.pose = dbImage.getMetadata().pose;
-    res.base_name = boost::uuids::to_string(image_id);
+    res.base_name = boost::uuids::to_string(dbImage.getIdentifier());
     res.img = sensorImg;
     res.pc = pointCloudRos;
 
@@ -114,19 +122,8 @@ bool saveResponseCb(bwi_msgs::SaveImageResponseRequest& req, bwi_msgs::SaveImage
     answer.questionId = req.question_id;
     answer.timestamp = req.timestamp.sec;
     answer.next = -1;
-
-    DatabaseImage img(image_id);
-    success = img.fetch();
-
-    if(!success) {
-        res.success = (unsigned char)false;
-        return true;
-    }
-
-    img.addAnswer(answer);
-    img.post();
-
-    res.success = (unsigned char)success;
+    
+    res.success = cache->addAnswer(image_id, answer);
     return true;
 
 }

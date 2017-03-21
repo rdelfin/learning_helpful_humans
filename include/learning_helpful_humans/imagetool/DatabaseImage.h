@@ -41,6 +41,7 @@ public:
     const sensor_msgs::Image& getImageData();
     const ImageMetadata& getMetadata();
     const pcl::PointCloud<pcl::PointXYZRGB>& getPointCloud();
+    const boost::uuids::uuid& getIdentifier();
 
     void addAnswer(Answer a);
 
