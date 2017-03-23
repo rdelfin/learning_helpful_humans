@@ -174,7 +174,7 @@ bool OfficeLocation::enterRoom(actionlib::SimpleActionClient<bwi_kr_execution::E
 
     client.sendGoal(goal);
 
-    client.waitForResult(ros::Duration(300, 0));
+    client.waitForResult(ros::Duration(30, 0));
 
     // If goal is not done in the timeout limit (5s), cancel goal and return failed
     if (!client.getState().isDone()) {
