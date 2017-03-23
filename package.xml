@@ -27,5 +27,7 @@
   <depend>geometry_msgs</depend>
   <depend>fltk</depend>
   <depend>opengl</depend>
+  <depend>curl</depend>
+  <depend>curlpp-dev</depend>
 
 </package>

@@ -19,13 +19,14 @@ public:
     virtual void load(XmlRpc::XmlRpcValue&);
     virtual void load(nlohmann::json&);
     virtual bool goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&,
-                              actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&);
+                              actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&,
+                              ros::ServiceClient&);
 
 private:
     geometry_msgs::Pose pose;
 
-    bool goToCorridor(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&);
-    bool goToPose(actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&);
+    bool goToCorridor(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&, ros::ServiceClient&);
+    bool goToPose(actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&, ros::ServiceClient&);
 };
 
 
