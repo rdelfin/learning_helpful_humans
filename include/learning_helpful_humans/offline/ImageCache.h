@@ -43,6 +43,7 @@ public:
     ~ImageCache();
     
 private:
+    std::deque<bool> readCacheFetched;
     std::deque<DatabaseImage> readCache;
     std::deque<DatabaseImage> pendingWrites;
     

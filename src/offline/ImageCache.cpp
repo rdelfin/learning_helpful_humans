@@ -19,8 +19,12 @@
 
 #include <learning_helpful_humans/offline/ImageCache.h>
 
-ImageCache::ImageCache()
-{
+#include <ros/ros.h>
+
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
+ImageCache::ImageCache() {
     
 }
 
@@ -30,27 +34,53 @@ ImageCache::ImageCache(ImagePickerPolicy* policy, size_t cachedImages)
 }
 
 void ImageCache::updateCache() {
+    //ROS_INFO_STREAM("UPDATING CACHE");
     
+    cacheMutex.lock();
     while(readCache.size() < cachedImages) {
         DatabaseImage img = policy->getNextImage();
-        
-        cacheMutex.lock();
+        ROS_INFO_STREAM("Adding image with id {" <<  boost::uuids::to_string(img.getIdentifier()) << "}");
         readCache.push_back(img);
-        cacheMutex.unlock();
+        readCacheFetched.push_back(false);
     }
+    cacheMutex.unlock();
+    
+    cacheMutex.lock();
+    for(int i = 0; i < readCacheFetched.size(); i++) {
+        if(!readCacheFetched[i]) {
+            bool success = readCache[i].fetch();
+            readCacheFetched[i] = success;
+            
+            if(success)
+                ROS_INFO_STREAM("Successfully fetched image with ID {" << boost::uuids::to_string(readCache[i].getIdentifier()) <<"}");
+        }
+    }
+    cacheMutex.unlock();
 }
 
 const DatabaseImage& ImageCache::getNextImage() {
     cacheMutex.lock();
     
-    DatabaseImage img = readCache.front();
-    readCache.pop_front();
-    imageCache.push_back(img);
-    DatabaseImage& imgRef = imageCache.back();
+    // Find a fetched image
+    size_t i = 0;
+    for(i = 0; i < readCacheFetched.size() && !readCacheFetched[i]; i++);
     
-    cacheMutex.unlock();
     
-    return imgRef;
+    if(i < readCacheFetched.size()) {
+        DatabaseImage img = readCache[i];
+        readCache.erase(readCache.begin()+i);
+        readCacheFetched.erase(readCacheFetched.begin()+i);
+        imageCache.push_back(img);
+        DatabaseImage& imgRef = imageCache.back();
+        
+        cacheMutex.unlock();
+        return imgRef;
+    } else {
+        cacheMutex.unlock();
+        throw "No fetched image found";
+    }
+    
+    
 }
 
 bool ImageCache::addAnswer(boost::uuids::uuid imageId, Answer answer) {
@@ -101,12 +131,17 @@ bool ImageCache::addNewImage(const sensor_msgs::Image& imageData, ImageMetadata 
 }
 
 void ImageCache::update() {
+    updateCache();
+    
+    
+    // Write out as neccessary
     cacheMutex.lock();
-    
     bool status = true;
-    while(status && !pendingWrites.empty())
+    while(status && !pendingWrites.empty()) {
         status = pendingWrites.front().post();
-    
+        if(status)
+            pendingWrites.pop_front();
+    }
     cacheMutex.unlock();
 }
 

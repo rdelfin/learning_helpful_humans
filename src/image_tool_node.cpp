@@ -81,8 +81,9 @@ bool uploadImageCb(bwi_msgs::UploadImageRequest& req, bwi_msgs::UploadImageRespo
 
 
 bool nextImageCb(bwi_msgs::GetNextImageRequest& req, bwi_msgs::GetNextImageResponse& res) {
+    ROS_INFO_STREAM("Next image requested");
     DatabaseImage dbImage = cache->getNextImage();
-    ROS_DEBUG_STREAM("Image ID: " << boost::uuids::to_string(dbImage.getIdentifier()));
+    ROS_INFO_STREAM("Image ID: " << boost::uuids::to_string(dbImage.getIdentifier()));
 
     ImageMetadata metadata = dbImage.getMetadata();
     ROS_DEBUG_STREAM("Image metadata:");
