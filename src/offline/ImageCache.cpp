@@ -64,6 +64,7 @@ const DatabaseImage& ImageCache::getNextImage() {
     // Find a fetched image
     size_t i = 0;
     for(i = 0; i < readCacheFetched.size() && !readCacheFetched[i]; i++);
+    ROS_INFO_STREAM("Getting image at index " << i);
     
     
     if(i < readCacheFetched.size()) {
@@ -74,6 +75,9 @@ const DatabaseImage& ImageCache::getNextImage() {
         DatabaseImage& imgRef = imageCache.back();
         
         cacheMutex.unlock();
+        
+        ROS_INFO_STREAM("\tAssociated ID: {" << boost::uuids::to_string(imgRef.getIdentifier()) <<"}");
+        
         return imgRef;
     } else {
         cacheMutex.unlock();

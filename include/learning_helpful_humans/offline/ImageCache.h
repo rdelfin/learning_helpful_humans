@@ -55,6 +55,7 @@ private:
     void updateCache();
     
     std::mutex cacheMutex;
+    std::mutex logMutex;
     
     bool write_all;
 };
