@@ -30,8 +30,6 @@ int main(int argc, char* argv[]) {
         boost::uuids::uuid imageId = boost::lexical_cast<boost::uuids::uuid>(std::string(argv[1]));
         image = DatabaseImage(imageId);
         image.fetch();
-
-        
     } else {
         ros::ServiceClient client = nh.serviceClient<bwi_msgs::GetNextImage>("/image_tool/next");
         ROS_INFO("Created client");

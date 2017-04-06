@@ -12,6 +12,8 @@
 #include <json/json.hpp>
 #include <learning_helpful_humans/bytestream.h>
 
+#include <ros/ros.h>
+
 using json = nlohmann::json;
 
 PostFieldValue::PostFieldValue(std::string path, json value)
@@ -65,11 +67,16 @@ bool PostFieldValue::perform() {
         return json::parse(result.str());
 
     } catch(curlpp::RuntimeError & e) {
-        std::cerr << e.what() << std::endl;
+        ROS_ERROR_STREAM("Runtime error when posting field to path \"" << path << "\"");
+        ROS_ERROR(e.what());
         return json();
     } catch(curlpp::LogicError & e) {
-        std::cerr << e.what() << std::endl;
+        ROS_ERROR_STREAM("Logic error when posting field to path \"" << path << "\"");
+        ROS_ERROR(e.what());
         return json();
+    } catch(...) {
+        ROS_ERROR_STREAM("Unknown error posting field to path \"" << path << "\"");
+        return false;
     }
 }
 

@@ -10,6 +10,8 @@
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
 
+#include <ros/ros.h>
+
 GetImage::GetImage()
         : server("https://firebasestorage.googleapis.com"),
          imageRoot("v0/b/robotimages-dacc9.appspot.com/o"),
@@ -49,11 +51,17 @@ std::vector<uint8_t> GetImage::performRaw() {
         return std::vector<uint8_t>(resultString.begin(), resultString.end());
 
     } catch(curlpp::RuntimeError & e) {
-        std::cerr << e.what() << std::endl;
-        return json();
+        // Assume this is timeout.
+        ROS_ERROR_STREAM("Runtime error when getting an image with name \"" << boost::uuids::to_string(identifier) << "\"");
+        ROS_ERROR_STREAM(e.what());
+        return std::vector<uint8_t>();
     } catch(curlpp::LogicError & e) {
-        std::cerr << e.what() << std::endl;
-        return json();
+        ROS_ERROR_STREAM("Logic error when getting an image with name \"" << boost::uuids::to_string(identifier) << "\"");
+        ROS_ERROR_STREAM(e.what());
+        return std::vector<uint8_t>();
+    } catch(...) {
+        ROS_ERROR_STREAM("Unknown error getting image with name \"" << boost::uuids::to_string(identifier) << "\"");
+        return std::vector<uint8_t>();
     }
 }
 

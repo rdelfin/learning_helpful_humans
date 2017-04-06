@@ -11,6 +11,8 @@
 
 #include <json/json.hpp>
 
+#include <ros/ros.h>
+
 using json = nlohmann::json;
 
 
@@ -34,6 +36,7 @@ json GetFieldValue::performAsJson() {
         // POST field
         req.setOpt(new curlpp::options::WriteStream(&resultStream));
         req.setOpt(new curlpp::options::Url(url));
+        req.setOpt(new curlpp::options::NoSignal(true));
 
         req.perform();
 
@@ -42,10 +45,15 @@ json GetFieldValue::performAsJson() {
         return json::parse(result);
 
     } catch(curlpp::RuntimeError & e) {
-        std::cerr << e.what() << std::endl;
+        ROS_ERROR_STREAM("Runtime error when getting field at path \"" << path << "\"");
+        ROS_ERROR_STREAM(e.what());
         return json();
     } catch(curlpp::LogicError & e) {
-        std::cerr << e.what() << std::endl;
+        ROS_ERROR_STREAM("Logic error when getting field at path \"" << path << "\"");
+        ROS_ERROR_STREAM(e.what());
+        return json();
+    } catch(...) {
+        ROS_ERROR_STREAM("Unknown error getting field at path \"" << path << "\"");
         return json();
     }
 }
@@ -72,10 +80,15 @@ std::string GetFieldValue::performAsString() {
         return result.str();
 
     } catch(curlpp::RuntimeError & e) {
-        std::cerr << e.what() << std::endl;
+        ROS_ERROR_STREAM("Runtime error when getting field at path \"" << path << "\"");
+        ROS_ERROR_STREAM(e.what());
         return "";
     } catch(curlpp::LogicError & e) {
-        std::cerr << e.what() << std::endl;
+        ROS_ERROR_STREAM("Logic error when getting field at path \"" << path << "\"");
+        ROS_ERROR_STREAM(e.what());
+        return "";
+    } catch(...) {
+        ROS_ERROR_STREAM("Unknown error getting field at path \"" << path << "\"");
         return "";
     }
 }

@@ -11,6 +11,8 @@
 #include <json/json.hpp>
 #include <learning_helpful_humans/bytestream.h>
 
+#include <ros/ros.h>
+
 using json = nlohmann::json;
 
 AppendFieldValue::AppendFieldValue(std::string path, json value)
@@ -64,15 +66,19 @@ bool AppendFieldValue::perform() {
         req.perform();
 
         std::string resultString = result.str();
-        std::cout << "Result: " << resultString << std::endl;
         json resultJson = json::parse(resultString);
         return true;
 
     } catch(curlpp::RuntimeError & e) {
-        std::cerr << e.what() << std::endl;
+        ROS_ERROR_STREAM("Runtime error when appending field at path \"" << path << "\"");
+        ROS_ERROR(e.what());
         return json();
     } catch(curlpp::LogicError & e) {
-        std::cerr << e.what() << std::endl;
+        ROS_ERROR_STREAM("Runtime error when appending field at path \"" << path << "\"");
+        ROS_ERROR(e.what());
+        return json();
+    } catch(...) {
+        ROS_ERROR_STREAM("Unknown error appending field at path \"" << path << "\"");
         return json();
     }
 }

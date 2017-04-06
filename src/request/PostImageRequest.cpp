@@ -15,6 +15,8 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+#include <ros/ros.h>
+
 PostImageRequest::PostImageRequest(uint8_t* jpegData, size_t len, std::string name, std::string mime_type, bool generate)
     : name(name), data(jpegData), mime_type(mime_type), len(len),
       server("https://firebasestorage.googleapis.com"),
@@ -69,15 +71,15 @@ bool PostImageRequest::perform() {
         return true;
 
     } catch(curlpp::RuntimeError & e) {
-        std::cerr << "Runtime error posting image request to id " << name << std::endl;
-        std::cerr << e.what() << std::endl;
+        ROS_ERROR_STREAM("Runtime error posting image request to id " << name);
+        ROS_ERROR(e.what());
         return false;
     } catch(curlpp::LogicError & e) {
-        std::cerr << "Logic error posting image request to id " << name << std::endl;
-        std::cerr << e.what() << std::endl;
+        ROS_ERROR_STREAM("Logic error posting image request to id " << name);
+        ROS_ERROR(e.what());
         return false;
     } catch(...) {
-        std::cerr << "Unknown error posting image request to id " << name << std::endl;
+        ROS_ERROR_STREAM("Unknown error posting image request to id " << name);
         return false;
     }
 }

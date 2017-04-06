@@ -28,9 +28,13 @@
 
 #include <opencv2/opencv.hpp>
 
+#include <signal.h>
+
 #include <vector>
 #include <learning_helpful_humans/imagetool/DatabaseImage.h>
 #include <sensor_msgs/PointCloud.h>
+
+#include <curlpp/cURLpp.hpp>
 
 #define CACHED_IMAGES (10)
 
@@ -45,6 +49,9 @@ ImagePickerPolicy* policy;
 ImageCache* cache;
 
 int main(int argc, char* argv[]) {
+    // Setup cURL to accept multiple threads
+    signal(SIGPIPE, SIG_IGN);
+    
     ros::init(argc, argv, "image_tool_node");
     ros::NodeHandle nh;
     ros::AsyncSpinner spinner(8);
@@ -57,7 +64,7 @@ int main(int argc, char* argv[]) {
     ros::ServiceServer getNextImageServer = nh.advertiseService("image_tool/next", nextImageCb);
     ros::ServiceServer saveResponseServer = nh.advertiseService("image_tool/save_response", saveResponseCb);
 
-    spinner.start();    
+    spinner.start();
     
     while(ros::ok()) {
         cache->update();
