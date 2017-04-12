@@ -3,6 +3,7 @@
 //
 
 #include <learning_helpful_humans/request/GetFieldValue.h>
+#include <learning_helpful_humans/request/TimeoutException.h>
 #include <curlpp/cURLpp.hpp>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
@@ -80,9 +81,8 @@ std::string GetFieldValue::performAsString() {
         return result.str();
 
     } catch(curlpp::RuntimeError & e) {
-        ROS_ERROR_STREAM("Runtime error when getting field at path \"" << path << "\"");
-        ROS_ERROR_STREAM(e.what());
-        return "";
+        // Assume this is timeout
+        throw TimeoutException(2);
     } catch(curlpp::LogicError & e) {
         ROS_ERROR_STREAM("Logic error when getting field at path \"" << path << "\"");
         ROS_ERROR_STREAM(e.what());

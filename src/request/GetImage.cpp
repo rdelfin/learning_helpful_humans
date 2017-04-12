@@ -3,6 +3,7 @@
 //
 
 #include "learning_helpful_humans/request/GetImage.h"
+#include <learning_helpful_humans/request/TimeoutException.h>
 
 #include <boost/uuid/uuid_io.hpp>
 
@@ -52,9 +53,7 @@ std::vector<uint8_t> GetImage::performRaw() {
 
     } catch(curlpp::RuntimeError & e) {
         // Assume this is timeout.
-        ROS_ERROR_STREAM("Runtime error when getting an image with name \"" << boost::uuids::to_string(identifier) << "\"");
-        ROS_ERROR_STREAM(e.what());
-        return std::vector<uint8_t>();
+        throw TimeoutException(2);
     } catch(curlpp::LogicError & e) {
         ROS_ERROR_STREAM("Logic error when getting an image with name \"" << boost::uuids::to_string(identifier) << "\"");
         ROS_ERROR_STREAM(e.what());

@@ -90,6 +90,7 @@ target_link_libraries(location_selector_node ${catkin_LIBRARIES})
 
 add_executable(location_asker_node src/location_asker_node.cpp
                                    src/request/GetFieldValue.cpp
+                                   src/request/TimeoutException.cpp
                                    src/Question.cpp)
 add_dependencies(location_asker_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(location_asker_node ${catkin_LIBRARIES}
@@ -105,6 +106,7 @@ add_executable(image_tool_node src/image_tool_node.cpp
                                src/request/GetFieldValue.cpp
                                src/request/AppendFieldValue.cpp
                                src/request/GetImage.cpp
+                               src/request/TimeoutException.cpp
                                src/imagetool/DatabaseImage.cpp
                                src/imagetool/ImageMetadata.cpp
                                src/imagetool/ImagePickerPolicy.cpp
@@ -131,6 +133,7 @@ add_executable(image_fetch_tester test/image_fetch_tester.cpp
                                   src/request/AppendFieldValue.cpp
                                   src/request/GetImage.cpp
                                   src/request/PostImageRequest.cpp
+                                  src/request/TimeoutException.cpp
                                   src/Fl_ViewerCV.cxx)
 add_dependencies(image_fetch_tester ${catkin_EXPORTED_TARGETS})
 target_link_libraries(image_fetch_tester

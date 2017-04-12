@@ -3,6 +3,7 @@
 //
 
 #include <learning_helpful_humans/request/PostImageRequest.h>
+#include <learning_helpful_humans/request/TimeoutException.h>
 #include <learning_helpful_humans/bytestream.h>
 
 #include <curlpp/cURLpp.hpp>
@@ -71,12 +72,11 @@ bool PostImageRequest::perform() {
         return true;
 
     } catch(curlpp::RuntimeError & e) {
-        ROS_ERROR_STREAM("Runtime error posting image request to id " << name);
-        ROS_ERROR(e.what());
-        return false;
+        // Assume this is timeout
+        throw TimeoutException(2);
     } catch(curlpp::LogicError & e) {
         ROS_ERROR_STREAM("Logic error posting image request to id " << name);
-        ROS_ERROR(e.what());
+        ROS_ERROR_STREAM(e.what());
         return false;
     } catch(...) {
         ROS_ERROR_STREAM("Unknown error posting image request to id " << name);

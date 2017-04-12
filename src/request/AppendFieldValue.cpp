@@ -3,6 +3,7 @@
 //
 
 #include "learning_helpful_humans/request/AppendFieldValue.h"
+#include <learning_helpful_humans/request/TimeoutException.h>
 #include <curlpp/cURLpp.hpp>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
@@ -70,9 +71,8 @@ bool AppendFieldValue::perform() {
         return true;
 
     } catch(curlpp::RuntimeError & e) {
-        ROS_ERROR_STREAM("Runtime error when appending field at path \"" << path << "\"");
-        ROS_ERROR(e.what());
-        return json();
+        // Assume this is timeout
+        throw TimeoutException(2);
     } catch(curlpp::LogicError & e) {
         ROS_ERROR_STREAM("Runtime error when appending field at path \"" << path << "\"");
         ROS_ERROR(e.what());

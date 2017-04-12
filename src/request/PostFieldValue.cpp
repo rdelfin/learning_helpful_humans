@@ -3,6 +3,7 @@
 //
 
 #include "learning_helpful_humans/request/PostFieldValue.h"
+#include <learning_helpful_humans/request/TimeoutException.h>
 
 #include <curlpp/cURLpp.hpp>
 #include <curlpp/Easy.hpp>
@@ -67,12 +68,11 @@ bool PostFieldValue::perform() {
         return json::parse(result.str());
 
     } catch(curlpp::RuntimeError & e) {
-        ROS_ERROR_STREAM("Runtime error when posting field to path \"" << path << "\"");
-        ROS_ERROR(e.what());
-        return json();
+        // Assume this is timeout
+        throw TimeoutException(2);
     } catch(curlpp::LogicError & e) {
         ROS_ERROR_STREAM("Logic error when posting field to path \"" << path << "\"");
-        ROS_ERROR(e.what());
+        ROS_ERROR_STREAM(e.what());
         return json();
     } catch(...) {
         ROS_ERROR_STREAM("Unknown error posting field to path \"" << path << "\"");
