@@ -1,17 +1,8 @@
 {
-  "locations": [
-    {
-      "name": "MAD office",
-      "type": "office",
-      "door": "d3_314",
-      "location": "l3_314",
-      "corridor": "l3_300"
-    },
-
-
     {
       "name": "Undergrad Lab Couches",
       "type": "corridor",
+      "classifiertype": "lab",
       "location": "l3_300",
       "pose": {
         "x": 14.533,
@@ -23,6 +14,7 @@
     {
       "name": "Undergrad Lab Entrance",
       "type": "corridor",
+      "classifiertype": "lab",
       "location": "l3_300",
       "pose": {
         "x": 4.334,
@@ -34,6 +26,7 @@
     {
       "name": "Main Lab",
       "type": "lab",
+      "classifiertype": "lab",
       "door": "d3_414b1",
       "location": "l3_414b"
     },
@@ -41,6 +34,7 @@
     {
       "name": "Corridor 500",
       "type": "corridor",
+      "classifiertype": "corridor",
       "location": "l3_500",
       "pose": {
         "x": -31.335,
@@ -52,6 +46,7 @@
     {
       "name": "Corridor 400",
       "type": "corridor",
+      "classifiertype": "corridor",
       "location": "l3_400",
       "pose": {
         "x": -36.993,
@@ -63,17 +58,19 @@
     {
       "name": "Grad Student Area 410",
       "type": "corridor",
+      "classifiertype": "corridor",
       "location": "l3_410",
       "pose": {
-        "x": -13.455,
-        "y": -7.998,
-        "theta": 2.852
+        "x": -13.488,
+        "y": -7.856,
+        "theta": 1.638
       }
     },
 
     {
       "name": "Jivko's Office",
       "type": "office",
+      "classifiertype": "office",
       "door": "d3_432",
       "location": "l3_432",
       "corridor": "l3_400"
@@ -82,6 +79,7 @@
     {
       "name": "Peter's Office",
       "type": "office",
+      "classifiertype": "office",
       "door": "d3_508",
       "location": "l3_508",
       "corridor": "l3_500"
@@ -90,9 +88,66 @@
     {
       "name": "Ray's Office",
       "type": "office",
+      "classifiertype": "office",
       "door": "d3_512",
       "location": "l3_512",
       "corridor": "l3_500"
+    },
+
+    {
+      "name": "Robot Arm Lab",
+      "type": "lab",
+      "classifiertype": "lab",
+      "door": "d3_414a2",
+      "location": "l3_414a"
+    },
+
+    {
+      "name": "Middle Lab",
+      "type": "lab",
+      "classifiertype": "lab",
+      "door": "d3_414b3",
+      "location": "l3_414"
+    },
+
+    {
+      "name": "Meeting Room",
+      "type": "lab",
+      "classifiertype": "lab",
+      "door": "d3_516",
+      "location": "l3_516"
+    },
+
+    {
+      "name": "Justin's Office",
+      "type": "office",
+      "classifiertype": "office",
+      "door": "d3_402",
+      "location": "l3_402",
+      "corridor": "l3_400"
+    },
+
+    {
+        "name": "400 Corridor Lobby Grad Area",
+        "type": "corridor",
+        "classifiertype": "corridor",
+        "location": "l3_400",
+        "pose": {
+            "x": -11.557,
+            "y": -12.863,
+            "theta": 1.604
+        }
+    },
+
+    {
+        "name": "500 Corridor Lobby Grad Area",
+        "type": "corridor",
+        "classifiertype": "corridor",
+        "location": "l3_500",
+        "pose": {
+            "x": -16.698,
+            "y": -3.860,
+            "theta": -1.466
+        }
     }
-  ]
 }
