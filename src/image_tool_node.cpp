@@ -56,15 +56,16 @@ int main(int argc, char* argv[]) {
     ros::NodeHandle nh;
     ros::AsyncSpinner spinner(8);
     ros::Rate r(10);
-
-    policy = new RandomImagePolicy();
-    cache = new ImageCache(policy, CACHED_IMAGES);
-
+    
     ros::ServiceServer uploadImageServer = nh.advertiseService("image_tool/upload", uploadImageCb);
     ros::ServiceServer getNextImageServer = nh.advertiseService("image_tool/next", nextImageCb);
     ros::ServiceServer saveResponseServer = nh.advertiseService("image_tool/save_response", saveResponseCb);
 
+    policy = new RandomImagePolicy();
+
     spinner.start();
+    
+    cache = new ImageCache(policy, CACHED_IMAGES);
     
     while(ros::ok()) {
         cache->update();

@@ -65,7 +65,6 @@ bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionRes
 
 void imageUpdate(const ros::TimerEvent& timer) {
     if(img != nullptr) {
-        ROS_INFO("IMAGE UPDATE");
         cv::imshow(WINDOW, img->image);
         cv::waitKey(3);
     }

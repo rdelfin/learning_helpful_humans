@@ -1,38 +1,6 @@
 {
   "locations": [
     {
-      "name": "Undergrad Lab Couches",
-      "type": "corridor",
-      "classifiertype": "lab",
-      "location": "l3_300",
-      "pose": {
-        "x": 14.533,
-        "y": -11.723,
-        "theta": 1.745
-      }
-    },
-
-    {
-      "name": "Undergrad Lab Entrance",
-      "type": "corridor",
-      "classifiertype": "lab",
-      "location": "l3_300",
-      "pose": {
-        "x": 4.334,
-        "y": -3.101,
-        "theta": 3.011
-      }
-    },
-
-    {
-      "name": "Main Lab",
-      "type": "lab",
-      "classifiertype": "lab",
-      "door": "d3_414b1",
-      "location": "l3_414b"
-    },
-
-    {
       "name": "Corridor 500",
       "type": "corridor",
       "classifiertype": "corridor",
@@ -66,6 +34,39 @@
         "y": -7.856,
         "theta": 1.638
       }
+    },
+
+
+    {
+      "name": "Undergrad Lab Couches",
+      "type": "corridor",
+      "classifiertype": "lab",
+      "location": "l3_300",
+      "pose": {
+        "x": 14.533,
+        "y": -11.723,
+        "theta": 1.745
+      }
+    },
+
+    {
+      "name": "Undergrad Lab Entrance",
+      "type": "corridor",
+      "classifiertype": "lab",
+      "location": "l3_300",
+      "pose": {
+        "x": 4.334,
+        "y": -3.101,
+        "theta": 3.011
+      }
+    },
+
+    {
+      "name": "Main Lab",
+      "type": "lab",
+      "classifiertype": "lab",
+      "door": "d3_414b1",
+      "location": "l3_414b"
     },
 
     {
