@@ -1,4 +1,4 @@
-{
+[
     {
       "name": "Undergrad Lab Couches",
       "type": "corridor",
@@ -150,4 +150,4 @@
             "theta": -1.466
         }
     }
-}
+]
