@@ -1,5 +1,6 @@
 /**
-  * Created by rdelfin on 10/3/16.
+  * Created by Ricardo Delfin Garcia on 10/3/16.
+  * 
   * Provides useful services for fetching locations from config/locations.json. It loads in all the data
   * for the locations at startup and provides a different location every time through the
   * `next_question_location` service.

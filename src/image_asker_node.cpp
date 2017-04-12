@@ -28,7 +28,7 @@ std::mutex imgMutex;
 bool askQuestion(bwi_msgs::ImageQuestionRequest&, bwi_msgs::ImageQuestionResponse&);
 
 void imageUpdate(const ros::TimerEvent&);
-std::string showQuestion(const std::string& question);
+std::string showQuestion(const std::string& question, long timeout);
 
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "image_asker_node");
@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
 bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionResponse& res) {
     ROS_INFO("Question request made. Timeout: %ld", req.timeout);
     img = cv_bridge::toCvCopy(req.image);
-    std::string answer = showQuestion(req.question);
+    std::string answer = showQuestion(req.question, req.timeout);
 
     if(answer != "")
         res.answers.push_back(answer);
@@ -71,13 +71,13 @@ void imageUpdate(const ros::TimerEvent& timer) {
     }
 }
 
-std::string showQuestion(const std::string& question) {
+std::string showQuestion(const std::string& question, long timeout) {
     std::string answer;
     bwi_msgs::QuestionDialogRequest questionReq;
     bwi_msgs::QuestionDialogResponse questionRes;
 
     questionReq.message = "Could you help me answer a quick question?";
-    questionReq.timeout = 100.0;
+    questionReq.timeout = timeout;
     questionReq.type = bwi_msgs::QuestionDialogRequest::CHOICE_QUESTION;
     questionReq.options = {"Yes, what question?", "No, please leave"};
     questionClient.call(questionReq, questionRes);

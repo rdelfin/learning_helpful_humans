@@ -1,5 +1,5 @@
 /**
-  * Created by rdelfin on 10/18/16.
+  * Created by Ricardo Delfin Garcia on 10/18/16.
   *
   * This drives the entire asking mechanism. Contains the overall logic: grab a location, go to it,
   * trigger the question asking, and save it onto the database. Uses all other nodes for all this

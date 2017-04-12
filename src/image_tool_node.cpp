@@ -1,5 +1,5 @@
 /**
-  * Created by rdelfin on 10/26/16.
+  * Created by Ricardo Delfin Garcia on 10/26/16.
   *
   * This node provides a set of services used to interact with the images on the firebase (online) database.
   * It provides `image_tool/upload` to upload new images and update old ones on firebase. It also provides
