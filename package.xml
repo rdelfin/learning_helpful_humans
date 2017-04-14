@@ -29,5 +29,6 @@
   <depend>opengl</depend>
   <depend>curl</depend>
   <depend>curlpp-dev</depend>
+  <depend>python-requests</depend>
 
 </package>
