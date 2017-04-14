@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+import rospy
 from firebase import firebase
 
 def generate_count_map(locations, measurements):
@@ -24,11 +25,21 @@ def get_first_min_map(the_map):
             
     return min_key
 
-#if __name__ == "__main__":
-#    firebase = firebase.FirebaseApplication("https://robotimages-dacc9.firebaseio.com", None)
-#    locs = firebase.get('/locations', None)
-#    measurements = firebase.get('/locationtravel', None)
-#    if not(measurements is None):
-#        count_map = generate_count_map(locs, measurements)
+if __name__ == "__main__":
+    rospy.init_node('collect_costs')
+    
+    firebase = firebase.FirebaseApplication("https://robotimages-dacc9.firebaseio.com", None)
+    locs = firebase.get('/locations', None)
+    measurements = firebase.get('/locationtravel', None)
+    if measurements is None:
+        measurements = {}
+    
+    count_map = generate_count_map(locs, measurements)
+    
+    r = rospy.Rate(10)
+    
+    while not rospy.is_shutdown():
+        print("hello!")
+        r.sleep()
     
     
