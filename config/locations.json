@@ -1,6 +1,7 @@
 {
   "locations": [
     {
+      "id": "119b8e3c-e266-43d7-84d4-08fe64f1f460",
       "name": "Corridor 500",
       "type": "corridor",
       "classifiertype": "corridor",
@@ -13,6 +14,7 @@
     },
 
     {
+      "id": "e4e5b353-4a29-4dfa-ac11-641b54e87f99",
       "name": "Corridor 400",
       "type": "corridor",
       "classifiertype": "corridor",
@@ -25,6 +27,7 @@
     },
 
     {
+      "id": "0a4fb9ce-45d1-4f65-a150-9bfa76ea2d5f",
       "name": "Grad Student Area 410",
       "type": "corridor",
       "classifiertype": "corridor",
@@ -38,6 +41,7 @@
 
 
     {
+      "id": "d1ee4596-905e-4ce5-a8af-55a79816896d",
       "name": "Undergrad Lab Couches",
       "type": "corridor",
       "classifiertype": "lab",
@@ -50,6 +54,7 @@
     },
 
     {
+      "id": "2c2ba267-fca4-4794-bd68-da2d7d9cbcb0",
       "name": "Undergrad Lab Entrance",
       "type": "corridor",
       "classifiertype": "lab",
@@ -62,6 +67,7 @@
     },
 
     {
+      "id": "7872f5d7-019c-400a-b6de-03b0e20b671c",
       "name": "Main Lab",
       "type": "lab",
       "classifiertype": "lab",
@@ -70,6 +76,7 @@
     },
 
     {
+      "id": "e49c60e5-592e-46de-a031-78a9b2b79949",
       "name": "Jivko's Office",
       "type": "office",
       "classifiertype": "office",
@@ -79,6 +86,7 @@
     },
 
     {
+      "id": "77d0b6d7-2a69-4d81-9e29-1bac4e5f5c94",
       "name": "Peter's Office",
       "type": "office",
       "classifiertype": "office",
@@ -88,6 +96,7 @@
     },
 
     {
+      "id": "8e447c94-5f7d-4d69-96d8-69ca2d619f43",
       "name": "Ray's Office",
       "type": "office",
       "classifiertype": "office",
@@ -97,6 +106,7 @@
     },
 
     {
+      "id": "44f4d449-0dd9-4069-b42d-e85d535a7dfc",
       "name": "Robot Arm Lab",
       "type": "lab",
       "classifiertype": "lab",
@@ -105,6 +115,7 @@
     },
 
     {
+      "id": "e12904dc-4d32-4f2f-8474-2ea18570d879",
       "name": "Middle Lab",
       "type": "lab",
       "classifiertype": "lab",
@@ -113,6 +124,7 @@
     },
 
     {
+      "id": "e9a4a015-e5ed-4dc1-8f25-0b583f51de4c",
       "name": "Meeting Room",
       "type": "lab",
       "classifiertype": "lab",
@@ -121,6 +133,7 @@
     },
 
     {
+      "id": "bc2b2b1b-9b33-455b-b3b7-6d7174c6cebd",
       "name": "Justin's Office",
       "type": "office",
       "classifiertype": "office",
@@ -130,27 +143,29 @@
     },
 
     {
-        "name": "400 Corridor Lobby Grad Area",
-        "type": "corridor",
-        "classifiertype": "corridor",
-        "location": "l3_400",
-        "pose": {
-            "x": -11.557,
-            "y": -12.863,
-            "theta": 1.604
-        }
+      "id": "2499b940-4cfd-4ff7-879c-a852f24531ef",
+      "name": "400 Corridor Lobby Grad Area",
+      "type": "corridor",
+      "classifiertype": "corridor",
+      "location": "l3_400",
+      "pose": {
+        "x": -11.557,
+        "y": -12.863,
+        "theta": 1.604
+      }
     },
 
     {
-        "name": "500 Corridor Lobby Grad Area",
-        "type": "corridor",
-        "classifiertype": "corridor",
-        "location": "l3_500",
-        "pose": {
-            "x": -16.698,
-            "y": -3.860,
-            "theta": -1.466
-        }
+      "id": "b50b7b34-c6d7-47d1-9432-7d8fc0ad55b5",
+      "name": "500 Corridor Lobby Grad Area",
+      "type": "corridor",
+      "classifiertype": "corridor",
+      "location": "l3_500",
+      "pose": {
+        "x": -16.698,
+        "y": -3.860,
+        "theta": -1.466
+      }
     }
   ]
 }
