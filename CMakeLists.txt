@@ -135,6 +135,7 @@ add_executable(image_fetch_tester test/image_fetch_tester.cpp
                                   src/request/PostImageRequest.cpp
                                   src/request/TimeoutException.cpp
                                   src/Fl_ViewerCV.cxx)
+
 add_dependencies(image_fetch_tester ${catkin_EXPORTED_TARGETS})
 target_link_libraries(image_fetch_tester
         ${catkin_LIBRARIES}
@@ -142,6 +143,22 @@ target_link_libraries(image_fetch_tester
         ${Boost_LIBRARIES}
         ${FLTK_LIBRARIES}
         curlpp)
+        
+add_executable(collect_costs src/collect_costs.cpp
+                             src/request/GetFieldValue.cpp
+                             src/request/TimeoutException.cpp
+                             src/locations/AskLocation.cpp
+                             src/locations/CorridorLocation.cpp
+                             src/locations/LabLocation.cpp
+                             src/locations/OfficeLocation.cpp)
 
+add_dependencies(collect_costs ${catkin_EXPORTED_TARGETS})
+target_link_libraries(collect_costs
+        ${catkin_LIBRARIES}
+        ${CURL_LIBRARIES}
+        ${Boost_LIBRARIES}
+        ${FLTK_LIBRARIES}
+        curlpp)
+                             
 catkin_install_python(PROGRAMS scripts/stop_here
                       DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
