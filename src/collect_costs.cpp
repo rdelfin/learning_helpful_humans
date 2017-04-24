@@ -14,6 +14,7 @@
 
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <boost/graph/graph_concepts.hpp>
 
 #include <curlpp/cURLpp.hpp>
 
@@ -24,6 +25,7 @@
 #include <learning_helpful_humans/locations/OfficeLocation.hpp>
 #include <learning_helpful_humans/request/GetFieldValue.h>
 #include <learning_helpful_humans/request/TimeoutException.h>
+#include <learning_helpful_humans/request/AppendFieldValue.h>
 
 #include <bwi_msgs/Trigger.h>
 
@@ -35,6 +37,10 @@ typedef std::pair<boost::uuids::uuid, boost::uuids::uuid> uuid_pair;
 
 std::unordered_map<boost::uuids::uuid, AskLocation*, boost::hash<boost::uuids::uuid>> locationMap;
 std::unordered_map<uuid_pair, int, boost::hash<uuid_pair>> locationVisitMap;
+
+boost::uuids::uuid currentLocation;
+
+bool locationKnown = false;
 
 bool fetch_locations();
 
@@ -55,22 +61,22 @@ int main(int argc, char* argv[]) {
     
     fetch_locations();
     
-    ROS_INFO("Locations:");
-    for(auto it = locationMap.begin(); it != locationMap.end(); ++it) {
-        ROS_INFO_STREAM("\tLoc UUID: " << it->first);
-        ROS_INFO_STREAM("\t\tName: " << it->second->getName());
-        ROS_INFO_STREAM("\t\tASP Name: " << it->second->getAspLocation());
-        ROS_INFO_STREAM("\t\tType: " << it->second->getTypeString());
-    }
-    
-    ROS_INFO("Data:");
-    int i = 0;
-    for(auto it = locationVisitMap.begin(); it != locationVisitMap.end(); ++it) {
-        i++;
-        ROS_INFO_STREAM("\tLOCATION #" << i);
-        ROS_INFO_STREAM("\t\tFrom: " << boost::uuids::to_string(it->first.first));
-        ROS_INFO_STREAM("\t\tTo: " << boost::uuids::to_string(it->first.second));
-        ROS_INFO_STREAM("\t\tTraveled " << it->second << " times");
+    while(ros::ok()) {
+        uuid_pair path = getNextLocation();
+        
+        // Go to initial location
+        if(!locationKnown)
+            locationKnown = locationMap[path.first]->goToLocation(planClient, moveBaseClient, stopClient);
+        
+        if(locationKnown) {
+            ros::Time start = ros::Time::now();
+            locationMap[path.first]->goToLocation(planClient, moveBaseClient, stopClient);
+            ros::Time end = ros::Time::now();
+            
+            ros::Duration timeToTarget = end - start;
+            
+            sendTime(path, timeToTarget);
+        }
     }
     
     return 0;
@@ -139,10 +145,48 @@ bool fetch_locations() {
     }
     
     ROS_INFO("CREATED LOCATION VISIT MAP");
-    
-    /*for(auto it = locTravelData.begin(); it != locTravelData.end(); ++it) {
-        json item = *it;
-        uuid_pair pairIndex(boost::lexical_cast<boost::uuids::uuid>(item["from"]), boost::lexical_cast<boost::uuids::uuid>(item["to"]));
-        locationVisitMap[pairIndex]++;
-    }*/
 }
+
+boost::uuids::uuid getNextLocation() {
+    std::list<uuid_pair> minElems;
+    
+    // First sweep: find minimum value
+    int min = locationVisitMap.begin()->second;
+    for(auto it = locationVisitMap.begin(); it != locationVisitMap.end(); ++it) {
+        if(it->second < min)
+            min = it->second;
+    }
+    
+    for(auto it = locationVisitMap.begin(); it != locationVisitMap.end(); ++it)
+        if(it->second == min)
+            minElems.push_back(it->first);
+        
+    if(!locationKnown)
+        return minElems[0];
+    else {
+        for(auto it = minElems.begin(); it != minElems.end(); ++it)
+            if(it->first == currentLocation)
+                return *it;
+            
+        return minElems[0];
+    }
+}
+
+void sendTime(uuid_pair path, ros::Duration timeToTarget) {
+    GetFieldValue locationTravelGet("locationtravel.json");
+    json getData = locationTravelGet.performAsJson();
+    
+    json obj;
+    obj["from"] = boost::uuids::to_string(path.first);
+    obj["to"] = boost::uuids::to_string(path.second);
+    obj["time"] = timeToTarget.toSec();
+    obj["completed"] = true;
+    
+    json finalObj;
+    finalObj[getData.size()] = obj;
+    
+    AppendFieldValue appendTime("locationtravel.json", finalObj);
+    
+    appendTime.perform();
+}
+
