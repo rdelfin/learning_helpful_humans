@@ -43,6 +43,8 @@ boost::uuids::uuid currentLocation;
 bool locationKnown = false;
 
 bool fetch_locations();
+uuid_pair getNextLocation();
+void sendTime(uuid_pair path, ros::Duration timeToTarget);
 
 int main(int argc, char* argv[]) {
     // Setup cURL to accept multiple threads
@@ -147,8 +149,8 @@ bool fetch_locations() {
     ROS_INFO("CREATED LOCATION VISIT MAP");
 }
 
-boost::uuids::uuid getNextLocation() {
-    std::list<uuid_pair> minElems;
+uuid_pair getNextLocation() {
+    std::vector<uuid_pair> minElems;
     
     // First sweep: find minimum value
     int min = locationVisitMap.begin()->second;

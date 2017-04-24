@@ -146,6 +146,7 @@ target_link_libraries(image_fetch_tester
         
 add_executable(collect_costs src/collect_costs.cpp
                              src/request/GetFieldValue.cpp
+                             src/request/AppendFieldValue.cpp
                              src/request/TimeoutException.cpp
                              src/locations/AskLocation.cpp
                              src/locations/CorridorLocation.cpp
