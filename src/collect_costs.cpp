@@ -195,5 +195,7 @@ void sendTime(uuid_pair path, ros::Duration timeToTarget) {
     AppendFieldValue appendTime("locationtravel.json", finalObj);
     
     appendTime.perform();
+    
+    locationVisitMap[path]++;
 }
 
