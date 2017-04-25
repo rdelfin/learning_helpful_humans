@@ -1,0 +1,6 @@
+<launch>
+    <rosparam command="load" file="$(find learning_helpful_humans)/config/locations.yml" />
+    <node pkg="learning_helpful_humans" name="collect_costs" type="collect_costs" />
+    <node pkg="learning_helpful_humans" name="stop_here" type="stop_here" />
+    <node pkg="sound_play" name="soundplay" type="soundplay_node.py" />
+</launch>
