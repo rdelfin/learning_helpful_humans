@@ -18,6 +18,9 @@ public:
     virtual bool goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&,
                               actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&,
                               ros::ServiceClient&);
+    virtual bool goOutsideLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&,
+                                   actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&,
+                                   ros::ServiceClient&);
 private:
     std::string door;
 };

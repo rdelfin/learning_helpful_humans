@@ -32,6 +32,9 @@ public:
     virtual bool goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&,
                               actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&,
                               ros::ServiceClient&) = 0;
+    virtual bool goOutsideLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>&,
+                                   actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&,
+                                   ros::ServiceClient&) = 0;
 
     const std::string& getName();
     const std::string& getAspLocation();

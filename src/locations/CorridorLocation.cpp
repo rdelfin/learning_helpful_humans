@@ -56,6 +56,12 @@ void CorridorLocation::load(json& val) {
     this->pose.orientation = tf::createQuaternionMsgFromYaw(static_cast<double>(pose["theta"]));
 }
 
+bool CorridorLocation::goOutsideLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& planClient,
+                                   actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>& poseClient,
+                                   ros::ServiceClient& stopClient) {
+    return goOutsideLocation(planClient, poseClient, stopClient);
+}
+
 bool CorridorLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& planClient,
                                     actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>& poseClient,
                                     ros::ServiceClient& stopClient) {

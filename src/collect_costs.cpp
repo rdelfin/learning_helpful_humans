@@ -69,14 +69,14 @@ int main(int argc, char* argv[]) {
         // Go to initial location
         if(!locationKnown) {
             ROS_INFO_STREAM("Going to initial location... (" << locationMap[path.first]->getName() << ")");
-            locationKnown = locationMap[path.first]->goToLocation(planClient, moveBaseClient, stopClient);
+            locationKnown = locationMap[path.first]->goOutsideLocation(planClient, moveBaseClient, stopClient);
             ROS_INFO_STREAM("Finished going to initial location " << locationMap[path.first]->getName() << "). Success: " << (locationKnown ? "true" : "false"));
         }
         
         if(locationKnown) {
             ros::Time start = ros::Time::now();
             ROS_INFO_STREAM("Going to second location... (" << locationMap[path.second]->getName() << ")");
-            bool success = locationMap[path.second]->goToLocation(planClient, moveBaseClient, stopClient);
+            bool success = locationMap[path.second]->goOutsideLocation(planClient, moveBaseClient, stopClient);
             ros::Time end = ros::Time::now();
             
             ros::Duration timeToTarget = end - start;

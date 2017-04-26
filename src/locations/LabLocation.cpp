@@ -42,6 +42,12 @@ void LabLocation::load(json& val) {
     this->aspLocation = val["location"];
 }
 
+bool LabLocation::goOutsideLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client,
+                               actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>& mbClient,
+                               ros::ServiceClient& stopClient) {
+    goToLocation(client, mbClient, stopClient);
+}
+
 bool LabLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client,
                                actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&,
                                ros::ServiceClient& stopClient) {
