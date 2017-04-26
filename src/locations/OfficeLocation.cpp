@@ -86,27 +86,27 @@ bool OfficeLocation::goToCorridor(actionlib::SimpleActionClient<bwi_kr_execution
         bwi_msgs::TriggerRequest req;
         bwi_msgs::TriggerResponse res;
 
-        ROS_WARN_STREAM("Canceling goal to face door: " << door);
+        ROS_WARN_STREAM("Canceling goal to corridor: " << corridor);
         client.cancelGoal();
         client.waitForResult(ros::Duration(1, 0));
         stopClient.call(req, res);
         return false;
     }
     if (client.getState() == actionlib::SimpleClientGoalState::ABORTED) {
-        ROS_WARN_STREAM("Aborted goal to face door: " << door);
+        ROS_WARN_STREAM("Aborted goal to corridor: " << corridor);
         return false;
     }
     else if (client.getState() == actionlib::SimpleClientGoalState::PREEMPTED) {
-        ROS_WARN_STREAM("Preempted goal to face door: " << door);
+        ROS_WARN_STREAM("Preempted goal to corridor: " << corridor);
         return false;
     }
 
     else if (client.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-        ROS_WARN_STREAM("Succeeded goal to face door: " << door);
+        ROS_WARN_STREAM("Succeeded goal to corridor: " << corridor);
         return true;
     }
     else {
-        ROS_WARN_STREAM("Terminated goal to face door: " << door);
+        ROS_WARN_STREAM("Terminated goal to corridor: " << corridor);
         return false;
     }
 }
