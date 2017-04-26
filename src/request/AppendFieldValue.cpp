@@ -62,7 +62,7 @@ bool AppendFieldValue::perform() {
         req.setOpt(new curlpp::options::InfileSize(value.length()));
         req.setOpt(new curlpp::options::WriteStream(&result));
         req.setOpt(new curlpp::options::NoSignal(true));
-        req.setOpt(new curlpp::options::Timeout(2));
+        req.setOpt(new curlpp::options::Timeout(10));
 
         req.perform();
 
@@ -72,7 +72,7 @@ bool AppendFieldValue::perform() {
 
     } catch(curlpp::RuntimeError & e) {
         // Assume this is timeout
-        throw TimeoutException(2);
+        throw TimeoutException(10);
     } catch(curlpp::LogicError & e) {
         ROS_ERROR_STREAM("Runtime error when appending field at path \"" << path << "\"");
         ROS_ERROR_STREAM(e.what());
