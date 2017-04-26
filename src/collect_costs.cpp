@@ -80,10 +80,12 @@ int main(int argc, char* argv[]) {
             ros::Time end = ros::Time::now();
             
             ros::Duration timeToTarget = end - start;
-            ROS_INFO_STREAM("Arrived " << (success ? "un" : "") << "successfully to location " << locationMap[path.second]->getName() << " after " << timeToTarget.toSec() <<" seconds.");
+            ROS_INFO_STREAM("Arrived " << (success ? "" : "un") << "successfully to location " << locationMap[path.second]->getName() << " after " << timeToTarget.toSec() <<" seconds.");
             
             sendTime(path, timeToTarget);
         }
+    
+	locationVisitMap[path]++;
     }
     
     return 0;
@@ -181,7 +183,9 @@ uuid_pair getNextLocation() {
 
 void sendTime(uuid_pair path, ros::Duration timeToTarget) {
     GetFieldValue locationTravelGet("locationtravel.json");
+    ROS_INFO("Preforming location travel get...");
     json getData = locationTravelGet.performAsJson();
+    ROS_INFO("Location travel get succeeded!");
     
     json obj;
     obj["from"] = boost::uuids::to_string(path.first);
@@ -191,11 +195,11 @@ void sendTime(uuid_pair path, ros::Duration timeToTarget) {
     
     json finalObj;
     finalObj[getData.size()] = obj;
-    
+
+    ROS_INFO_STREAM("Sending JSON object to /locationtravel.json: " << finalObj);
     AppendFieldValue appendTime("locationtravel.json", finalObj);
     
     appendTime.perform();
-    
-    locationVisitMap[path]++;
+    ROS_INFO_STREAM("Object sent to /loctaiontravel.json!");
 }
 
