@@ -65,6 +65,10 @@ int main(int argc, char* argv[]) {
     
     while(ros::ok()) {
         uuid_pair path = getNextLocation();
+        ROS_INFO_STREAM("Going from location ID: {" << boost::uuids::to_string(path.first) << "}  to {" << boost::uuids::to_string(path.second) << "}");
+        ROS_INFO_STREAM("\tFirst location exists?:    " << (locationMap.count(path.first) > 0 ? "yes" : "no"));
+        ROS_INFO_STREAM("\tSecond location exists?:   " << (locationMap.count(path.second) > 0 ? "yes" : "no"));
+        ROS_INFO_STREAM("\tPair in visit map exists?: " << (locationVisitMap.count(path) > 0 ? "yes" : "no"));
         
         // Go to initial location
         if(!locationKnown) {
@@ -101,10 +105,10 @@ bool fetch_locations() {
         locTravelData = getLocationTravel.performAsJson();
     } catch(TimeoutException e) {
         ROS_ERROR_STREAM("The locations request timed out after " << e.time() << "seconds!");
-        exit(-1);
+	return false;
     } catch(...) {
         ROS_ERROR_STREAM("The locations request failed for an unknown reason!");
-        exit(-1);
+	return false;
     }
     
     for(auto it = locData.begin(); it != locData.end(); ++it) {
@@ -116,6 +120,7 @@ bool fetch_locations() {
             loc = new LabLocation();
             loc->load(item);
         } else if (type == "corridor") {
+            ROS_INFO_STREAM("Load corridor location: " << item);
             loc = new CorridorLocation();
             loc->load(item);
         } else if (type == "office") {
@@ -193,8 +198,8 @@ void sendTime(uuid_pair path, ros::Duration timeToTarget) {
     obj["time"] = timeToTarget.toSec();
     obj["completed"] = true;
     
-    json finalObj;
-    finalObj[getData.size()] = obj;
+    json finalObj = json::object();
+    finalObj[std::to_string(getData.size())] = obj;
 
     ROS_INFO_STREAM("Sending JSON object to /locationtravel.json: " << finalObj);
     AppendFieldValue appendTime("locationtravel.json", finalObj);

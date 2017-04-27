@@ -59,7 +59,7 @@ void CorridorLocation::load(json& val) {
 bool CorridorLocation::goOutsideLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& planClient,
                                    actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>& poseClient,
                                    ros::ServiceClient& stopClient) {
-    return goOutsideLocation(planClient, poseClient, stopClient);
+    return goToLocation(planClient, poseClient, stopClient);
 }
 
 bool CorridorLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& planClient,
