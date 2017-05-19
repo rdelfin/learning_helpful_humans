@@ -44,13 +44,13 @@ void LabLocation::load(json& val) {
 
 bool LabLocation::goOutsideLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client,
                                actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>& mbClient,
-                               ros::ServiceClient& stopClient) {
-    goToLocation(client, mbClient, stopClient);
+                               ros::ServiceClient& stopClient, ros::ServiceClient& current_state_client) {
+    goToLocation(client, mbClient, stopClient, current_state_client);
 }
 
 bool LabLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client,
                                actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&,
-                               ros::ServiceClient& stopClient) {
+                               ros::ServiceClient& stopClient, ros::ServiceClient& current_state_client) {
     bwi_kr_execution::ExecutePlanGoal goal;
 
     bwi_kr_execution::AspRule rule;

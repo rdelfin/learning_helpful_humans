@@ -50,7 +50,7 @@ void OfficeLocation::load(json& val) {
 
 bool OfficeLocation::goOutsideLocation(actionlib::SimpleActionClient< bwi_kr_execution::ExecutePlanAction >& client,
                                        actionlib::SimpleActionClient< move_base_msgs::MoveBaseAction >&,
-                                       ros::ServiceClient& stopClient) {
+                                       ros::ServiceClient& stopClient, ros::ServiceClient& current_state_client) {
     bool success = goToCorridor(client, stopClient) && faceDoor(client, stopClient);
     return success;
 }
@@ -58,8 +58,10 @@ bool OfficeLocation::goOutsideLocation(actionlib::SimpleActionClient< bwi_kr_exe
 
 bool OfficeLocation::goToLocation(actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction>& client,
                                   actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>&,
-                                  ros::ServiceClient& stopClient) {
-    bool success = goToCorridor(client, stopClient) && faceDoor(client, stopClient) && enterRoom(client, stopClient) && faceDoor(client, stopClient);
+                                  ros::ServiceClient& stopClient, ros::ServiceClient& current_state_client) {
+    bool success = goToCorridor(client, stopClient) &&
+                   isDoorOpen(current_state_client) &&
+                   faceDoor(client, stopClient) && enterRoom(client, stopClient) && faceDoor(client, stopClient);
 
     return success;
 }

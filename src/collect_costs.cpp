@@ -27,6 +27,8 @@
 #include <learning_helpful_humans/request/TimeoutException.h>
 #include <learning_helpful_humans/request/AppendFieldValue.h>
 
+#include <bwi_kr_execution/CurrentStateQuery.h>
+
 #include <bwi_msgs/Trigger.h>
 
 #include <unordered_map>
@@ -53,6 +55,7 @@ int main(int argc, char* argv[]) {
     ros::init(argc, argv, "collect_costs_node");
     ros::NodeHandle nh;
     
+    ros::ServiceClient currentStateClient = nh.serviceClient<bwi_kr_execution::CurrentStateQuery> ("/current_state_query");
     actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction> planClient("/action_executor/execute_plan", true);
     actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> moveBaseClient("/move_base", true);
     ros::ServiceClient stopClient = nh.serviceClient<bwi_msgs::Trigger>("stop_base");
@@ -60,6 +63,7 @@ int main(int argc, char* argv[]) {
     planClient.waitForServer();
     moveBaseClient.waitForServer();
     stopClient.waitForExistence();
+    currentStateClient.waitForExistence();
     
     fetch_locations();
     
@@ -69,14 +73,14 @@ int main(int argc, char* argv[]) {
         // Go to initial location
         if(!locationKnown) {
             ROS_INFO_STREAM("Going to initial location... (" << locationMap[path.first]->getName() << ")");
-            locationKnown = locationMap[path.first]->goOutsideLocation(planClient, moveBaseClient, stopClient);
+            locationKnown = locationMap[path.first]->goOutsideLocation(planClient, moveBaseClient, stopClient, currentStateClient);
             ROS_INFO_STREAM("Finished going to initial location " << locationMap[path.first]->getName() << "). Success: " << (locationKnown ? "true" : "false"));
         }
         
         if(locationKnown) {
             ros::Time start = ros::Time::now();
             ROS_INFO_STREAM("Going to second location... (" << locationMap[path.second]->getName() << ")");
-            bool success = locationMap[path.second]->goOutsideLocation(planClient, moveBaseClient, stopClient);
+            bool success = locationMap[path.second]->goOutsideLocation(planClient, moveBaseClient, stopClient, currentStateClient);
             ros::Time end = ros::Time::now();
             
             ros::Duration timeToTarget = end - start;
