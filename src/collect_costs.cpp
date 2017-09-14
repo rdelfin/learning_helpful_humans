@@ -60,10 +60,10 @@ int main(int argc, char* argv[]) {
     actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> moveBaseClient("/move_base", true);
     ros::ServiceClient stopClient = nh.serviceClient<bwi_msgs::Trigger>("stop_base");
     
-    planClient.waitForServer();
-    moveBaseClient.waitForServer();
-    stopClient.waitForExistence();
-    currentStateClient.waitForExistence();
+    //planClient.waitForServer();
+    //moveBaseClient.waitForServer();
+    //stopClient.waitForExistence();
+    //currentStateClient.waitForExistence();
     
     fetch_locations();
     
@@ -166,27 +166,39 @@ bool fetch_locations() {
 }
 
 uuid_pair getNextLocation() {
-    std::vector<uuid_pair> minElems;
-    
-    // First sweep: find minimum value
-    int min = locationVisitMap.begin()->second;
-    for(auto it = locationVisitMap.begin(); it != locationVisitMap.end(); ++it) {
-        if(it->second < min)
-            min = it->second;
+    std::vector<uuid_pair> min_list;
+    std::pair<uuid_pair, int> test = *locationVisitMap.begin();
+
+    auto min_comp = [](const std::pair<uuid_pair, int>& a, const std::pair<uuid_pair, int>& b) -> bool {
+        return a.second < b.second;
+    };
+
+
+    int min_val = std::min_element(locationVisitMap.begin(), locationVisitMap.end(), min_comp)->second;
+
+    auto val_comp = [&](const std::pair<uuid_pair, int> a) -> bool {
+        return a.second == min_val;
+    };
+
+    {
+        auto it = locationVisitMap.begin();
+        while (it != locationVisitMap.end()) {
+            it = std::find_if(it, locationVisitMap.end(), val_comp);
+            if (it != locationVisitMap.end()) {
+                min_list.push_back(it->first);
+                ++it;
+            }
+        }
     }
-    
-    for(auto it = locationVisitMap.begin(); it != locationVisitMap.end(); ++it)
-        if(it->second == min)
-            minElems.push_back(it->first);
-        
+
     if(!locationKnown)
-        return minElems[0];
+        return min_list[0];
     else {
-        for(auto it = minElems.begin(); it != minElems.end(); ++it)
+        for(auto it = min_list.begin(); it != min_list.end(); ++it)
             if(it->first == currentLocation)
                 return *it;
-        
-        return minElems[0];
+
+        return min_list[0];
     }
 }
 
