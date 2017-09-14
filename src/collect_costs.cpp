@@ -92,8 +92,8 @@ int main(int argc, char* argv[]) {
             
             sendTime(path, timeToTarget);
         }
-    
-	locationVisitMap[path]++;
+
+        locationVisitMap[path]++;
     }
     
     return 0;
@@ -109,10 +109,10 @@ bool fetch_locations() {
         locTravelData = getLocationTravel.performAsJson();
     } catch(TimeoutException e) {
         ROS_ERROR_STREAM("The locations request timed out after " << e.time() << "seconds!");
-	return false;
+        return false;
     } catch(...) {
         ROS_ERROR_STREAM("The locations request failed for an unknown reason!");
-	return false;
+        return false;
     }
     
     for(auto it = locData.begin(); it != locData.end(); ++it) {
@@ -140,7 +140,7 @@ bool fetch_locations() {
     
     for(auto it_from = locationMap.begin(); it_from != locationMap.end(); ++it_from) {
         for (auto it_to = locationMap.begin(); it_to != locationMap.end(); ++it_to) {
-            locationVisitMap[uuid_pair(it_from->first, it_to->first)] = 0;
+                locationVisitMap[uuid_pair(it_from->first, it_to->first)] = 0;
         }
     }
     
@@ -185,7 +185,7 @@ uuid_pair getNextLocation() {
         for(auto it = minElems.begin(); it != minElems.end(); ++it)
             if(it->first == currentLocation)
                 return *it;
-            
+        
         return minElems[0];
     }
 }
