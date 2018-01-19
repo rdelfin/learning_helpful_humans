@@ -157,11 +157,49 @@ include_directories(
 # all install targets should use catkin DESTINATION variables
 # See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
 
+file(GLOB agents_SRC
+    "scripts/agents/*.py"
+)
+
+file(GLOB firebase_scripts_SRC
+    "scripts/firebase_scripts/*.py"
+)
+
+file(GLOB mdp_SRC
+    "scripts/mdp/*.py"
+)
+
+file(GLOB nn_SRC
+    "scripts/nn/*.py"
+)
+
+message("AGENTS_SRC: ${agents_SRC}")
+
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 install(PROGRAMS
   scripts/agent
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(PROGRAMS
+  ${agents_SRC}
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}/agents/
+)
+
+install(PROGRAMS
+  ${firebase_scripts_SRC}
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}/firebase_scripts/
+)
+
+install(PROGRAMS
+  ${mdp_SRC}
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}/mdp/
+)
+
+install(PROGRAMS
+  ${nn_SRC}
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}/nn/
 )
 
 ## Mark executables and/or libraries for installation

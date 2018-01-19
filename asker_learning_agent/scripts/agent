@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import rospy
+from agents.sarsa_agent import SarsaAgent
+from agents.function_estimator import NeuralNetEstimator
 
 def main():
     rospy.init_node('asker_learning_agent')
