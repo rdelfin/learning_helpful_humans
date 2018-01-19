@@ -44,7 +44,7 @@ class SarsaAgent(Agent):
 
     def action_update(self, reward, new_state):
         # Implemented semi-gradient SARSA update
-        # (page 198 of Sutton http://incompleteideas.net/sutton/book/bookdraft2017nov5.pdf)
+        # (page 198 of Sutton http://www.incompleteideas.net/book/bookdraft2017nov5.pdf)
         if is_terminal_state(new_state):
             qval_diff = reward - self.estimator.get_qval(*self.past_state_actions[-1])
         else:
