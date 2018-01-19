@@ -1,15 +1,28 @@
 #!/usr/bin/env python
 import rospy
+
+import __config__ as conf
+
 from agents.sarsa_agent import SarsaAgent
-from agents.function_estimator import NeuralNetEstimator
+from agents.function_estimator import NeuralNetEstimator, FourierEstimator
+
+from mdp.states import FullState, Action
+
+from firebase_scripts import travel_data
 
 def main():
-    rospy.init_node('asker_learning_agent')
-    rate = rospy.Rate(10)
+    global agent
+    global location_ids
 
-    while not rospy.is_shutdown():
-        rospy.loginfo('Hello!')
-        rate.sleep()
+    location_ids = travel_data.get_location_ids()
+    sample_state = FullState(list(location_ids)[0], 0, 0, [])
+    sample_action = Action(list(location_ids)[0], False)
+
+    estimator = FourierEstimator(sample_state, sample_action, conf.series)
+    agent = SarsaAgent(conf.eps, conf.alpha, conf.gamma, estimator)
+
+    rospy.init_node('asker_learning_agent')
+    rospy.spin()
 
 if __name__ == '__main__':
     try:
