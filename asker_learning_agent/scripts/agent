@@ -3,23 +3,65 @@ import rospy
 
 import __config__ as conf
 
+from bwi_msgs.srv import ActionUpdate, ActionUpdateRequest, ActionUpdateResponse
+from bwi_msgs.srv import LocationAction, LocationActionRequest, LocationActionResponse
+
 from agents.sarsa_agent import SarsaAgent
 from agents.function_estimator import NeuralNetEstimator, FourierEstimator
 
-from mdp.states import FullState, Action
+from mdp.states import FullState, Action, Request
 
 from firebase_scripts import travel_data
+
+int32 QUESTION_ANSWERED = 0
+int32 QUESTION_DENIED = 1
+int32 QUESTION_TIMEOUT = 2
+int32 ARRIVED = 3
+int32 ARRIVAL_FAILURE = 4
+
+def action_result_to_reward(result):
+    if result == 0:
+        return 1
+    if result == 1:
+        return -10
+    if result == 2:
+        return 0
+    if result == 3:
+        return 0
+    if result == 4:
+        return -2
+
+def get_next_action(req):
+    state = FullState(req.current_location, req.time.time_seconds, req.time.day_of_week)
+    next_action = agent.next_action(state)
+    curr_state.request_history += [Request(location=next_action.location, \
+                                           time_of_day=state.time_of_day, \
+                                           day_of_week=state.day_of_week)]
+    return LocationActionResponse(ask_question=next_action.ask, \
+                                  location=next_action.location)
+
+def update_action(req):
+    global curr_state
+
+    curr_state = FullState(req.current_location, req.time.time_seconds, req.time.day_of_week, curr_state.request_history)
+    agent.action_update(action_result_to_reward(req.result), curr_state)
+    return ActionUpdateResponse()
 
 def main():
     global agent
     global location_ids
+    global curr_state
 
     location_ids = travel_data.get_location_ids()
     sample_state = FullState(list(location_ids)[0], 0, 0, [])
     sample_action = Action(list(location_ids)[0], False)
+    curr_state = sample_state
 
     estimator = FourierEstimator(sample_state, sample_action, conf.series)
     agent = SarsaAgent(conf.eps, conf.alpha, conf.gamma, estimator)
+
+    next_action_service = rospy.Service('next_sarsa_action', LocationAction, get_next_action)
+    update_action_service = rospy.Service('update_sarsa_action', ActionUpdate, update_action)
 
     rospy.init_node('asker_learning_agent')
     rospy.spin()
