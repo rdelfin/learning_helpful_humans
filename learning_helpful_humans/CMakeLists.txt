@@ -19,7 +19,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O1")
 FIND_PACKAGE(Boost COMPONENTS system REQUIRED)
 
 # we are now using the OpenCV library
-find_package(OpenCV 2)
+find_package(OpenCV)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 find_package(CURL REQUIRED)
@@ -97,7 +97,7 @@ target_link_libraries(location_asker_node ${catkin_LIBRARIES}
         ${catkin_LIBRARIES}
         ${CURL_LIBRARIES}
         ${Boost_LIBRARIES}
-        curlpp)
+        /usr/local/lib/libcurlpp.so)
 
 
 add_executable(image_tool_node src/image_tool_node.cpp
@@ -117,7 +117,7 @@ target_link_libraries(image_tool_node
         ${catkin_LIBRARIES}
         ${CURL_LIBRARIES}
         ${Boost_LIBRARIES}
-        curlpp)
+        /usr/local/lib/libcurlpp.so)
 
 add_executable(image_uploader_test test/image_uploader_test.cpp)
 add_dependencies(image_uploader_test ${catkin_EXPORTED_TARGETS})
