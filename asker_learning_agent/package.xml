@@ -49,7 +49,7 @@
   <run_depend>rospy</run_depend>
   <run_depend>python-numpy</run_depend>
   <run_depend>python-scipy</run_depend>
-  <run_depend>pyrebase</run_depend>
+  <run_depend>pyrebase-pip</run_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
