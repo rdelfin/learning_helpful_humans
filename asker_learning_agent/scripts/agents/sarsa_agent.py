@@ -11,12 +11,12 @@ import numpy as np
 class SarsaAgent(Agent):
     def __init__(self, eps, alpha, gamma, estimator):
         # FIX: Stop depending on states class to define sizes
-        # 8 input neurons:
+        # 9 input neurons:
         #   1 for time
         #   7 for each day of week
         #   num_actions for each action (move to location, excluding the current location)
-        self.travel_locations = travel_data.get_location_ids()
-        self.num_actions = len(self.travel_locations) - 1
+        #   1 for whether the action involves asking or not
+        self.possible_actions = [Action(loc, ask) for loc in travel_data.get_location_ids() for ask in [True, False]]
         self.eps = eps
         self.alpha = alpha
         self.gamma = gamma
@@ -25,11 +25,10 @@ class SarsaAgent(Agent):
         self.past_state_actions = []
 
     def generate_next_action(self, state):
-        max_location = max(self.travel_locations, key=lambda loc: self.estimator.get_qval(state, Action(True, loc)))
-        rand_location = random.choice(list(self.travel_locations))
+        max_action = max(self.possible_actions, key=lambda loc: self.estimator.get_qval(state, Action(True, loc)))
+        rand_action = random.choice(list(self.possible_actions))
 
-        location_taken = rand_location if random.random() < self.eps else max_location   # Epsilon-greedy behaviour
-        action_taken = Action(True, location_taken)
+        action_taken = rand_action if random.random() < self.eps else max_action   # Epsilon-greedy behaviour
 
         self.future_state_actions += [(state, action_taken)]
 

@@ -9,7 +9,7 @@ class RandomAgent(Agent):
         self.travel_locations = travel_data.get_location_ids()
 
     def next_action(self, state):
-        return Action(True, random.choice(list(self.travel_locations)))
+        return Action(random.choice(list(self.travel_locations)), random.randint(1, 2) == 1)
     
     def action_update(self, reward, new_state):
         pass
