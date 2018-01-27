@@ -34,7 +34,7 @@ def action_result_to_reward(result):
         return -2
 
 def get_next_action(req):
-    state = FullState(req.current_location, req.time.time_seconds, req.time.day_of_week)
+    state = FullState(req.current_location, req.time.time_seconds, req.time.day_of_week, [])
     next_action = agent.next_action(state)
     curr_state.request_history += [Request(location=next_action.location, \
                                            time_of_day=state.time_of_day, \
