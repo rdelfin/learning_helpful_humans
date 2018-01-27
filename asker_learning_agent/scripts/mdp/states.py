@@ -14,7 +14,7 @@ departure_stddev = 180
 open_stddev = 300
 
 class Request:
-    def __init__(self, *, location, time_of_day, day_of_week):
+    def __init__(self, location, time_of_day, day_of_week):
         self.location = location
         self.time_of_day = time_of_day
         self.day_of_week = day_of_week
@@ -35,7 +35,7 @@ def is_terminal_state(state):
     return state.time_of_day > 64800  # 6pm in seconds
 
 class FullState:
-    def __init__(self, *, location, time_of_day, day_of_week, request_history):
+    def __init__(self, location, time_of_day, day_of_week, request_history):
         self.location = location
         self.time_of_day = time_of_day
         self.day_of_week = day_of_week

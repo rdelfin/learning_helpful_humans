@@ -13,22 +13,24 @@ from mdp.states import FullState, Action, Request
 
 from firebase_scripts import travel_data
 
-int32 QUESTION_ANSWERED = 0
-int32 QUESTION_DENIED = 1
-int32 QUESTION_TIMEOUT = 2
-int32 ARRIVED = 3
-int32 ARRIVAL_FAILURE = 4
+QUESTION_ANSWERED = 0
+QUESTION_DENIED = 1
+QUESTION_TIMEOUT = 2
+ARRIVED = 3
+ARRIVAL_FAILURE = 4
 
 def action_result_to_reward(result):
-    if result == 0:
+    global QUESTION_ANSWERED, QUESTION_DENIED, QUESTION_TIMEOUT, ARRIVED, ARRIVAL_FAILURE
+
+    if result == QUESTION_ANSWERED:
         return 1
-    if result == 1:
+    if result == QUESTION_DENIED:
         return -10
-    if result == 2:
+    if result == QUESTION_TIMEOUT:
         return 0
-    if result == 3:
+    if result == ARRIVED:
         return 0
-    if result == 4:
+    if result == ARRIVAL_FAILURE:
         return -2
 
 def get_next_action(req):
@@ -43,7 +45,8 @@ def get_next_action(req):
 def update_action(req):
     global curr_state
 
-    curr_state = FullState(req.current_location, req.time.time_seconds, req.time.day_of_week, curr_state.request_history)
+    curr_state = FullState(req.current_location, req.time.time_seconds, \
+                           req.time.day_of_week, curr_state.request_history)
     agent.action_update(action_result_to_reward(req.result), curr_state)
     return ActionUpdateResponse()
 
@@ -64,6 +67,8 @@ def main():
     update_action_service = rospy.Service('update_sarsa_action', ActionUpdate, update_action)
 
     rospy.init_node('asker_learning_agent')
+
+    rospy.loginfo('Asker Learning Agent started...')
     rospy.spin()
 
 if __name__ == '__main__':
