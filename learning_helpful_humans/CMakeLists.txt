@@ -84,9 +84,14 @@ add_executable(location_selector_node src/location_selector_node.cpp
                                       src/locations/AskLocation.cpp
                                       src/locations/CorridorLocation.cpp
                                       src/locations/LabLocation.cpp
-                                      src/locations/OfficeLocation.cpp)
+                                      src/locations/OfficeLocation.cpp
+                                      src/request/GetFieldValue.cpp
+                                      src/request/TimeoutException.cpp)
 add_dependencies(location_selector_node ${catkin_EXPORTED_TARGETS})
-target_link_libraries(location_selector_node ${catkin_LIBRARIES})
+target_link_libraries(location_selector_node
+                      ${catkin_LIBRARIES}
+                      ${CURL_LIBRARIES}
+                      /usr/local/lib/libcurlpp.so)
 
 add_executable(location_asker_node src/location_asker_node.cpp
                                    src/request/GetFieldValue.cpp

@@ -11,12 +11,12 @@
 #include "bwi_kr_execution/ExecutePlanAction.h"
 
 #include <actionlib/client/simple_action_client.h>
-#include <learning_helpful_humans/locations/AskLocation.hpp>
-#include <learning_helpful_humans/locations/LabLocation.hpp>
-#include <learning_helpful_humans/locations/CorridorLocation.hpp>
-#include <learning_helpful_humans/locations/OfficeLocation.hpp>
 
-#include <fstream>
+#include <learning_helpful_humans/locations/AskLocation.hpp>
+#include <learning_helpful_humans/locations/CorridorLocation.hpp>
+#include <learning_helpful_humans/locations/LabLocation.hpp>
+#include <learning_helpful_humans/locations/OfficeLocation.hpp>
+#include <learning_helpful_humans/request/GetFieldValue.h>
 
 #include <ros/package.h>
 
@@ -72,39 +72,33 @@ int main(int argc, char* argv[]) {
 
 void loadLocations() {
     try {
-        std::string locFilePath = ros::package::getPath("learning_helpful_humans") + "/config/locations.json";
-        ROS_INFO_STREAM("READING CONFIG FILE \"" << locFilePath << "\"");
-
-        std::ifstream locFile(locFilePath, std::ifstream::in);
-        std::string locString((std::istreambuf_iterator<char>(locFile)),
-                              std::istreambuf_iterator<char>());
-
-        ROS_INFO("Parsing JSON...");
+        GetFieldValue get_locations("locations.json");
+        
+        ROS_INFO("Requesting locations...");
 
         // Load in JSON
-        json locJson = json::parse(locString);
-
-
-        json list = locJson["locations"];
+        json locJson = get_locations.performAsJson();
 
         // Iterate over all locations
-        for (json::iterator it = list.begin(); it != list.end(); ++it) {
+        for (auto it = locJson.begin(); it != locJson.end(); ++it) {
             ROS_INFO("GETTING LOCATION");
-            json item = *it;
-            std::string type = item["type"];
+            json val = it.value();
+            val["id"] = it.key();
+            
+            std::string type = val["type"];
             AskLocation *loc;
             if (type == "lab") {
                 ROS_INFO("LAB");
                 loc = new LabLocation();
-                loc->load(item);
+                loc->load(val);
             } else if (type == "corridor") {
                 ROS_INFO("CORRIDOR");
                 loc = new CorridorLocation();
-                loc->load(item);
+                loc->load(val);
             } else if (type == "office") {
                 ROS_INFO("OFFICE");
                 loc = new OfficeLocation();
-                loc->load(item);
+                loc->load(val);
             } else
                 continue;
 
