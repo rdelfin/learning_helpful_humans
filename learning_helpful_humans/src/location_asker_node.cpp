@@ -6,26 +6,36 @@
   * task, so it does very little work by itself.
   */
 
+#include <bwi_msgs/ActionUpdate.h>
+#include <bwi_msgs/GetNextImage.h>
+#include <bwi_msgs/ImageQuestion.h>
+#include <bwi_msgs/NextLocation.h>
+#include <bwi_msgs/SaveImageResponse.h>
+#include <bwi_msgs/Trigger.h>
+
+#include <cv_bridge/cv_bridge.h>
+
+#include <learning_helpful_humans/imagetool/DatabaseImage.h>
+#include <learning_helpful_humans/Question.h>
+
 #include <ros/ros.h>
 
-#include <bwi_msgs/NextLocation.h>
-#include <bwi_msgs/ImageQuestion.h>
+#include <sensor_msgs/image_encodings.h>
+
 #include <sound_play/sound_play.h>
 
 #include <opencv2/opencv.hpp>
-#include <cv_bridge/cv_bridge.h>
-
-#include <sensor_msgs/image_encodings.h>
-#include <learning_helpful_humans/imagetool/DatabaseImage.h>
-#include <learning_helpful_humans/Question.h>
-#include <bwi_msgs/GetNextImage.h>
-#include <bwi_msgs/SaveImageResponse.h>
-#include <bwi_msgs/Trigger.h>
 
 bwi_msgs::GetNextImageResponse getQuestionImg();
 
 ros::ServiceClient nextImageClient;
 ros::ServiceClient saveResponseClient;
+ros::ServiceClient updateSarsaClient;
+
+int day_time_seconds();
+int day_week();
+
+void update_sarsa_agent(std::string location, int result);
 
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "location_asker_node");
@@ -36,6 +46,7 @@ int main(int argc, char* argv[]) {
     ros::ServiceClient locationClient = nh.serviceClient<bwi_msgs::NextLocation>("next_question_location");
     nextImageClient = nh.serviceClient<bwi_msgs::GetNextImage>("image_tool/next");
     saveResponseClient = nh.serviceClient<bwi_msgs::SaveImageResponse>("image_tool/save_response");
+    updateSarsaClient = nh.serviceClient<bwi_msgs::ActionUpdate>("update_sarsa_action");
 
     ros::Publisher pub = nh.advertise<sound_play::SoundRequest>("robotsound", 10);
 
@@ -44,6 +55,7 @@ int main(int argc, char* argv[]) {
     locationClient.waitForExistence();
     nextImageClient.waitForExistence();
     saveResponseClient.waitForExistence();
+    updateSarsaClient.waitForExistence();
 
     ros::Rate r(10);
 
@@ -54,17 +66,23 @@ int main(int argc, char* argv[]) {
     sound_play::SoundRequest helpSound;
     sound_play::SoundRequest thanksSound;
 
+    bwi_msgs::ActionUpdateRequest actionUpdateReq;
+
     helpSound.sound = thanksSound.sound = sound_play::SoundRequest::SAY;
     helpSound.command = thanksSound.command = sound_play::SoundRequest::PLAY_ONCE;
     helpSound.arg = "Hello! Can you help me by answering a quick question?";
     thanksSound.arg = "Thank you!";
 
     while(ros::ok()) {
+        ros::spinOnce();
 
         locationClient.call(locReq, locRes);
 
-        if(locRes.success)
+        if(locRes.success) {
             ROS_WARN_STREAM("FAILED TO GO TO NEXT LOCATION.");
+            update_sarsa_agent(locRes.locationName, actionUpdateReq.ARRIVAL_FAILURE);
+            continue;
+        }
         else
             ROS_INFO_STREAM("SUCCESSFULLY ARRIVED TO NEXT LOCATION.");
 
@@ -97,9 +115,13 @@ int main(int argc, char* argv[]) {
             saveReq.base_name = nextImage.base_name;
             saveReq.location = locRes.locationName;
             saveReq.question_id = question.id;
+
+            update_sarsa_agent(locRes.locationName, actionUpdateReq.QUESTION_ANSWERED);
         }
-        else
+        else {
           ROS_INFO("No answer provided!");
+          update_sarsa_agent(locRes.locationName, actionUpdateReq.QUESTION_TIMEOUT);
+        }
     }
 }
 
@@ -110,4 +132,28 @@ bwi_msgs::GetNextImageResponse getQuestionImg() {
     nextImageClient.call(req, res);
 
     return res;
+}
+
+int day_time_seconds() {
+    time_t t = time(0);   // get time now
+    struct tm * now = localtime( & t );
+    return now->tm_sec + 60*(now->tm_min + 60*now->tm_hour);
+}
+
+int day_week() {
+    time_t t = time(0);   // get time now
+    struct tm * now = localtime( & t );
+    return now->tm_wday == 0 ? 6 : now->tm_wday - 1;
+}
+
+void update_sarsa_agent(std::string location, int result) {
+    bwi_msgs::ActionUpdateRequest actionUpdateReq;
+    bwi_msgs::ActionUpdateResponse actionUpdateRes;
+
+    actionUpdateReq.time.time_seconds = day_time_seconds();
+    actionUpdateReq.time.day_of_week = day_week();
+    actionUpdateReq.current_location = location;
+    actionUpdateReq.result = result;
+
+    updateSarsaClient.call(actionUpdateReq, actionUpdateRes);
 }
