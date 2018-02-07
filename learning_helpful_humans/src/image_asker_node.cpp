@@ -28,7 +28,7 @@ std::mutex imgMutex;
 bool askQuestion(bwi_msgs::ImageQuestionRequest&, bwi_msgs::ImageQuestionResponse&);
 
 void imageUpdate(const ros::TimerEvent&);
-std::string showQuestion(const std::string& question, long timeout);
+std::pair<std::string, int> showQuestion(const std::string& question, long timeout);
 
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "image_asker_node");
@@ -55,10 +55,17 @@ int main(int argc, char* argv[]) {
 bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionResponse& res) {
     ROS_INFO("Question request made. Timeout: %ld", req.timeout);
     img = cv_bridge::toCvCopy(req.image);
-    std::string answer = showQuestion(req.question, req.timeout);
+    std::pair<std::string, int> answer = showQuestion(req.question, req.timeout);
 
-    if(answer != "")
-        res.answers.push_back(answer);
+    if(answer.first != "")
+        res.answers.push_back(answer.first);
+
+    switch(answer.second) {
+        case 0:  res.end_reason = res.SUCCESSFUL_ANSWER; break;
+        case 1:  res.end_reason = res.TIMEOUT; break;
+        case 2:  res.end_reason = res.CANCELLED; break;
+        default: res.end_reason = res.SUCCESSFUL_ANSWER;
+    }
 
     return true;
 }
@@ -70,7 +77,8 @@ void imageUpdate(const ros::TimerEvent& timer) {
     }
 }
 
-std::string showQuestion(const std::string& question, long timeout) {
+// int: 0 for ok, 1 for timeout, 2 for cancelation
+std::pair<std::string, int> showQuestion(const std::string& question, long timeout) {
     std::string answer;
     bwi_msgs::QuestionDialogRequest questionReq;
     bwi_msgs::QuestionDialogResponse questionRes;
@@ -82,7 +90,7 @@ std::string showQuestion(const std::string& question, long timeout) {
     questionClient.call(questionReq, questionRes);
 
     if(questionRes.index < 0 || questionRes.index == 1)
-        return "";
+        return {"", questionRes.index == bwi_msgs::QuestionDialogRequest::TIMED_OUT ? 1 : 2};
 
     questionRes.index = 0;
     questionRes.text = "";
@@ -92,10 +100,13 @@ std::string showQuestion(const std::string& question, long timeout) {
     questionClient.call(questionReq, questionRes);
     answer = questionRes.index < 0 ? "" : questionRes.text;
 
+    // Assume no timeout here. If they said ok and walked away, it is equivalent to cancelling
+    int answer_idx = questionRes.index < 0 ? 2 : 0;
+
     questionReq.message = "Thank you!";
     questionReq.type = bwi_msgs::QuestionDialogRequest::DISPLAY;
     questionReq.timeout = 0.1;                                  // (almost) immediate timeout
     questionClient.call(questionReq, questionRes);
 
-    return answer;
+    return {answer, answer_idx};
 }
