@@ -120,7 +120,10 @@ int main(int argc, char* argv[]) {
         }
         else {
           ROS_INFO("No answer provided!");
-          update_sarsa_agent(locRes.locationName, actionUpdateReq.QUESTION_TIMEOUT);
+          int result = (qRes.end_reason == qRes.TIMEOUT
+                        ? int(actionUpdateReq.QUESTION_TIMEOUT)
+                        : int(actionUpdateReq.QUESTION_DENIED));
+          update_sarsa_agent(locRes.locationName, result);
         }
     }
 }
