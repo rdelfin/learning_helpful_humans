@@ -11,7 +11,7 @@ from agents.function_estimator import NeuralNetEstimator, FourierEstimator
 
 from mdp.states import FullState, Action, Request
 
-from firebase_scripts import travel_data
+from firebase_scripts import travel_data, training_data
 
 QUESTION_ANSWERED = 0
 QUESTION_DENIED = 1
@@ -48,6 +48,10 @@ def update_action(req):
     curr_state = FullState(req.current_location, req.time.time_seconds, \
                            req.time.day_of_week, curr_state.request_history)
     agent.action_update(action_result_to_reward(req.result), curr_state)
+
+    training_data.set_weights(agent.estimator.get_weights())
+    training_data.set_num_actions(training_data.get_num_actions() + 1)
+
     return ActionUpdateResponse()
 
 def main():
@@ -61,6 +65,12 @@ def main():
     curr_state = sample_state
 
     estimator = FourierEstimator(sample_state, sample_action, conf.series)
+
+    if training_data.get_weights() is None:
+        training_data.set_weights(list(estimator.get_weights()))
+    else:
+        estimator.set_weights(training_data.get_weights())
+
     agent = SarsaAgent(conf.eps, conf.alpha, conf.gamma, estimator)
 
     next_action_service = rospy.Service('next_sarsa_action', LocationAction, get_next_action)
