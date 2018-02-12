@@ -7,7 +7,7 @@ def set_weights(weights):
     """
     firebase_app = pyrebase.initialize_app(config.firebase_data)
     db = firebase_app.database()
-    db.child("training").child("").set(weights)
+    db.child("training").child("weights").set(weights)
 
 
 def get_weights():
