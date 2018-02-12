@@ -51,7 +51,7 @@ def update_action(req):
                            req.time.day_of_week, curr_state.request_history)
     agent.action_update(action_result_to_reward(req.result), curr_state)
 
-    training_data.set_weights(agent.estimator.get_weights())
+    training_data.set_weights(list(agent.estimator.get_weights()))
     training_data.set_num_actions(training_data.get_num_actions() + 1)
 
     return ActionUpdateResponse()
