@@ -5,5 +5,6 @@
     <node pkg="learning_helpful_humans" name="location_asker" type="location_asker_node" />
     <node pkg="learning_helpful_humans" name="image_tool" type="image_tool_node" />
     <node pkg="learning_helpful_humans" name="stop_here" type="stop_here" />
+    <node pkg="asker_learning_agent" name="asker_agent" type="agent" />
     <node pkg="sound_play" name="soundplay" type="soundplay_node.py" />
 </launch>
