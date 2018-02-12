@@ -27,7 +27,6 @@ class SarsaAgent(Agent):
         self.past_state_actions = []
 
     def generate_next_action(self, state):
-        rospy.loginfo("Possible actions: %s" % self.possible_actions)
         max_action = max(self.possible_actions, key=lambda action: self.estimator.get_qval(state, action))
         rand_action = random.choice(list(self.possible_actions))
 
