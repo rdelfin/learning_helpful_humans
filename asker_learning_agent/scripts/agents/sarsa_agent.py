@@ -8,6 +8,8 @@ import random
 
 import numpy as np
 
+import rospy
+
 class SarsaAgent(Agent):
     def __init__(self, eps, alpha, gamma, estimator):
         # FIX: Stop depending on states class to define sizes
@@ -25,7 +27,8 @@ class SarsaAgent(Agent):
         self.past_state_actions = []
 
     def generate_next_action(self, state):
-        max_action = max(self.possible_actions, key=lambda loc: self.estimator.get_qval(state, Action(True, loc)))
+        rospy.loginfo("Possible actions: %s" % self.possible_actions)
+        max_action = max(self.possible_actions, key=lambda action: self.estimator.get_qval(state, action))
         rand_action = random.choice(list(self.possible_actions))
 
         action_taken = rand_action if random.random() < self.eps else max_action   # Epsilon-greedy behaviour

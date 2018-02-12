@@ -29,7 +29,7 @@ class Action:
         self.location = location
     
     def __repr__(self):
-        return "Action(ask=%s, location=%s)" % (str(self.ask), self.location)
+        return "Action(location='%s', ask=%s)" % (str(self.location), self.ask)
 
 def is_terminal_state(state):
     return state.time_of_day > 64800  # 6pm in seconds
@@ -48,8 +48,7 @@ class FullState:
         return (self.time_of_day, self.day_of_week, self.location)
 
     def __repr__(self):
-        return "FullState(location=%s, time_of_day=%d, day_of_week=%d," \
-                "person_present_map=%s)" % \
+        return "FullState(location='%s', time_of_day=%d, day_of_week=%d)" % \
                 (self.location, self.time_of_day, self.day_of_week)
 
 def state_action_reducer(state, action):
