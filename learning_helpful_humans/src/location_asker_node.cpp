@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
 
         locationClient.call(locReq, locRes);
 
-        if(locRes.success) {
+        if(!locRes.success) {
             ROS_WARN_STREAM("FAILED TO GO TO NEXT LOCATION.");
             update_sarsa_agent(locRes.locationName, actionUpdateReq.ARRIVAL_FAILURE);
             continue;
