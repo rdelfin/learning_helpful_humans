@@ -13,6 +13,8 @@ from mdp.states import FullState, Action, Request
 
 from firebase_scripts import travel_data, training_data
 
+import numpy as np
+
 QUESTION_ANSWERED = 0
 QUESTION_DENIED = 1
 QUESTION_TIMEOUT = 2
@@ -69,7 +71,7 @@ def main():
     if training_data.get_weights() is None:
         training_data.set_weights(list(estimator.get_weights()))
     else:
-        estimator.set_weights(training_data.get_weights())
+        estimator.set_weights(np.array(training_data.get_weights()))
 
     agent = SarsaAgent(conf.eps, conf.alpha, conf.gamma, estimator)
 
