@@ -57,6 +57,16 @@ bool askQuestion(bwi_msgs::ImageQuestionRequest& req, bwi_msgs::ImageQuestionRes
     img = cv_bridge::toCvCopy(req.image);
     std::pair<std::string, int> answer = showQuestion(req.question, req.timeout);
 
+    std::string status = "";
+    switch(answer.second) {
+        case 0: status = "RESPONDED"; break;
+        case 1: status = "TIMEOUT"; break;
+        case 2: status = "CANCELLED"; break;
+        default: status = "UKNOWN STATUS";
+    }
+
+    ROS_INFO("Question finished. Status: %s. Text: '%s'", status.c_str(), answer.first.c_str());
+
     if(answer.first != "")
         res.answers.push_back(answer.first);
 
@@ -89,7 +99,8 @@ std::pair<std::string, int> showQuestion(const std::string& question, long timeo
     questionReq.options = {"Yes, what question?", "No, please leave"};
     questionClient.call(questionReq, questionRes);
 
-    if(questionRes.index < 0 || questionRes.index == 1)
+    if(questionRes.index != bwi_msgs::QuestionDialogRequest::TEXT_RESPONSE &&
+      (questionRes.index < 0 || questionRes.index == 1))
         return {"", questionRes.index == bwi_msgs::QuestionDialogRequest::TIMED_OUT ? 1 : 2};
 
     questionRes.index = 0;
@@ -98,10 +109,11 @@ std::pair<std::string, int> showQuestion(const std::string& question, long timeo
     questionReq.timeout = 60.0;
     questionReq.type = bwi_msgs::QuestionDialogRequest::TEXT_QUESTION;
     questionClient.call(questionReq, questionRes);
-    answer = questionRes.index < 0 ? "" : questionRes.text;
+    answer = questionRes.index < 0 && questionRes.index != -3 ? "" : questionRes.text;
 
     // Assume no timeout here. If they said ok and walked away, it is equivalent to cancelling
-    int answer_idx = questionRes.index < 0 ? 2 : 0;
+    int answer_idx = questionRes.index < 0 && questionRes.index != bwi_msgs::QuestionDialogRequest::TEXT_RESPONSE
+                     ? 2 : 0;
 
     questionReq.message = "Thank you!";
     questionReq.type = bwi_msgs::QuestionDialogRequest::DISPLAY;
