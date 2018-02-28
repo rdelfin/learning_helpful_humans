@@ -162,7 +162,6 @@ def transition_func(state, action):
     return FullState(location=next_location,
                      time_of_day=time_of_day,
                      day_of_week=state.day_of_week,
-                     person_present_map=new_present_map,
                      request_history=new_request_list)
 
 def reward_func(state, action, newState):

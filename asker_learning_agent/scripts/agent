@@ -7,11 +7,12 @@ from bwi_msgs.srv import ActionUpdate, ActionUpdateRequest, ActionUpdateResponse
 from bwi_msgs.srv import LocationAction, LocationActionRequest, LocationActionResponse
 
 from agents.sarsa_agent import SarsaAgent
+from agents.random_agent import RandomAgent
 from agents.function_estimator import NeuralNetEstimator, FourierEstimator
 
 from mdp.states import FullState, Action, Request
 
-from firebase_scripts import travel_data, training_data
+from firebase_scripts import travel_data, training_data, log_data
 
 import numpy as np
 
@@ -35,17 +36,45 @@ def action_result_to_reward(result):
     if result == ARRIVAL_FAILURE:
         return -2
 
+def action_result_to_string(result):
+    global QUESTION_ANSWERED, QUESTION_DENIED, QUESTION_TIMEOUT, ARRIVED, ARRIVAL_FAILURE
+
+    if result == QUESTION_ANSWERED:
+        return 'QUESTION_ANSWERED'
+    if result == QUESTION_DENIED:
+        return 'QUESTION_DENIED'
+    if result == QUESTION_TIMEOUT:
+        return 'QUESTION_TIMEOUT'
+    if result == ARRIVED:
+        return 'ARRIVED'
+    if result == ARRIVAL_FAILURE:
+        return 'ARRIVAL_FAILURE'
+    return 'UNKNOWN_RESULT'
+
+def get_timestamp():
+    return int(time.mktime(datetime.datetime.utcnow().timetuple()))
+
 def get_next_action(req):
+    global collect_data
+    global run_logger
+    
     state = FullState(req.current_location, req.time.time_seconds, req.time.day_of_week, [])
     next_action = agent.next_action(state)
     curr_state.request_history += [Request(location=next_action.location, \
                                            time_of_day=state.time_of_day, \
                                            day_of_week=state.day_of_week)]
+
+    if collect_data:
+        action_dict = {'location': next_action.location, 'ask': next_action.ask}
+        run_logger.record_action(req.current_location, action_dict, get_timestamp())
+
     return LocationActionResponse(ask_question=next_action.ask, \
                                   location=next_action.location)
 
 def update_action(req):
     global curr_state
+    global collect_data
+    global run_logger
 
     curr_state = FullState(req.current_location, req.time.time_seconds, \
                            req.time.day_of_week, curr_state.request_history)
@@ -54,26 +83,39 @@ def update_action(req):
     training_data.set_weights(list(agent.estimator.get_weights()))
     training_data.set_num_actions(training_data.get_num_actions() + 1)
 
+    if collect_data:
+        run_logger.record_response(req.current_location, action_result_to_string(req.result), get_timestamp())
+
     return ActionUpdateResponse()
 
 def main():
     global agent
     global location_ids
     global curr_state
+    global collect_data
+    global run_logger
 
     location_ids = travel_data.get_location_ids()
     sample_state = FullState(list(location_ids)[0], 0, 0, [])
     sample_action = Action(list(location_ids)[0], False)
     curr_state = sample_state
 
-    estimator = FourierEstimator(sample_state, sample_action, conf.series)
+    collect_data = rospy.get_param('~agent_data_collect', False)
+    agent_type = rospy.get_param('~agent_type', 'sarsa_agent')
 
-    if training_data.get_weights() is None:
-        training_data.set_weights(list(estimator.get_weights()))
+    run_logger = log_data.RunLogger()
+
+    if agent_type == 'sarsa_agent':
+        estimator = FourierEstimator(sample_state, sample_action, conf.series)
+
+        if training_data.get_weights() is None:
+            training_data.set_weights(list(estimator.get_weights()))
+        else:
+            estimator.set_weights(np.array(training_data.get_weights()))
+
+        agent = SarsaAgent(conf.eps, conf.alpha, conf.gamma, estimator)
     else:
-        estimator.set_weights(np.array(training_data.get_weights()))
-
-    agent = SarsaAgent(conf.eps, conf.alpha, conf.gamma, estimator)
+        agent = RandomAgent()
 
     next_action_service = rospy.Service('next_sarsa_action', LocationAction, get_next_action)
     update_action_service = rospy.Service('update_sarsa_action', ActionUpdate, update_action)
