@@ -91,7 +91,7 @@ add_dependencies(location_selector_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(location_selector_node
                       ${catkin_LIBRARIES}
                       ${CURL_LIBRARIES}
-                      /usr/local/lib/libcurlpp.so)
+                      /usr/lib/x86_64-linux-gnu/libcurlpp.so)
 
 add_executable(location_asker_node src/location_asker_node.cpp
                                    src/request/GetFieldValue.cpp
@@ -102,7 +102,7 @@ target_link_libraries(location_asker_node ${catkin_LIBRARIES}
         ${catkin_LIBRARIES}
         ${CURL_LIBRARIES}
         ${Boost_LIBRARIES}
-        /usr/local/lib/libcurlpp.so)
+        /usr/lib/x86_64-linux-gnu/libcurlpp.so)
 
 
 add_executable(image_tool_node src/image_tool_node.cpp
@@ -122,7 +122,7 @@ target_link_libraries(image_tool_node
         ${catkin_LIBRARIES}
         ${CURL_LIBRARIES}
         ${Boost_LIBRARIES}
-        /usr/local/lib/libcurlpp.so)
+        /usr/lib/x86_64-linux-gnu/libcurlpp.so)
 
 add_executable(image_uploader_test test/image_uploader_test.cpp)
 add_dependencies(image_uploader_test ${catkin_EXPORTED_TARGETS})
@@ -147,7 +147,7 @@ target_link_libraries(image_fetch_tester
         ${CURL_LIBRARIES}
         ${Boost_LIBRARIES}
         ${FLTK_LIBRARIES}
-        curlpp)
+        /usr/lib/x86_64-linux-gnu/libcurlpp.so)
         
 add_executable(collect_costs src/collect_costs.cpp
                              src/request/GetFieldValue.cpp
@@ -164,7 +164,7 @@ target_link_libraries(collect_costs
         ${CURL_LIBRARIES}
         ${Boost_LIBRARIES}
         ${FLTK_LIBRARIES}
-        curlpp)
+        /usr/lib/x86_64-linux-gnu/libcurlpp.so)
                              
 catkin_install_python(PROGRAMS scripts/stop_here
                       DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
