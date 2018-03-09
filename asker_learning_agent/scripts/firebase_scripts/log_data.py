@@ -6,7 +6,7 @@ class RunLogger:
     def __init__(self):
         self.firebase_app = pyrebase.initialize_app(config.firebase_data)
         self.db = self.firebase_app.database()
-        self.run_id = datetime.datetime.now().format("%Y%m%dT%H%M%S")
+        self.run_id = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
 
 
     def record_travel_time(self, from_loc, to_loc, time, timestamp):
